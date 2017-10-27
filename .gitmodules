@@ -1,0 +1,9 @@
+[submodule "convolutional-pose-machines-release"]
+	path = convolutional-pose-machines-release
+	url = https://github.com/shihenw/convolutional-pose-machines-release.git
+[submodule "cpm"]
+	path = cpm
+	url = https://github.com/psycharo/cpm.git
+[submodule "cpm-tf"]
+	path = cpm-tf
+	url = https://github.com/psycharo/cpm.git
