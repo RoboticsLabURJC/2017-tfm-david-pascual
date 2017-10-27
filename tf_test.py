@@ -10,3 +10,4 @@ __date__ = "2017/10/2017"
 
 if __name__ == '__main__':
     #TODO adapt TF notebook
+    quit()
