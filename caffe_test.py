@@ -22,6 +22,7 @@ import caffe
 from caffe_tools import util
 from caffe_tools.config_reader import config_reader
 from caffe_tools.person_detector import PersonDetector
+from caffe_tools.pose_estimator import PoseEstimator
 import cv2 as cv
 from matplotlib import pyplot as plt
 import time
@@ -71,6 +72,17 @@ def display_map(im, map, coords):
     plt.show()
 
 
+def display_boxes(ims):
+    """
+    Displays the boxes that contain the detected humans.
+    :param ims: np.array - images of each human
+    """
+    plt.figure()
+    for i, im in enumerate(ims):
+        plt.subplot(1, ims.shape[0], i + 1)
+        plt.imshow(cv.cvtColor(np.uint8(im), cv.COLOR_BGR2RGB))
+    plt.show()
+
 if __name__ == '__main__':
     caffe.set_mode_cpu()
 
@@ -86,27 +98,49 @@ if __name__ == '__main__':
     param, model = config_reader()
     boxsize = model['boxsize']  # image size used during training
     im = get_sample_ready(im_original, boxsize)
-    print("Image resized: " + str(im_original.shape) + " -> " + str(im.shape))
 
     """
     Person detection
     """
-    deploy_model = model['deployFile_person']
-    weights = model['caffemodel_person']
-    print("\nModel: " + deploy_model)
-    print("Weights: " + weights)
+    deploy_model_person = model['deployFile_person']
+    weights_person = model['caffemodel_person']
+    print("\nPerson detector:\n\tModel: " + deploy_model_person)
+    print("\tWeights: " + weights_person)
 
-    person_detector = PersonDetector(im, deploy_model, weights)
+    person_detector = PersonDetector(deploy_model_person, weights_person)
+
     start_time = time.time()
-    person_map = person_detector.detect()
-    print("\nPerson net took %.2f ms." % (1000 * (time.time() - start_time)))
+    person_map = person_detector.detect(im)
+    print("\n\tPerson net took %.2f ms." % (1000 * (time.time() - start_time)))
 
     person_map_resized = person_detector.map_resize(im.shape, person_map)
     person_coords = person_detector.peaks_coords(person_map_resized)
-    print("Person coordinates: ")
+    print("\tPerson coordinates: ")
     for x, y in person_coords:
-        print("\t(x,y)=" + str(x) + "," + str(y))
+        print("\t\t(x,y)=" + str(x) + "," + str(y))
 
-    display_map(im, person_map_resized, person_coords)
+    # display_map(im, person_map_resized, person_coords)
 
-    # TODO estimate pose
+    """
+    Pose estimation
+    """
+    deploy_model = model['deployFile']
+    weights = model['caffemodel']
+    print("\nPose estimator:\n\tModel: " + deploy_model_person)
+    print("\tWeights: " + weights_person)
+
+    pose_estimator = PoseEstimator(deploy_model, weights)
+
+    humans = pose_estimator.get_boxes(im, person_coords, boxsize)
+    # display_boxes(humans)
+
+    for human in humans:
+        start_time = time.time()
+        gauss_map = pose_estimator.gen_gaussmap(boxsize, model["sigma"])
+        print("\n\tPerson net took %.2f ms." % (1000 * (time.time() - start_time)))
+
+        plt.figure()
+        plt.imshow(np.uint8(np.clip(gauss_map, 0, 255)), cmap="gray")
+        plt.show()
+
+        # TODO fix pose estimator

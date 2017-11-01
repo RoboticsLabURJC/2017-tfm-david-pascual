@@ -19,31 +19,34 @@ import time
 import numpy as np
 import scipy
 
-
 class PersonDetector():
     """
     Class for person detection.
     """
 
-    def __init__(self, im, model, weights):
+    def __init__(self, model, weights):
         """
         Class constructor.
+        :param model: caffe model
+        :param weights: caffe model weights
         """
-        # Reshapes and normalizes the input image
-        im = np.float32(im[:, :, :, np.newaxis])
-        self.im = np.transpose(im, (3, 2, 0, 1)) / 256 - 0.5
 
         # Reshapes the model input accordingly
         self.net = caffe.Net(model, weights, caffe.TEST)
-        self.net.blobs['image'].reshape(*self.im.shape)
 
-    def detect(self):
+    def detect(self, im):
         """
         Detects people in the image.
+        :param im: np.array - input image
         :return: np.array - heatmap
         """
+        # Reshapes and normalizes the input image
+        im = np.float32(im[:, :, :, np.newaxis])
+        im = np.transpose(im, (3, 2, 0, 1)) / 256 - 0.5
+        self.net.blobs['image'].reshape(*im.shape)
+
         # Feeds the net
-        self.net.blobs['image'].data[...] = self.im
+        self.net.blobs['image'].data[...] = im
 
         # Person detection
         start_time = time.time()
