@@ -85,6 +85,7 @@ class PoseEstimator():
         self.net.blobs['data'].data[...] = input_adapted
 
         # Estimates the pose
-        output_blob = self.net.forward()
+        output_blobs = self.net.forward()
+        pose_map = np.squeeze(self.net.blobs[output_blobs.keys()[0]].data)
 
-        return output_blob
+        return pose_map

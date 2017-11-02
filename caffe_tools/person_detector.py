@@ -13,7 +13,6 @@ import sys
 
 sys.path.insert(0, "/home/dpascualhe/caffe/python")
 
-import cv2 as cv
 import caffe
 import time
 import numpy as np
@@ -56,30 +55,15 @@ class PersonDetector():
 
         return map
 
-    def map_resize(self, new_shape, map):
-        """
-        Resizes the heatmap detected.
-        :param new_shape: tuple - target shape
-        :param map: np.array - heatmap
-        :return: np.array - resized heatmap
-        """
-        # Resizes the output back to the size of the test image
-        scale_y = new_shape[0] / float(map.shape[0])
-        scale_x = new_shape[1] / float(map.shape[1])
-        map_resized = cv.resize(map, (0, 0), fx=scale_x, fy=scale_y,
-                                interpolation=cv.INTER_CUBIC)
-
-        return map_resized
-
-    def peaks_coords(self, map):
+    def peaks_coords(self, heatmap):
         """
         Gets the exact coordinates of each person in the heatmap.
-        :param map: np.array - heatmap
+        :param heatmap: np.array - heatmap
         :return: np.array - people coordinates
         """
         # Founds the peaks in the output
-        data_max = scipy.ndimage.filters.maximum_filter(map, 3)
-        max = (map == data_max)
+        data_max = scipy.ndimage.filters.maximum_filter(heatmap, 3)
+        max = (heatmap == data_max)
         thresh = (data_max > 0.5)
         max[thresh == 0] = 0
 
