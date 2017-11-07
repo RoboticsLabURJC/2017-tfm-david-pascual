@@ -16,7 +16,7 @@ sys.path.insert(0, "/home/dpascualhe/caffe/python")
 import caffe
 import numpy as np
 import math
-
+import cv2 as cv
 
 class PoseEstimator():
     def __init__(self, model, weights):
@@ -89,3 +89,57 @@ class PoseEstimator():
         pose_map = np.squeeze(self.net.blobs[output_blobs.keys()[0]].data)
 
         return pose_map
+
+    def get_coords(self, joint_map, person_coord, boxsize):
+        """
+        Get joint coordinates and resize them given a heatmap.
+        :param joint_map: np.array - heatmap
+        :param person_coord: np.array - person center coordinates
+        :param boxsize: int - boxsize
+        :return: joint coordinates
+        """
+        # Get coordinates
+        joint_coord = list(np.unravel_index(joint_map.argmax(), joint_map.shape))
+
+        # Back to full coordinates
+        joint_coord[0] = joint_coord[0] - (boxsize / 2) + person_coord[1]
+        joint_coord[1] = joint_coord[1] - (boxsize / 2) + person_coord[0]
+
+        return joint_coord
+
+    def draw_limbs(self, limbs, im, pose_coords):
+        """
+        Draw limbs over the original image.
+        :param limbs: list - relationship between limbs and joints
+        :param im: np.array - original image
+        :param pose_coords: np.array - coordinates of the predicted
+        joints
+        :return: drawn image
+        """
+        stickwidth = 6
+        colors = [[0, 0, 255], [0, 170, 255], [0, 255, 170], [0, 255, 0],
+                  [170, 255, 0], [255, 170, 0], [255, 0, 0], [255, 0, 170],
+                  [170, 0, 255]]  # note BGR ...
+
+        for joint_coords in pose_coords:
+            for joint_coord in joint_coords[:-1]:
+                cv.circle(im, (int(joint_coord[1]), int(joint_coord[0])), 3,
+                          (0, 0, 0), -1)
+
+            for l in range(limbs.shape[0]):
+                X = [joint_coords[limbs[l][0] - 1][0],
+                     joint_coords[limbs[l][1] - 1][0]]
+                Y = [joint_coords[limbs[l][0] - 1][1],
+                     joint_coords[limbs[l][1] - 1][1]]
+
+                mX = np.mean(X)
+                mY = np.mean(Y)
+
+                length = ((X[0] - X[1]) ** 2. + (Y[0] - Y[1]) ** 2.) ** 0.5
+                angle = math.degrees(math.atan2(X[0] - X[1], Y[0] - Y[1]))
+                polygon = cv.ellipse2Poly((int(mY), int(mX)),
+                                          (int(length / 2), stickwidth),
+                                          int(angle), 0, 360, 1)
+                cv.fillConvexPoly(im, polygon, colors[l])
+
+        return im
