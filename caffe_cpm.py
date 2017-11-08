@@ -150,9 +150,10 @@ def display_result(im):
     plt.imshow(cv.cvtColor(im, cv.COLOR_BGR2RGB))
     plt.show()
 
-def predict(deploy_models, im_original, viz):
+def predict(model, deploy_models, im_original, viz):
     """
     Make a complete human pose estimation with Caffe CPM
+    :param model: dict - model info
     :param deploy_models: list - models & weights
     :param im_original: np.array - input image
     :param viz: bool - flag for visualizations
@@ -172,11 +173,11 @@ def predict(deploy_models, im_original, viz):
 
     start_time = time.time()
     person_map = person_detector.detect(im)
-    print("\n\tPerson net took %.2f ms." % (1000 * (time.time() - start_time)))
+    print("\nPerson net took %.2f ms." % (1000 * (time.time() - start_time)))
 
     person_map_resized = map_resize(im.shape, person_map)
     person_coords = person_detector.peaks_coords(person_map_resized)
-    print("\tPerson coordinates: ")
+    print("Person coordinates: ")
     for x, y in person_coords:
         print("\t\t(x,y)=" + str(x) + "," + str(y))
 
@@ -199,8 +200,8 @@ def predict(deploy_models, im_original, viz):
 
         start_time = time.time()
         pose_map = pose_estimator.estimate(im_human, person_coords, gauss_map)
-        print("\n\tPose net took %.2f ms." % (1000 * (time.time()
-                                                        - start_time)))
+        print("\nPose net took %.2f ms." % (1000 * (time.time()
+                                                    - start_time)))
 
         pose_map_resized = []
         joint_coords = []
@@ -236,17 +237,16 @@ def load_model():
     """
     param, model = config_reader()
 
-    deploy_model_person = model['deployFile_person']
-    weights_person = model['caffemodel_person']
-    print("\nPerson detector:\n\tModel: " + deploy_model_person)
-    print("\tWeights: " + weights_person)
+    deploy_model_person = (model['deployFile_person'],
+                           model['caffemodel_person'])
+    print("\nPerson detector:\n\tModel: " + deploy_model_person[0])
+    print("\tWeights: " + deploy_model_person[1])
+    
+    deploy_model_pose = (model['deployFile'], model['caffemodel'])
+    print("\nPose estimator:\n\tModel: " + deploy_model_pose[0])
+    print("\tWeights: " + deploy_model_pose[1])
 
-    deploy_model = model['deployFile']
-    weights = model['caffemodel']
-    print("\nPose estimator:\n\tModel: " + deploy_model_person)
-    print("\tWeights: " + weights_person)
-
-    return [[deploy_model_person, weights_person], [deploy_model, weights]]
+    return model, [deploy_model_person, deploy_model_pose]
 
 
 if __name__ == '__main__':
@@ -258,8 +258,8 @@ if __name__ == '__main__':
     im_original = cv.imread(im_path)
 
     viz = False
-    models = load_model()
-    pose_coords, im_predicted = predict(models, im_original, viz)
+    model, deploy_models = load_model()
+    pose_coords, im_predicted = predict(model, deploy_models, im_original, viz)
 
     plt.figure()
     plt.imshow(cv.cvtColor(im_predicted, cv.COLOR_BGR2RGB))
