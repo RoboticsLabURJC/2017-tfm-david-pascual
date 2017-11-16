@@ -15,10 +15,10 @@ modelID = 1
 ## don't edit this part
 
 [[1]]
-caffemodel_person = 'caffe_model/_trained_person_MPI/pose_iter_70000.caffemodel'
-deployFile_person = 'caffe_model/_trained_person_MPI/pose_deploy_copy_4sg_resize.prototxt'
-caffemodel = 'caffe_model/_trained_MPI/pose_iter_320000.caffemodel'
-deployFile = 'caffe_model/_trained_MPI/pose_deploy_resize.prototxt'
+caffemodel_person = 'Estimator/Caffe/caffe_model/_trained_person_MPI/pose_iter_70000.caffemodel'
+deployFile_person = 'Estimator/Caffe/caffe_model/_trained_person_MPI/pose_deploy_copy_4sg_resize.prototxt'
+caffemodel = 'Estimator/Caffe/caffe_model/_trained_MPI/pose_iter_320000.caffemodel'
+deployFile = 'Estimator/Caffe/caffe_model/_trained_MPI/pose_deploy_resize.prototxt'
 description = 'MPII 6 stage'
 boxsize = 368
 np = 14
