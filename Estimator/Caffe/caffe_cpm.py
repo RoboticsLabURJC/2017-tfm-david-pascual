@@ -35,12 +35,12 @@ def get_sample_ready(im, boxsize):
     # The image is resized to conveniently crop a region that can
     # nicely fit a person
     s = boxsize / float(im.shape[0])
-    im_nopad = cv.resize(im, (0, 0), fx=s, fy=s, interpolation=cv.INTER_CUBIC)
+    im_nopad = cv.resize(im, None, fx=s, fy=s, interpolation=cv.INTER_CUBIC)
 
     # Padded to become multiple of 8 (downsize factor of the CPM)
-    im, pad = util.padRightDownCorner(im)
+    im_padded, pad = util.padRightDownCorner(im_nopad)
 
-    return im, im_nopad
+    return im_padded, im_nopad, s
 
 
 def blend_map(im, heatmap):
@@ -107,7 +107,7 @@ def map_resize(new_shape, heatmap):
     # Resizes the output back to the size of the test image
     scale_y = new_shape[0] / float(heatmap.shape[0])
     scale_x = new_shape[1] / float(heatmap.shape[1])
-    map_resized = cv.resize(heatmap, (0, 0), fx=scale_x, fy=scale_y,
+    map_resized = cv.resize(heatmap, None, fx=scale_x, fy=scale_y,
                             interpolation=cv.INTER_CUBIC)
 
     return map_resized
@@ -124,6 +124,7 @@ def display_boxes(ims):
         plt.imshow(cv.cvtColor(np.uint8(im), cv.COLOR_BGR2RGB))
     plt.show()
 
+
 def display_joints(im, joints):
     """
     Display predicted joints over the original image
@@ -136,6 +137,7 @@ def display_joints(im, joints):
         plt.plot(x, y, "*", color="red")
     plt.show()
 
+
 def display_result(im):
     """
     Display the resultant image
@@ -144,6 +146,7 @@ def display_result(im):
     plt.figure()
     plt.imshow(cv.cvtColor(im, cv.COLOR_BGR2RGB))
     plt.show()
+
 
 def predict(model, deploy_models, im_original, viz):
     """
@@ -156,10 +159,10 @@ def predict(model, deploy_models, im_original, viz):
     """
 
     """
-    Gets test image
+    Get test image
     """
     boxsize = model['boxsize']  # image size used during training
-    im, im_nopad = get_sample_ready(im_original, boxsize)
+    im, im_nopad, rate = get_sample_ready(im_original, boxsize)
 
     """
     Person detection
@@ -194,7 +197,7 @@ def predict(model, deploy_models, im_original, viz):
         gauss_map = pose_estimator.gen_gaussmap(boxsize, model["sigma"])
 
         start_time = time.time()
-        pose_map = pose_estimator.estimate(im_human, person_coords, gauss_map)
+        pose_map = pose_estimator.estimate(im_human, gauss_map)
         print("\nPose net took %.2f ms." % (1000 * (time.time()
                                                     - start_time)))
 
@@ -207,7 +210,8 @@ def predict(model, deploy_models, im_original, viz):
 
             # Get resized coordinates of every joint
             joint_coord = pose_estimator.get_coords(joint_map_resized,
-                                                    person_coord, boxsize)
+                                                    person_coord, rate,
+                                                    boxsize)
             joint_coords.append(joint_coord)
 
         pose_coords.append(joint_coords)
@@ -225,6 +229,7 @@ def predict(model, deploy_models, im_original, viz):
 
     return pose_coords, im_final
 
+
 def load_model():
     """
     Get model and weights for pose and person detection
@@ -236,7 +241,7 @@ def load_model():
                            model['caffemodel_person'])
     print("\nPerson detector:\n\tModel: " + deploy_model_person[0])
     print("\tWeights: " + deploy_model_person[1])
-    
+
     deploy_model_pose = (model['deployFile'], model['caffemodel'])
     print("\nPose estimator:\n\tModel: " + deploy_model_pose[0])
     print("\tWeights: " + deploy_model_pose[1])
@@ -252,10 +257,11 @@ if __name__ == '__main__':
     im_path = sys.argv[1]
     im_original = cv.imread(im_path)
 
-    viz = True
     model, deploy_models = load_model()
-    pose_coords, im_predicted = predict(model, deploy_models, im_original, viz)
-
+    start_time = time.time()
+    pose_coords, im_predicted = predict(model, deploy_models, im_original, True)
+    print("\nTotal time (w/out loading) %.2f ms." % (1000 * (time.time()
+                                                             - start_time)))
     plt.figure()
     plt.imshow(cv.cvtColor(im_predicted, cv.COLOR_BGR2RGB))
     plt.show()

@@ -8,10 +8,12 @@ https://github.com/shihenw/convolutional-pose-machines-release/blob/master/testi
 __author__ = "David Pascual Hernandez"
 __date__ = "2017/11/01"
 
-import caffe
 import time
+
+import caffe
 import numpy as np
 import scipy
+
 
 class PersonDetector():
     """
@@ -43,7 +45,6 @@ class PersonDetector():
         self.net.blobs['image'].data[...] = im
 
         # Person detection
-        start_time = time.time()
         output_blobs = self.net.forward()
 
         map = np.squeeze(self.net.blobs[output_blobs.keys()[0]].data)

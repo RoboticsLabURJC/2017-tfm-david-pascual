@@ -10,6 +10,7 @@ __date__ = "2017/11/16"
 
 import sys
 import signal
+from multiprocessing import Process
 
 from PyQt5 import QtWidgets
 
@@ -22,17 +23,15 @@ from Estimator.threadestimator import ThreadEstimator
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-
 if __name__ == '__main__':
-    cam = Camera()
+    # Init objects
     app = QtWidgets.QApplication(sys.argv)
-    window = GUI()
-    window.setCamera(cam)
+
+    cam = Camera()
+    window = GUI(cam)
+    estimator = Estimator(window, cam)
     window.show()
-    estimator = Estimator()
-    estimator.setGUI(window)
-    estimator.setCamera(cam)
-    
+
     # Threading camera
     t_cam = ThreadCamera(cam)
     t_cam.start()
@@ -40,10 +39,9 @@ if __name__ == '__main__':
     # Threading estimator
     t_estimator = ThreadEstimator(estimator)
     t_estimator.start()
-    
+
     # Threading GUI
     t_gui = ThreadGUI(window)
     t_gui.start()
 
     sys.exit(app.exec_())
-

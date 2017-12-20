@@ -13,6 +13,7 @@ import numpy as np
 import math
 import cv2 as cv
 
+
 class PoseEstimator():
     def __init__(self, model, weights):
         """
@@ -33,15 +34,15 @@ class PoseEstimator():
         num_people = coords.shape[0]
         boxes = np.ones((num_people, size, size, 3)) * 128
 
+        pad_h = np.ones((im.shape[0] + size, size / 2, 3)) * 128
+        pad_v = np.ones((size / 2, im.shape[1], 3)) * 128
+        im = np.vstack((pad_v, im, pad_v))
+        im = np.hstack((pad_h, im, pad_h))
         for i in range(num_people):
-            for x_box in range(size):
-                for y_box in range(size):
-                    x_i = x_box - size / 2 + coords[i][0]
-                    y_i = y_box - size / 2 + coords[i][1]
-                    if (x_i >= 0 and x_i < im.shape[1]) \
-                            and (y_i >= 0 and y_i < im.shape[0]):
-                        boxes[i, y_box, x_box, :] = im[y_i, x_i, :]
-
+            y = coords[i][1] + size / 2
+            x = coords[i][0] + size / 2
+            boxes[i, :, :, :] = im[y - size / 2: y + size / 2,
+                                x - size / 2: x + size / 2]
         return boxes
 
     def gen_gaussmap(self, size, sigma):
@@ -61,11 +62,10 @@ class PoseEstimator():
 
         return gaussmap
 
-    def estimate(self, im, coords, gaussmap):
+    def estimate(self, im, gaussmap):
         """
         Estimates human pose.
         :param im: np.array - input image
-        :param coords: np.array - human coordinates
         :param gaussmap: np.array - Gaussian map
         :return: np.array: articulations coordinates
         """
@@ -77,6 +77,7 @@ class PoseEstimator():
         # Adapts input to the net
         input_adapted = np.transpose(np.float32(input_4ch[:, :, :, np.newaxis]),
                                      (3, 2, 0, 1))
+        self.net.blobs['data'].reshape(*input_adapted.shape)
         self.net.blobs['data'].data[...] = input_adapted
 
         # Estimates the pose
@@ -85,20 +86,22 @@ class PoseEstimator():
 
         return pose_map
 
-    def get_coords(self, joint_map, person_coord, boxsize):
+    def get_coords(self, joint_map, person_coord, rate, boxsize):
         """
         Get joint coordinates and resize them given a heatmap.
         :param joint_map: np.array - heatmap
         :param person_coord: np.array - person center coordinates
+        :param rate: float - resize rate
         :param boxsize: int - boxsize
         :return: joint coordinates
         """
         # Get coordinates
         joint_coord = list(np.unravel_index(joint_map.argmax(), joint_map.shape))
-
         # Back to full coordinates
-        joint_coord[0] = joint_coord[0] - (boxsize / 2) + person_coord[1]
-        joint_coord[1] = joint_coord[1] - (boxsize / 2) + person_coord[0]
+        joint_coord[0] = (joint_coord[0] - (boxsize / 2) + person_coord[1])\
+                         / rate
+        joint_coord[1] = (joint_coord[1] - (boxsize / 2) + person_coord[0])\
+                         / rate
 
         return joint_coord
 
