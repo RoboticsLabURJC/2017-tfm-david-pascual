@@ -8,9 +8,9 @@ Based on https://github.com/RoboticsURJC-students/2016-tfg-david-pascual
 __author__ = "David Pascual Hernandez"
 __date__ = "2017/11/16"
 
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtWidgets import QWidget, QLabel
-from PyQt5.QtCore import pyqtSignal
 
 
 class GUI(QWidget):
@@ -20,7 +20,7 @@ class GUI(QWidget):
         """
         GUI class creates the GUI that we're going to use to preview
         the live video as well as the estimation results.
-        :param parent: bool
+        @param parent: bool
         """
         QWidget.__init__(self, parent)
 
@@ -44,20 +44,24 @@ class GUI(QWidget):
         # Camera
         self.cam = cam
 
+    # noinspection PyArgumentList
     def update(self):
         """ Updates the GUI. """
         # Get original image and display it
         im_live = self.cam.get_image()
         im_live = QImage(im_live, im_live.shape[1], im_live.shape[0],
                          QImage.Format_RGB888)
+        # noinspection PyCallByClass
         im_live = QPixmap.fromImage(im_live)
         self.im_live_label.setPixmap(im_live)
 
+    # noinspection PyArgumentList
     def display_result(self, im):
         """
         Display image with estimated limbs and joint coordinates
-        :param im: np.array - Image with limbs
+        @param im: np.array - Image with limbs
         """
         im = QImage(im, im.shape[1], im.shape[0], QImage.Format_RGB888)
+        # noinspection PyCallByClass
         im = QPixmap.fromImage(im)
         self.im_pose_label.setPixmap(im)

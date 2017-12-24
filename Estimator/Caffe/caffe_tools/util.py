@@ -82,5 +82,5 @@ def padRightDownCorner(img):
 
     return img_padded, pad
 
-# if __name__ == "__main__":
-#    caffe_config()
+if __name__ == "__main__":
+    caffe_config()

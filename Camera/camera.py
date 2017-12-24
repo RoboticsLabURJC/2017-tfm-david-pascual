@@ -12,8 +12,8 @@ import sys
 import threading
 import traceback
 
+import easyiceconfig as easy_ice
 import numpy as np
-import easyiceconfig as EasyIce
 from jderobot import CameraPrx
 
 
@@ -24,10 +24,11 @@ class Camera:
         in order to predict the digit in the image.
         """
         # Initialize Ice
-        ic = EasyIce.initialize(sys.argv)
+        ic = easy_ice.initialize(sys.argv)
 
         self.lock = threading.Lock()
 
+        # noinspection PyBroadException
         try:
             # Obtain a proxy for the camera
             obj = ic.propertyToProxy("Humanpose.Camera.Proxy")
@@ -40,7 +41,6 @@ class Camera:
                 print(im.description)
             else:
                 print("Interface camera not connected")
-
         except:
             traceback.print_exc()
             exit()
@@ -48,7 +48,7 @@ class Camera:
     def get_image(self):
         """
         Get image from webcam.
-        :return: np.array - Frame
+        @return: np.array - Frame
         """
         im = np.zeros((self.im_width, self.im_height, 3))
         if self.cam:

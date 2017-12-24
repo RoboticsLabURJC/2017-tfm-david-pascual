@@ -8,23 +8,25 @@ https://github.com/shihenw/convolutional-pose-machines-release/blob/master/testi
 __author__ = "David Pascual Hernandez"
 __date__ = "2017/12/05"
 
-# Avoids verbosity when loading Caffe model
 import os
-
-os.environ['GLOG_minloglevel'] = '2'
 
 import caffe
 import cv2
+
 import caffe_cpm as cpm
 
+# Avoids verbosity when loading Caffe model
+os.environ['GLOG_minloglevel'] = '2'
+
 if __name__ == '__main__':
-    caffe.set_mode_cpu()
+    caffe.set_mode_gpu()
+    caffe.set_device(0)
 
     model, deploy_models = cpm.load_model()
 
     cap = cv2.VideoCapture(0)
 
-    while(True):
+    while True:
         # Capture frame-by-frame
         ret, frame = cap.read()
 

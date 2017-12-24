@@ -14,8 +14,8 @@ def config_reader():
     model['limbs'] = np.array(model['limbs']).reshape((num_limb, 2))
     model['limbs'] = model['limbs'].astype(np.int)
     model['sigma'] = float(model['sigma'])
-    # param['use_gpu'] = int(param['use_gpu'])
-    # param['GPUdeviceNumber'] = int(param['GPUdeviceNumber'])
+    param['use_gpu'] = int(param['use_gpu'])
+    param['GPUdeviceNumber'] = int(param['GPUdeviceNumber'])
 
     return param, model
 

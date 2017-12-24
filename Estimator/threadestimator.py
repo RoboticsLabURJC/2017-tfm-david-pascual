@@ -15,12 +15,12 @@ class ThreadEstimator(threading.Thread):
     def __init__(self, estimator):
         """
         Threading class for estimator.
-        :param estimtor: Estimator object
+        @param estimator: Estimator object
         """
         self.estimator = estimator
         threading.Thread.__init__(self)
 
     def run(self):
         """ Updates the thread. """
-        while (True):
+        while True:
             self.estimator.update()

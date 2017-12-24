@@ -8,25 +8,25 @@ Based on https://github.com/RoboticsURJC-students/2016-tfg-david-pascual
 __author__ = "David Pascual Hernandez"
 __date__ = "2017/11/16"
 
-import time
 import threading
+import time
 from datetime import datetime
 
-t_cycle = 70  # ms
+t_cycle = 20  # ms
 
 
 class ThreadCamera(threading.Thread):
     def __init__(self, cam):
         """
         Threading class for Camera.
-        :param cam: Camera object
+        @param cam: Camera object
         """
         self.cam = cam
         threading.Thread.__init__(self)
 
     def run(self):
         """ Updates the thread. """
-        while (True):
+        while True:
             start_time = datetime.now()
             self.cam.get_image()
             end_time = datetime.now()
@@ -35,5 +35,5 @@ class ThreadCamera(threading.Thread):
             dtms = ((dt.days * 24 * 60 * 60 + dt.seconds) * 1000
                     + dt.microseconds / 1000.0)
 
-            if (dtms < t_cycle):
+            if dtms < t_cycle:
                 time.sleep((t_cycle - dtms) / 1000.0)

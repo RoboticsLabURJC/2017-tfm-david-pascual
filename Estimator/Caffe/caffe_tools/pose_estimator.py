@@ -8,28 +8,30 @@ https://github.com/shihenw/convolutional-pose-machines-release/blob/master/testi
 __author__ = "David Pascual Hernandez"
 __date__ = "2017/11/01"
 
-import caffe
-import numpy as np
 import math
+
+import caffe
 import cv2 as cv
+import numpy as np
 
 
-class PoseEstimator():
+class PoseEstimator:
     def __init__(self, model, weights):
         """
         Constructs Estimator class.
-        :param model: Caffe model
-        :param weights: Caffe model weights
+        @param model: Caffe model
+        @param weights: Caffe model weights
         """
         self.net = caffe.Net(model, weights, caffe.TEST)
 
-    def get_boxes(self, im, coords, size):
+    @staticmethod
+    def get_boxes(im, coords, size):
         """
         Crops the original image once for each person.
-        :param im: np.array - input image
-        :param coords: np.array - human coordinates
-        :param size: int - size of the squared box
-        :return: np.array - cropped images around each person
+        @param im: np.array - input image
+        @param coords: np.array - human coordinates
+        @param size: int - size of the squared box
+        @return: np.array - cropped images around each person
         """
         num_people = coords.shape[0]
         boxes = np.ones((num_people, size, size, 3)) * 128
@@ -45,12 +47,13 @@ class PoseEstimator():
                                 x - size / 2: x + size / 2]
         return boxes
 
-    def gen_gaussmap(self, size, sigma):
+    @staticmethod
+    def gen_gaussmap(size, sigma):
         """
         Generates a grayscale image with a centered Gaussian
-        :param size: int - map size
-        :param sigma: float - Gaussian sigma
-        :return: np.array - Gaussian map
+        @param size: int - map size
+        @param sigma: float - Gaussian sigma
+        @return: np.array - Gaussian map
         """
         gaussmap = np.zeros((size, size))
         for x in range(size):
@@ -65,9 +68,9 @@ class PoseEstimator():
     def estimate(self, im, gaussmap):
         """
         Estimates human pose.
-        :param im: np.array - input image
-        :param gaussmap: np.array - Gaussian map
-        :return: np.array: articulations coordinates
+        @param im: np.array - input image
+        @param gaussmap: np.array - Gaussian map
+        @return: np.array: articulations coordinates
         """
         # Adds gaussian map channel to the input
         input_4ch = np.ones((im.shape[0], im.shape[1], 4))
@@ -86,33 +89,34 @@ class PoseEstimator():
 
         return pose_map
 
-    def get_coords(self, joint_map, person_coord, rate, boxsize):
+    @staticmethod
+    def get_coords(joint_map, person_coord, r, boxsize):
         """
         Get joint coordinates and resize them given a heatmap.
-        :param joint_map: np.array - heatmap
-        :param person_coord: np.array - person center coordinates
-        :param rate: float - resize rate
-        :param boxsize: int - boxsize
-        :return: joint coordinates
+        @param joint_map: np.array - heatmap
+        @param person_coord: np.array - person center coordinates
+        @param r: float - resize rate
+        @param boxsize: int - boxsize
+        @return: joint coordinates
         """
         # Get coordinates
-        joint_coord = list(np.unravel_index(joint_map.argmax(), joint_map.shape))
+        joint_coord = list(
+            np.unravel_index(joint_map.argmax(), joint_map.shape))
         # Back to full coordinates
-        joint_coord[0] = (joint_coord[0] - (boxsize / 2) + person_coord[1])\
-                         / rate
-        joint_coord[1] = (joint_coord[1] - (boxsize / 2) + person_coord[0])\
-                         / rate
+        joint_coord[0] = (joint_coord[0] - (boxsize / 2) + person_coord[1]) / r
+        joint_coord[1] = (joint_coord[1] - (boxsize / 2) + person_coord[0]) / r
 
         return joint_coord
 
-    def draw_limbs(self, limbs, im, pose_coords):
+    @staticmethod
+    def draw_limbs(limbs, im, pose_coords):
         """
         Draw limbs over the original image.
-        :param limbs: list - relationship between limbs and joints
-        :param im: np.array - original image
-        :param pose_coords: np.array - coordinates of the predicted
+        @param limbs: list - relationship between limbs and joints
+        @param im: np.array - original image
+        @param pose_coords: np.array - coordinates of the predicted
         joints
-        :return: drawn image
+        @return: drawn image
         """
         stickwidth = 6
         colors = [[0, 0, 255], [0, 170, 255], [0, 255, 170], [0, 255, 0],
@@ -125,17 +129,17 @@ class PoseEstimator():
                           (0, 0, 0), -1)
 
             for l in range(limbs.shape[0]):
-                X = [joint_coords[limbs[l][0] - 1][0],
+                x = [joint_coords[limbs[l][0] - 1][0],
                      joint_coords[limbs[l][1] - 1][0]]
-                Y = [joint_coords[limbs[l][0] - 1][1],
+                y = [joint_coords[limbs[l][0] - 1][1],
                      joint_coords[limbs[l][1] - 1][1]]
 
-                mX = np.mean(X)
-                mY = np.mean(Y)
+                m_x = np.mean(x)
+                m_y = np.mean(y)
 
-                length = ((X[0] - X[1]) ** 2. + (Y[0] - Y[1]) ** 2.) ** 0.5
-                angle = math.degrees(math.atan2(X[0] - X[1], Y[0] - Y[1]))
-                polygon = cv.ellipse2Poly((int(mY), int(mX)),
+                length = ((x[0] - x[1]) ** 2. + (y[0] - y[1]) ** 2.) ** 0.5
+                angle = math.degrees(math.atan2(x[0] - x[1], y[0] - y[1]))
+                polygon = cv.ellipse2Poly((int(m_y), int(m_x)),
                                           (int(length / 2), stickwidth),
                                           int(angle), 0, 360, 1)
                 cv.fillConvexPoly(im, polygon, colors[l])

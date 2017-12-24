@@ -8,14 +8,12 @@ https://github.com/shihenw/convolutional-pose-machines-release/blob/master/testi
 __author__ = "David Pascual Hernandez"
 __date__ = "2017/11/01"
 
-import time
-
 import caffe
 import numpy as np
 import scipy
 
 
-class PersonDetector():
+class PersonDetector:
     """
     Class for person detection.
     """
@@ -23,8 +21,8 @@ class PersonDetector():
     def __init__(self, model, weights):
         """
         Class constructor.
-        :param model: caffe model
-        :param weights: caffe model weights
+        @param model: caffe model
+        @param weights: caffe model weights
         """
 
         # Reshapes the model input accordingly
@@ -33,8 +31,8 @@ class PersonDetector():
     def detect(self, im):
         """
         Detects people in the image.
-        :param im: np.array - input image
-        :return: np.array - heatmap
+        @param im: np.array - input image
+        @return: np.array - heatmap
         """
         # Reshapes and normalizes the input image
         im = np.float32(im[:, :, :, np.newaxis])
@@ -47,25 +45,27 @@ class PersonDetector():
         # Person detection
         output_blobs = self.net.forward()
 
-        map = np.squeeze(self.net.blobs[output_blobs.keys()[0]].data)
+        humans_map = np.squeeze(self.net.blobs[output_blobs.keys()[0]].data)
 
-        return map
+        return humans_map
 
-    def peaks_coords(self, heatmap):
+    @staticmethod
+    def peaks_coords(heatmap):
         """
         Gets the exact coordinates of each person in the heatmap.
-        :param heatmap: np.array - heatmap
-        :return: np.array - people coordinates
+        @param heatmap: np.array - heatmap
+        @return: np.array - people coordinates
         """
         # Founds the peaks in the output
+        # noinspection PyUnresolvedReferences
         data_max = scipy.ndimage.filters.maximum_filter(heatmap, 3)
-        max = (heatmap == data_max)
+        peaks = (heatmap == data_max)
         thresh = (data_max > 0.5)
-        max[thresh == 0] = 0
+        peaks[thresh == 0] = 0
 
         # Peaks coordinates
-        x = np.nonzero(max)[1]
-        y = np.nonzero(max)[0]
+        x = np.nonzero(peaks)[1]
+        y = np.nonzero(peaks)[0]
         peaks_coords = []
         for x_coord, y_coord in zip(x, y):
             peaks_coords.append([x_coord, y_coord])

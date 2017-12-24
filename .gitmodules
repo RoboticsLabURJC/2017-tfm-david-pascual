@@ -1,6 +1,0 @@
-[submodule "cpm"]
-	path = cpm
-	url = https://github.com/dpascualhe/cpm
-[submodule "convolutional-pose-machines-release"]
-	path = convolutional-pose-machines-release
-	url = https://github.com/dpascualhe/convolutional-pose-machines-release

@@ -8,25 +8,25 @@ Based on https://github.com/RoboticsURJC-students/2016-tfg-david-pascual
 __author__ = "David Pascual Hernandez"
 __date__ = "2017/11/16"
 
-import time
 import threading
+import time
 from datetime import datetime
 
-t_cycle = 80  # ms
+t_cycle = 50  # ms
 
 
 class ThreadGUI(threading.Thread):
     def __init__(self, gui):
         """
         Threading class for GUI.
-        :param gui: GUI object
+        @param gui: GUI object
         """
         self.gui = gui
         threading.Thread.__init__(self)
 
     def run(self):
         """ Updates the thread. """
-        while (True):
+        while True:
             start_time = datetime.now()
             self.gui.updGUI.emit()
             end_time = datetime.now()
@@ -34,5 +34,5 @@ class ThreadGUI(threading.Thread):
             dtms = ((dt.days * 24 * 60 * 60 + dt.seconds) * 1000
                     + dt.microseconds / 1000.0)
 
-            if (dtms < t_cycle):
+            if dtms < t_cycle:
                 time.sleep((t_cycle - dtms) / 1000.0)
