@@ -8,6 +8,11 @@ Based on https://github.com/RoboticsURJC-students/2016-tfg-david-pascual
 __author__ = "David Pascual Hernandez"
 __date__ = "2017/11/16"
 
+import os
+
+# Avoids verbosity when loading Caffe model
+os.environ['GLOG_minloglevel'] = '2'
+
 import signal
 import sys
 from PyQt5 import QtWidgets

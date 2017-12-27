@@ -8,15 +8,11 @@ Based on https://github.com/RoboticsURJC-students/2016-tfg-david-pascual
 __author__ = "David Pascual Hernandez"
 __date__ = "2017/11/16"
 
-import os
+import sys
 
-import caffe
+import easyiceconfig as easy_ice
 
-from Caffe import caffe_cpm as cpm
-from Caffe.caffe_tools.config_reader import config_reader
-
-# Avoids verbosity when loading Caffe model
-os.environ['GLOG_minloglevel'] = '2'
+from Caffe import cpm
 
 
 class Estimator:
@@ -24,18 +20,22 @@ class Estimator:
         """
         Estimator class gets human pose estimations for a given image.
         """
-        param, model = config_reader()
-        if param['use_gpu']:
-            print("Using GPU...")
-            caffe.set_device(param['GPUdeviceNumber'])
-            caffe.set_mode_gpu()
-        else:
-            print("Using CPU...")
-            caffe.set_mode_cpu()
+        ic = easy_ice.initialize(sys.argv)
+        self.framework = ic.getProperties().getProperty("Humanpose.Framework")
 
-        print("\nLoading Caffe models...")
-        self.model, self.deploy_models = cpm.load_model()
-        print("loaded\n")
+        if self.framework == "caffe":
+            self.param_conf, self.model_conf = cpm.read_settings()
+
+            cpm.set_dev(self.param_conf)
+            self.deploy_models = cpm.load_model(self.model_conf)
+
+        elif self.framework == "tensorflow":
+            print(self.framework)
+
+        else:
+            print(self.framework, " framework is not supported")
+            print("Available frameworks: 'caffe', 'tensorflow'")
+            exit()
 
         self.gui = gui
         self.cam = cam
@@ -47,7 +47,7 @@ class Estimator:
         @return: np.array, np.array - joint coordinates & limbs drawn
         over original image
         """
-        pose_coords, im_predicted = cpm.predict(self.model,
+        pose_coords, im_predicted = cpm.predict(self.model_conf,
                                                 self.deploy_models,
                                                 im, viz=False)
 

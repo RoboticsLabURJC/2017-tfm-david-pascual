@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-caffe_cv.py: Script for testing CPMs original implementation with
+live_cpm.py: Script for testing CPMs original implementation with
 Caffe and OpenCV captured video. Based on @shihenw code:
 https://github.com/shihenw/convolutional-pose-machines-release/blob/master/testing/python/demo.ipynb
 """
@@ -10,19 +10,17 @@ __date__ = "2017/12/05"
 
 import os
 
-import caffe
 import cv2
 
-import caffe_cpm as cpm
+import cpm
 
 # Avoids verbosity when loading Caffe model
 os.environ['GLOG_minloglevel'] = '2'
 
 if __name__ == '__main__':
-    caffe.set_mode_gpu()
-    caffe.set_device(0)
-
-    model, deploy_models = cpm.load_model()
+    params, model = cpm.read_settings()
+    cpm.set_dev(params)
+    deploy_models = cpm.load_model(model)
 
     cap = cv2.VideoCapture(0)
 

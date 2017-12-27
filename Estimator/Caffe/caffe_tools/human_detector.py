@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-person_detector.py: Module for detecting persons with Caffe.
+human_detector.py: Module for detecting persons with Caffe.
 Based on @shihenw code:
 https://github.com/shihenw/convolutional-pose-machines-release/blob/master/testing/python/demo.ipynb
 """
@@ -13,7 +13,7 @@ import numpy as np
 import scipy
 
 
-class PersonDetector:
+class HumanDetector:
     """
     Class for person detection.
     """
