@@ -188,12 +188,13 @@ def load_model(model_conf):
     return deploy_model_person, deploy_model_pose
 
 
-def predict(model_params, models, im, viz):
+def predict(im, model_params, models, boxsize=184, viz=True):
     """
     Make a complete human pose estimation with Caffe CPM.
+    @param im: np.array - input image
     @param model_params: dict - model info
     @param models: list - models & weights
-    @param im: np.array - input image
+    @param boxsize: int - boxsize
     @param viz: bool - flag for visualizations
     @return: final image and joint coordinates
     """
@@ -277,7 +278,7 @@ if __name__ == '__main__':
     im_original = cv.imread(im_path)
 
     param, model = read_settings()
-    set_dev(param)
+    # set_dev(param)
     deploy_models = load_model(model)
 
     start_time = time.time()

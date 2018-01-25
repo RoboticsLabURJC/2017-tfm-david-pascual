@@ -7,7 +7,7 @@ https://github.com/psycharo/cpm/blob/master/example.ipynb
 """
 
 __author__ = "David Pascual Hernandez"
-__date__ = "2017/mm/dd"
+__date__ = "2017/01/03"
 
 import math
 import time
@@ -153,49 +153,46 @@ class HumanDetector:
         """
         self.im_original = im
 
-        factor = boxsize / float(im.shape[0])
-        self.im = cv2.resize(im, None, fx=factor, fy=factor,
+        self.factor = boxsize / float(im.shape[0])
+        self.im = cv2.resize(im, None, fx=self.factor, fy=self.factor,
                              interpolation=cv2.INTER_CUBIC)
-        self.im = self.im[np.newaxis] / 255.0 - 0.5
+
+        self.im_norm = self.im[np.newaxis] / 255.0 - 0.5
 
         self.config = config
         self.model_path = model_path
         self.boxsize = boxsize
 
-    @staticmethod
-    def set_model():
+        h, w = self.im.shape[:2]
+        with tf.variable_scope('CPM'):
+            # Input dims for the human model
+            self.image_in = tf.placeholder(tf.float32, [1, h, w, 3])
+
+            map_human = inference_person(self.image_in)
+            self.map_human_large = tf.image.resize_images(map_human, [h, w])
+
+        self.sess = tf.Session(config=self.config)
+        self.set_model()
+
+    def set_model(self):
         """
         Get the model ready for inference.
-        @return: Model restorer
         """
         model = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES,
                                   'CPM/PersonNet')
         restorer = tf.train.Saver(model)
 
-        return restorer
+        restorer.restore(self.sess, self.model_path)
 
     def get_map(self):
         """
         Get human heatmap.
         @return: np.array - human heatmap
         """
-        with tf.variable_scope('CPM'):
-            # Input dims for the human model
-            image_in = tf.placeholder(tf.float32, self.im.shape)
-
-            map_human = inference_person(image_in)
-            map_human_large = tf.image.resize_images(map_human,
-                                                     [self.im.shape[1],
-                                                      self.im.shape[2]])
-
-        restorer = self.set_model()
-
-        with tf.Session(config=self.config) as sess:
-            restorer.restore(sess, self.model_path)
-            start_time = time.time()
-            map_human = sess.run(map_human_large, {image_in: self.im})
-            print("Human detected! (%.2f ms)" % (1000 * (time.time()
-                                                         - start_time)))
+        start_time = time.time()
+        map_human = self.sess.run(self.map_human_large,
+                                  {self.image_in: self.im_norm})
+        print("Human detected! (%.2f ms)" % (1000 * (time.time() - start_time)))
 
         return map_human
 
@@ -246,13 +243,14 @@ class HumanDetector:
         @return: np.array - cropped humans
         """
         num_people = coords.shape[0]
-        boxes = np.ones((num_people, self.boxsize, self.boxsize, 3)) * 128
+        boxes = np.zeros((num_people, self.boxsize, self.boxsize, 3))
 
-        pad_h = np.ones((self.im.shape[1] + self.boxsize,
-                         self.boxsize / 2, 3)) * 128
-        pad_v = np.ones((self.boxsize / 2, self.im.shape[2], 3)) * 128
-        im_human = np.vstack((pad_v, np.squeeze(self.im), pad_v))
+        pad_h = np.zeros((self.im.shape[0] + self.boxsize, self.boxsize / 2, 3))
+        pad_v = np.zeros((self.boxsize / 2, self.im.shape[1], 3))
+
+        im_human = np.vstack((pad_v, np.squeeze(self.im_norm), pad_v))
         im_human = np.hstack((pad_h, im_human, pad_h))
+
         for i in range(num_people):
             y = coords[i][1] + self.boxsize / 2
             x = coords[i][0] + self.boxsize / 2
