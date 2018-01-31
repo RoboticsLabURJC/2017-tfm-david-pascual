@@ -33,12 +33,18 @@ closer to real-time estimation (we're almost there).
 In order to test CPMs with live video feed, we have built <code>humanpose</code> component within the framework of
 [JdeRobot](http://jderobot.org/), a middleware that provides several tools and drivers for robotics and computer vision tasks.
 
-Once all the dependencies have been installed and the repo has been cloned, you must open a terminal and run:
+Once all the dependencies have been installed and the repo has been cloned, download the trained Caffe and TensorFlow models:
+<pre>
+chmod +x get_models.sh
+./get_models.sh
+</pre>
+
+Then you must open a terminal and run:
 <pre>
 cameraserver cameraserver.cfg
 </pre>
 This will launch <code>cameraserver</code>, which will serve live video from your webcam (or any other source of video).
-Now, access the cloned repo and from another terminal run:
+Now, from another terminal run:
 <pre>
 python humanpose.py humanpose.yml
 </pre>
