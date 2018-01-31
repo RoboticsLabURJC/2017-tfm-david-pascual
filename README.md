@@ -33,7 +33,7 @@ closer to real-time estimation (we're almost there).
 In order to test CPMs with live video feed, we have built <code>humanpose</code> component within the framework of
 [JdeRobot](http://jderobot.org/), a middleware that provides several tools and drivers for robotics and computer vision tasks.
 
-Once all the dependencies have been installed and the repo has been cloned, download the trained Caffe and TensorFlow models:
+Once all the dependencies have been installed and the repo has been cloned, download the trained Caffe and TensorFlow models (provided by their authors):
 <pre>
 chmod +x get_models.sh
 ./get_models.sh
