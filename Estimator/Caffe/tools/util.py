@@ -1,6 +1,6 @@
+import PIL.Image
 from cStringIO import StringIO
 
-import PIL.Image
 import numpy as np
 from IPython.display import Image, display
 

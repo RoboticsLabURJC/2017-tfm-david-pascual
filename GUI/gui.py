@@ -8,6 +8,7 @@ Based on https://github.com/RoboticsURJC-students/2016-tfg-david-pascual
 __author__ = "David Pascual Hernandez"
 __date__ = "2017/11/16"
 
+import numpy as np
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtWidgets import QWidget, QLabel
@@ -40,6 +41,7 @@ class GUI(QWidget):
         self.im_pose_label.resize(640, 480)
         self.im_pose_label.move(700, 30)
         self.im_pose_label.show()
+        self.im_pose = np.zeros((480, 640), dtype=np.uint8)
 
         # Camera
         self.cam = cam
@@ -55,13 +57,7 @@ class GUI(QWidget):
         im_live = QPixmap.fromImage(im_live)
         self.im_live_label.setPixmap(im_live)
 
-    # noinspection PyArgumentList
-    def display_result(self, im):
-        """
-        Display image with estimated limbs and joint coordinates
-        @param im: np.array - Image with limbs
-        """
-        im = QImage(im, im.shape[1], im.shape[0], QImage.Format_RGB888)
-        # noinspection PyCallByClass
-        im = QPixmap.fromImage(im)
-        self.im_pose_label.setPixmap(im)
+        im_pose = QImage(self.im_pose, self.im_pose.shape[1],
+                         self.im_pose.shape[0], QImage.Format_RGB888)
+        im_pose = QPixmap.fromImage(im_pose)
+        self.im_pose_label.setPixmap(im_pose)

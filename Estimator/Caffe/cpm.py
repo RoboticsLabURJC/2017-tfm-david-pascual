@@ -10,34 +10,25 @@ __date__ = "2017/10/27"
 
 import sys
 import time
+import yaml
 from matplotlib import pyplot as plt
 
 import caffe
 import cv2 as cv
 import numpy as np
 
-from caffe_tools import util
-from caffe_tools.config_reader import config_reader
-from caffe_tools.human_detector import HumanDetector
-from caffe_tools.pose_estimator import PoseEstimator
+from tools import util
+from tools.human_detector import HumanDetector
+from tools.pose_estimator import PoseEstimator
 
 
-def read_settings():
-    """
-    Read Caffe CPM settings.
-    @return: dicts containing CPM settings
-    """
-    return config_reader()
-
-
-def set_dev(param_conf):
+def set_dev(data):
     """
     Set Caffe to run on GPU or CPU.
-    @param param_conf: dict - Caffe CPM configuration
+    @param data: dict - Caffe CPM configuration
     """
-    gpu = param_conf["use_gpu"]
-    dev_number = param_conf['GPUdeviceNumber']
-
+    gpu = data["GPU"]
+    dev_number = data["device"]
     if gpu:
         print("Using GPU...")
         caffe.set_device(dev_number)
@@ -49,7 +40,7 @@ def set_dev(param_conf):
 
 def get_sample_ready(im, boxsize):
     """
-    Processes the input image until it can be feed to the Caffe model
+    Processes the input image until it can be feed to the Caffe models
     @param im: np.array - input image
     @param boxsize: int - image size used during training
     @return: np.array - processed image
@@ -170,31 +161,29 @@ def display_result(im):
     plt.show()
 
 
-def load_model(model_conf):
+def load_model(models):
     """
-    Get model and weights for pose and person detection.
-    @param model_conf: dict - Caffe models configuration
+    Get models and weights for pose and person detection.
+    @param models: dict - Caffe models configuration
     @return: models & weights
     """
-    deploy_model_person = (model_conf['deployFile_person'],
-                           model_conf['caffemodel_person'])
+    deploy_model_person = (models["deploy_human"], models["model_human"])
     print("\nPerson detector:\n\tModel: " + deploy_model_person[0])
     print("\tWeights: " + deploy_model_person[1])
 
-    deploy_model_pose = (model_conf['deployFile'], model_conf['caffemodel'])
+    deploy_model_pose = (models["deploy_pose"], models["model_pose"])
     print("\nPose estimator:\n\tModel: " + deploy_model_pose[0])
     print("\tWeights: " + deploy_model_pose[1])
 
     return deploy_model_person, deploy_model_pose
 
 
-def predict(im, model_params, models, boxsize=184, viz=True):
+def predict(im, data, models, viz=True):
     """
     Make a complete human pose estimation with Caffe CPM.
     @param im: np.array - input image
-    @param model_params: dict - model info
+    @param data: dict - models info
     @param models: list - models & weights
-    @param boxsize: int - boxsize
     @param viz: bool - flag for visualizations
     @return: final image and joint coordinates
     """
@@ -202,7 +191,7 @@ def predict(im, model_params, models, boxsize=184, viz=True):
     """
     Get test image
     """
-    boxsize = model_params['boxsize']  # image size used during training
+    boxsize = data["boxsize"]  # image size used during training
     im_bsize, im_nopad, rate = get_sample_ready(im, boxsize)
 
     """
@@ -235,7 +224,7 @@ def predict(im, model_params, models, boxsize=184, viz=True):
     pose_maps = []
     pose_coords = []
     for im_human, person_coord in zip(im_humans, person_coords):
-        gauss_map = pose_estimator.gen_gaussmap(boxsize, model_params["sigma"])
+        gauss_map = pose_estimator.gen_gaussmap(boxsize, data["sigma"])
 
         start_t = time.time()
         pose_map = pose_estimator.estimate(im_human, gauss_map)
@@ -262,27 +251,34 @@ def predict(im, model_params, models, boxsize=184, viz=True):
             display_joints(im, joint_coords)
 
     # Draw limbs
-    limbs = model_params["limbs"]
-    im_final = pose_estimator.draw_limbs(limbs, im, pose_coords)
+    limbs = data["limbs"]
+    colors = data["colors"]
+    im_final = pose_estimator.draw_limbs(im, pose_coords, limbs, colors)
 
     if viz:
         display_result(im_final)
 
-    return pose_coords, im_final
+    return im_final, pose_coords
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("\n----Script for testing original CPMs repo (Caffe)----")
 
     im_path = sys.argv[1]
     im_original = cv.imread(im_path)
 
-    param, model = read_settings()
-    # set_dev(param)
-    deploy_models = load_model(model)
+    data = None
+    with open("cpm.yml", "r") as stream:
+        try:
+            data = yaml.load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    set_dev(data)
+    deploy_models = load_model(data["caffe_models"])
 
     start_time = time.time()
-    _, im_predicted = predict(model, deploy_models, im_original, True)
+    im_predicted, _ = predict(im_original, data, deploy_models, True)
     print("\nTotal time (w/out loading) %.2f ms." % (1000 * (time.time()
                                                              - start_time)))
     plt.figure()

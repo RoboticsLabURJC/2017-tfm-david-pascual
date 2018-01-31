@@ -1,0 +1,39 @@
+HumanPose:
+  Camera:
+    Server: 1 # 0 -> Deactivate, 1 -> Ice , 2 -> ROS
+    Proxy: "cameraA:tcp -h localhost -p 9999"
+    Format: RGB8
+    Topic: "/TurtlebotROS/cameraL/image_raw"
+    Name: cameraA
+    Fps: 30
+
+NodeName: HumanPose
+
+Framework: "caffe"  # "caffe" or "tensorflow"
+
+Settings:
+  # CPU mode or GPU mode
+  GPU: yes
+
+  # GPU device number (doesn"t matter for CPU mode)
+  device: 0
+
+  caffe_models:
+    model_human: "Estimator/Caffe/models/_trained_person_MPI/pose_iter_70000.caffemodel"
+    deploy_human: "Estimator/Caffe/models/_trained_person_MPI/pose_deploy_copy_4sg_resize.prototxt"
+    model_pose: "Estimator/Caffe/models/_trained_MPI/pose_iter_320000.caffemodel"
+    deploy_pose: "Estimator/Caffe/models/_trained_MPI/pose_deploy_resize.prototxt"
+
+  tf_models:
+    model_human: "Estimator/TensorFlow/models/person_net.ckpt"
+    model_pose: "Estimator/TensorFlow/models/pose_net.ckpt"
+
+  boxsize: 184
+
+  limbs: [1, 2, 3, 4, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14]
+
+  colors: [[0, 0, 255], [0, 170, 255], [0, 255, 170], [0, 255, 0],
+           [170, 255, 0], [255, 170, 0], [255, 0, 0], [255, 0, 170],
+           [170, 0, 255]]
+
+  sigma: 21

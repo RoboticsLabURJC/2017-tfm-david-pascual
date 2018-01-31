@@ -9,45 +9,50 @@ https://github.com/psycharo/cpm/blob/master/example.ipynb
 __author__ = "David Pascual Hernandez"
 __date__ = "2017/12/26"
 
-import os
 import sys
+import yaml
 from matplotlib import pyplot as plt
 
 import cv2
 import numpy as np
 import tensorflow as tf
 
-from tf_tools.human_detector import HumanDetector
-from tf_tools.pose_estimator import PoseEstimator
+from tools.human_detector import HumanDetector
+from tools.pose_estimator import PoseEstimator
 
 
-def load_model(path):
+def load_model(data):
     """
-    Get person & pose model paths.
-    @param path: folder path
-    @return: model paths
+    Get person & pose models paths.
+    @param data: models paths
+    @return: models paths
     """
-    human_path = os.path.join(path, "person_net.ckpt")
-    pose_path = os.path.join(path, "pose_net.ckpt")
+    human_path = data["model_human"]
+    pose_path = data["model_pose"]
 
     return human_path, pose_path
 
 
-def set_dev():
+def set_dev(data):
     """
     GPU settings.
+    @param data: parsed YAML config. file
     @return: TensorFlow configuration
     """
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
-    config.allow_soft_placement = True
+    if data["GPU"]:
+        dev = {"GPU": 1}
+    else:
+        dev = {"CPU": 1, "GPU": 0}
+
+    config = tf.ConfigProto(device_count=dev, allow_soft_placement=True,
+                            log_device_placement=False)
 
     return config
 
 
 def get_sample_ready(im, boxsize):
     """
-    Processes the input image until it can be feed to the Caffe model
+    Processes the input image until it can be feed to the Caffe models
     @param im: np.array - input image
     @param boxsize: int - image size used during training
     @return: np.array - processed image
@@ -63,13 +68,13 @@ def get_sample_ready(im, boxsize):
     return im, s
 
 
-def predict(im, config, models, bsize, viz=True):
+def predict(im, config, models, data, viz=True):
     """
     Estimates human pose given an image.
     @param im: np.array - image
     @param config: TensorFlow config
     @param models: TensorFlow human & pose models
-    @param bsize: int - size of the human cropped region
+    @param data: parsed YAML config. file
     @param viz: bool - Flag for visualization
     @return: np.array, np.array - joint coordinates & final image
     """
@@ -78,6 +83,8 @@ def predict(im, config, models, bsize, viz=True):
     human_model, pose_model = models
 
     full_coords_joints = []
+
+    bsize = data["boxsize"]
 
     """
     Human detection
@@ -94,7 +101,7 @@ def predict(im, config, models, bsize, viz=True):
 
     if len(humans_coords):
         im_humans = human_detector.crop_humans(humans_coords)
-        map_gaussian = human_detector.gen_gaussmap(21)
+        map_gaussian = human_detector.gen_gaussmap(data["sigma"])
 
         pose_input = []
         for im_human in im_humans:
@@ -145,25 +152,28 @@ def predict(im, config, models, bsize, viz=True):
                 for x, y in coords_joints:
                     cv2.circle(im, (int(x), int(y)), 2, (0, 0, 255), 2)
 
-            im = pose_estimator.draw_limbs(im, coords_joints)
+            im = pose_estimator.draw_limbs(im, coords_joints, data)
             full_coords_joints.append(coords_joints)
 
     return im, np.array(full_coords_joints)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sample_path = sys.argv[1]
     sample = cv2.cvtColor(cv2.imread(sample_path), cv2.COLOR_BGR2RGB)
 
-    # TODO: Config file
+    data = None
+    with open("cpm.yml", "r") as stream:
+        try:
+            data = yaml.load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
 
-    model_paths = load_model("model/")
+    model_paths = load_model(data["tf_models"])
 
-    boxsize = 184
+    tf_config = set_dev(data)
 
-    tf_config = set_dev()
-
-    im_estimated, _ = predict(sample, tf_config, model_paths, boxsize)
+    im_estimated, _ = predict(sample, tf_config, model_paths, data)
 
     plt.figure()
     plt.imshow(im_estimated)

@@ -12,38 +12,54 @@ import sys
 import threading
 import traceback
 
-import easyiceconfig as easy_ice
+import comm
+import config
 import numpy as np
-from jderobot import CameraPrx
 
 
 class Camera:
-    def __init__(self):
+    def __init__(self, data):
         """
         Camera class gets images from live video and transform them
         in order to predict the digit in the image.
+        @param data: parsed YAML config. file
         """
-        # Initialize Ice
-        ic = easy_ice.initialize(sys.argv)
+        self.data = data
+
+        cfg = config.load(sys.argv[1])
+
+        # starting comm
+        jdrc = comm.init(cfg, "HumanPose")
+        print(jdrc)
+        self.cam = jdrc.getCameraClient("HumanPose.Camera")
 
         self.lock = threading.Lock()
 
         # noinspection PyBroadException
         try:
-            # Obtain a proxy for the camera
-            obj = ic.propertyToProxy("Humanpose.Camera.Proxy")
-            # Get first image and print its description.
-            self.cam = CameraPrx.checkedCast(obj)
-            if self.cam:
-                im = self.cam.getImageData("RGB8")
-                self.im_height = im.description.height
-                self.im_width = im.description.width
-                print(im.description)
-            else:
-                print("Interface camera not connected")
+            if self.cam.hasproxy():
+                self.im = self.cam.getImage()
+                self.im_height = self.im.height
+                self.im_width = self.im.width
+                print("Camera succesfully connected!")
         except:
             traceback.print_exc()
             exit()
+
+    def update(self):
+        """
+        Updates Camera object.
+        """
+        if self.cam:
+            self.lock.acquire()
+
+            im = self.cam.getImage()
+
+            self.im = im.data
+            self.im_height = im.height
+            self.im_width = im.width
+
+            self.lock.release()
 
     def get_image(self):
         """
@@ -52,8 +68,7 @@ class Camera:
         """
         im = np.zeros((self.im_width, self.im_height, 3))
         if self.cam:
-            im_data = self.cam.getImageData("RGB8")
-            im = np.frombuffer(im_data.pixelData, dtype=np.uint8)
+            im = np.frombuffer(self.im.data, dtype=np.uint8)
             im.shape = self.im_height, self.im_width, 3
 
         return im

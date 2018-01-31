@@ -9,12 +9,9 @@ __author__ = "David Pascual Hernandez"
 __date__ = "2017/11/16"
 
 import os
-
-# Avoids verbosity when loading Caffe model
-os.environ['GLOG_minloglevel'] = '2'
-
 import signal
 import sys
+import yaml
 from PyQt5 import QtWidgets
 
 from Camera.camera import Camera
@@ -24,15 +21,26 @@ from Estimator.threadestimator import ThreadEstimator
 from GUI.gui import GUI
 from GUI.threadgui import ThreadGUI
 
+# Avoids verbosity when loading Caffe model
+os.environ["GLOG_minloglevel"] = "2"
+
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+    # Parse YAML config. file
+    data = None
+    with open(sys.argv[1], "r") as stream:
+        try:
+            data = yaml.load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
     # Init objects
     app = QtWidgets.QApplication(sys.argv)
 
-    cam = Camera()
+    cam = Camera(data)
     window = GUI(cam)
-    estimator = Estimator(window, cam)
+    estimator = Estimator(window, cam, data)
     window.show()
 
     # Threading camera

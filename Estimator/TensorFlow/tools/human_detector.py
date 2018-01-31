@@ -21,9 +21,9 @@ import tensorflow.contrib.layers as layers
 
 def inference_person(image):
     """
-    Human detection model.
+    Human detection models.
     @param image: np.array - human image
-    @return: TensorFlow model
+    @return: TensorFlow models
     """
     with tf.variable_scope('PersonNet'):
         conv1_1 = layers.conv2d(image, 64, 3, 1, activation_fn=None,
@@ -148,7 +148,7 @@ class HumanDetector:
         Class for human detection.
         @param im: image to be analyzed
         @param config: TensorFlow configuration
-        @param model_path: human detection model path
+        @param model_path: human detection models path
         @param boxsize: int - boxsize
         """
         self.im_original = im
@@ -165,7 +165,7 @@ class HumanDetector:
 
         h, w = self.im.shape[:2]
         with tf.variable_scope('CPM'):
-            # Input dims for the human model
+            # Input dims for the human models
             self.image_in = tf.placeholder(tf.float32, [1, h, w, 3])
 
             map_human = inference_person(self.image_in)
@@ -176,7 +176,7 @@ class HumanDetector:
 
     def set_model(self):
         """
-        Get the model ready for inference.
+        Get the models ready for inference.
         """
         model = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES,
                                   'CPM/PersonNet')

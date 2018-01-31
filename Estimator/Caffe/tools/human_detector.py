@@ -21,11 +21,11 @@ class HumanDetector:
     def __init__(self, model, weights):
         """
         Class constructor.
-        @param model: caffe model
-        @param weights: caffe model weights
+        @param model: caffe models
+        @param weights: caffe models weights
         """
 
-        # Reshapes the model input accordingly
+        # Reshapes the models input accordingly
         self.net = caffe.Net(model, weights, caffe.TEST)
 
     def detect(self, im):

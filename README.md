@@ -14,41 +14,42 @@
 
 **State:** Developing 
 
-## Usage
-This is an implementation of a human pose estimator based in [Convolutional Pose Machines (CVPR'16)](https://github.com/shihenw/convolutional-pose-machines-release). The original paper and the datasets that have been used to train the model are available in that link. For executing the code in this repo you must first install:
+[Convolutional Pose Machines (CPMs)](https://www.cv-foundation.org/openaccess/content_cvpr_2016/app/S20-08.pdf) are multi-stage
+convolutional neural networks for estimating articulated poses, like human pose estimation. In this repo, a tool for
+live testing CPMs is provided. We currently host two implementations based on different frameworks:
+* [Caffe implementation](https://github.com/shihenw/convolutional-pose-machines-release) (official repo).
+* [TensorFlow implementation](https://github.com/psycharo/cpm).
+
+## Dependencies
+* JdeRobot ([installation guide](http://jderobot.org/Installation))
+* TensorFlow ([installation guide](https://www.tensorflow.org/install/install_linux))
 * Caffe ([recommended installation guide](https://chunml.github.io/ChunML.github.io/project/Installing-Caffe-CPU-Only/))
-* OpenCV 3 ([recommended installation guide](https://www.pyimagesearch.com/2015/06/22/install-opencv-3-0-and-python-2-7-on-ubuntu/)). Please note that if you're planning to install JdeRobot, OpenCV 3 will be automatically installed.
 
-First things first, clone the repo and download the trained Caffe models:
-<pre>
-git clone https://github.com/RoboticsURJC-students/2017-tfm-david-pascual.git
-cd Estimator/Caffe
-chmod +x get_models.sh
-./get_models.sh
-</pre>
+Other dependencies like Numpy, PyQT or OpenCV should be automatically installed along with the previous ones. By the way, 
+if you install TensorFlow and/or Caffe with GPU support, the code provided in this repo will take advantage of it to get 
+closer to real-time estimation (we're almost there).
 
-Now, you're ready to test the code. There are currently two options:
+## Usage
+In order to test CPMs with live video feed, we have built <code>humanpose</code> component within the framework of
+[JdeRobot](http://jderobot.org/), a middleware that provides several tools and drivers for robotics and computer vision tasks.
 
-### Short one
-First option is launching <code>cpm_caffe.py</code> to test CPMs implementation and how it works. From the root of the repo run:
-<pre>
-cd Estimator/Caffe
-python cpm_caffe.py path-to-image
-</pre>
-This will take an image, find human/s and draw estimated pose/s. Additionally, it'll draw some figures during execution to monitor the whole process.
-
-### Long (and cooler) one:
-For this one, you must install JdeRobot ([installation guide](http://jderobot.org/Installation)), a middleware for robotics and computer vision which provides several drivers and components for multiple tasks. In this sense, we're currently building <code>humanpose</code>, a JdeRobot component which aims to be a tool for testing different implementations of human pose estimators.
-First, you must open a terminal and run:
+Once all the dependencies have been installed and the repo has been cloned, you must open a terminal and run:
 <pre>
 cameraserver cameraserver.cfg
 </pre>
-This will launch <code>cameraserver</code>, which will serve live video from the webcam.
-In another terminal (from the root of the repo) run:
+This will launch <code>cameraserver</code>, which will serve live video from your webcam (or any other source of video).
+Now, access the cloned repo and from another terminal run:
 <pre>
-python humanpose.py humanpose.cfg
+python humanpose.py humanpose.yml
 </pre>
-This will launch a GUI where live video and estimated pose are shown. Please note that it is under development so it may freeze sometimes.
+
+This will launch a GUI where live video and estimated pose are shown and you should see something like this:
 ![Alt text](http://jderobot.org/store/dpascual/uploads/images/tfm/humapose.png)
+
+If you want to change the framework that will be used for live estimation or any other parameter related with the 
+CPMs, you must edit the YAML configuration file.
+
+
+ 
 
 More info: http://jderobot.org/Dpascual-tfm

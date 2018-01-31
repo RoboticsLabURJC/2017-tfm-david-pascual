@@ -8,33 +8,30 @@ Based on https://github.com/RoboticsURJC-students/2016-tfg-david-pascual
 __author__ = "David Pascual Hernandez"
 __date__ = "2017/11/16"
 
-import sys
-
-import easyiceconfig as easy_ice
-
-# from Caffe import cpm as caffe_cpm
+from Caffe import cpm as caffe_cpm
 from TensorFlow import cpm as tf_cpm
 
 
 class Estimator:
-    def __init__(self, gui, cam):
+    def __init__(self, gui, cam, data):
         """
         Estimator class gets human pose estimations for a given image.
+        @param gui: GUI object
+        @param cam: Camera object
+        @param data: parsed YAML config. file
         """
-        ic = easy_ice.initialize(sys.argv)
-        self.framework = ic.getProperties().getProperty("Humanpose.Framework")
+        self.data = data
+        self.config = data["Settings"]
+        print(self.config["boxsize"])
+        self.framework = self.data["Framework"]
 
         if self.framework == "caffe":
-            # self.param_conf, self.model_conf = caffe_cpm.read_settings()
-
-            # caffe_cpm.set_dev(self.param_conf)
-            # self.deploy_models = caffe_cpm.load_model(self.model_conf)
-            print("Cerrado por vacaciones")
+            self.deploy_models = caffe_cpm.load_model(
+                self.config["caffe_models"])
 
         elif self.framework == "tensorflow":
-            self.boxsize = 184
-            self.model_paths = tf_cpm.load_model("Estimator/TensorFlow/model/")
-            self.tf_config = tf_cpm.set_dev()
+            self.model_paths = tf_cpm.load_model(self.config["tf_models"])
+            self.tf_config = tf_cpm.set_dev(self.config)
 
         else:
             print(self.framework, " framework is not supported")
@@ -43,6 +40,7 @@ class Estimator:
 
         self.gui = gui
         self.cam = cam
+        self.set_caffe = False
 
     def estimate(self, im):
         """
@@ -51,27 +49,31 @@ class Estimator:
         @return: np.array, np.array - joint coordinates & limbs drawn
         over original image
         """
+        im_predicted, pose_coords = [None, None]
         if self.framework == "caffe":
-            # pose_coords, im_predicted = caffe_cpm.predict(self.model_conf,
-            #                                               self.deploy_models,
-            #                                               im, viz=False)
-            print("Cerrado por vacaciones")
+            if not self.set_caffe:
+                caffe_cpm.set_dev(self.config)
+                self.set_caffe = True
+
+            im_predicted, pose_coords = caffe_cpm.predict(im, self.config,
+                                                          self.deploy_models,
+                                                          viz=False)
 
         elif self.framework == "tensorflow":
             im_predicted, pose_coords = tf_cpm.predict(im, self.tf_config,
                                                        self.model_paths,
-                                                       self.boxsize, viz=False)
+                                                       self.config, viz=False)
 
         else:
             print(self.framework, " framework is not supported")
             print("Available frameworks: 'caffe', 'tensorflow'")
             exit()
 
-        return pose_coords, im_predicted
+        return im_predicted, pose_coords
 
     def update(self):
         """ Update estimator. """
         im = self.cam.get_image()
-        coords, im = self.estimate(im)
+        im, coords = self.estimate(im)
 
-        self.gui.display_result(im)
+        self.gui.im_pose = im

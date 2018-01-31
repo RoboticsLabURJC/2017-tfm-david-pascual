@@ -19,10 +19,10 @@ __date__ = "2018/01/18"
 
 def inference_pose(image, center_map):
     """
-    Human detection model.
+    Human detection models.
     @param image: np.array - human image
     @param center_map: np.array - gaussian map
-    @return: TensorFlow model
+    @return: TensorFlow models
     """
     with tf.variable_scope('PoseNet'):
         pool_center_lower = layers.avg_pool2d(center_map, 9, 8, padding='VALID')
@@ -165,7 +165,7 @@ class PoseEstimator:
         Class for human detection.
         @param humans: human images and gaussian maps
         @param config: TensorFlow configuration
-        @param model_path: human detection model path
+        @param model_path: human detection models path
         @param boxsize: int - boxsize
         """
         self.config = config
@@ -188,7 +188,7 @@ class PoseEstimator:
 
     def set_model(self):
         """
-        Get the model ready for inference.
+        Get the models ready for inference.
         """
         model = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES,
                                   'CPM/PoseNet')
@@ -255,18 +255,16 @@ class PoseEstimator:
 
         return np.array(joint_coords)
 
-    def draw_limbs(self, im, joints):
+    def draw_limbs(self, im, joints, data):
         """
         Draw estimated limb positions over the image.
         @param im: np.array - image
         @param joints: np.array - joints estimated for every human
+        @param data: parsed YAML config. file
         @return: np.array - image with limbs drawn
         """
-        limbs = np.array([1, 2, 3, 4, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11, 12, 13,
-                          13, 14]).reshape((-1, 2)) - 1
-        colors = [[0, 0, 255], [0, 170, 255], [0, 255, 170], [0, 255, 0],
-                  [170, 255, 0], [255, 170, 0], [255, 0, 0], [255, 0, 170],
-                  [170, 0, 255]]
+        limbs = np.array(data["limbs"]).reshape((-1, 2)) - 1
+        colors = data["colors"]
 
         for i, (p, q) in enumerate(limbs):
             px, py = joints[p]

@@ -19,8 +19,8 @@ class PoseEstimator:
     def __init__(self, model, weights):
         """
         Constructs Estimator class.
-        @param model: Caffe model
-        @param weights: Caffe model weights
+        @param model: Caffe models
+        @param weights: Caffe models weights
         """
         self.net = caffe.Net(model, weights, caffe.TEST)
 
@@ -109,30 +109,27 @@ class PoseEstimator:
         return joint_coord
 
     @staticmethod
-    def draw_limbs(limbs, im, pose_coords):
+    def draw_limbs(im, pose_coords, limbs, colors):
         """
         Draw limbs over the original image.
-        @param limbs: list - relationship between limbs and joints
         @param im: np.array - original image
         @param pose_coords: np.array - coordinates of the predicted
         joints
+        @param limbs: list - relationship between limbs and joints
+        @param colors: list - limbs colors
         @return: drawn image
         """
+        limbs = np.array(limbs).reshape((-1, 2)) - 1
         stickwidth = 6
-        colors = [[0, 0, 255], [0, 170, 255], [0, 255, 170], [0, 255, 0],
-                  [170, 255, 0], [255, 170, 0], [255, 0, 0], [255, 0, 170],
-                  [170, 0, 255]]  # note BGR ...
 
         for joint_coords in pose_coords:
             for joint_coord in joint_coords[:-1]:
                 cv.circle(im, (int(joint_coord[1]), int(joint_coord[0])), 3,
                           (0, 0, 0), -1)
 
-            for l in range(limbs.shape[0]):
-                x = [joint_coords[limbs[l][0] - 1][0],
-                     joint_coords[limbs[l][1] - 1][0]]
-                y = [joint_coords[limbs[l][0] - 1][1],
-                     joint_coords[limbs[l][1] - 1][1]]
+            for l, (p, q) in enumerate(limbs):
+                x = [joint_coords[p][0], joint_coords[q][0]]
+                y = [joint_coords[p][1], joint_coords[q][1]]
 
                 m_x = np.mean(x)
                 m_y = np.mean(y)
