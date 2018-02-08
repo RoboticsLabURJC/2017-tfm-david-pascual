@@ -28,7 +28,7 @@ class ThreadCamera(threading.Thread):
         """ Updates the thread. """
         while True:
             start_time = datetime.now()
-            self.cam.get_image()
+            self.cam.update()
             end_time = datetime.now()
 
             dt = end_time - start_time

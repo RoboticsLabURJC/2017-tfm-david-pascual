@@ -8,10 +8,14 @@ https://github.com/shihenw/convolutional-pose-machines-release/blob/master/testi
 __author__ = "David Pascual Hernandez"
 __date__ = "2017/10/27"
 
+import os
 import sys
 import time
 import yaml
 from matplotlib import pyplot as plt
+
+# Avoids verbosity when loading Caffe model
+os.environ["GLOG_minloglevel"] = "2"
 
 import caffe
 import cv2 as cv
@@ -22,16 +26,14 @@ from tools.human_detector import HumanDetector
 from tools.pose_estimator import PoseEstimator
 
 
-def set_dev(data):
+def set_dev(gpu):
     """
     Set Caffe to run on GPU or CPU.
-    @param data: dict - Caffe CPM configuration
+    @param gpu: str - flag for GPU usage
     """
-    gpu = data["GPU"]
-    dev_number = data["device"]
     if gpu:
         print("Using GPU...")
-        caffe.set_device(dev_number)
+        caffe.set_device(0)
         caffe.set_mode_gpu()
     else:
         print("Using CPU...")
@@ -165,46 +167,53 @@ def load_model(models):
     """
     Get models and weights for pose and person detection.
     @param models: dict - Caffe models configuration
-    @return: models & weights
+    @return: human detector & pose estimator
     """
     deploy_model_person = (models["deploy_human"], models["model_human"])
     print("\nPerson detector:\n\tModel: " + deploy_model_person[0])
     print("\tWeights: " + deploy_model_person[1])
+    human_detector = HumanDetector(deploy_model_person[0],
+                                   deploy_model_person[1])
+
 
     deploy_model_pose = (models["deploy_pose"], models["model_pose"])
     print("\nPose estimator:\n\tModel: " + deploy_model_pose[0])
     print("\tWeights: " + deploy_model_pose[1])
+    pose_estimator = PoseEstimator(deploy_model_pose[0], deploy_model_pose[1])
 
-    return deploy_model_person, deploy_model_pose
+    return human_detector, pose_estimator
 
 
-def predict(im, data, models, viz=True):
+def predict(im, data, models, boxsize=None, viz=True):
     """
     Make a complete human pose estimation with Caffe CPM.
     @param im: np.array - input image
     @param data: dict - models info
-    @param models: list - models & weights
+    @param models: list - human detector & pose estimator
     @param viz: bool - flag for visualizations
-    @return: final image and joint coordinates
+    @return: np.array, np.array, tuple - joint coordinates, result
+    image & estimation times
     """
+    if not boxsize:
+        boxsize = data["boxsize"]
+
+    human_detector, pose_estimator = models
 
     """
     Get test image
     """
-    boxsize = data["boxsize"]  # image size used during training
     im_bsize, im_nopad, rate = get_sample_ready(im, boxsize)
 
     """
     Person detection
     """
-    person_detector = HumanDetector(models[0][0], models[0][1])
-
     start_t = time.time()
-    person_map = person_detector.detect(im_bsize)
-    print("\nPerson net took %.2f ms." % (1000 * (time.time() - start_t)))
+    person_map = human_detector.detect(im_bsize)
+    human_t = int(1000 * (time.time() - start_t))
+    print("\nPerson net took %.2f ms." % human_t)
 
     person_map_resized = map_resize(im_bsize.shape, person_map)
-    person_coords = person_detector.peaks_coords(person_map_resized)
+    person_coords = human_detector.peaks_coords(person_map_resized)
     print("Person coordinates: ")
     for x, y in person_coords:
         print("\t\t(x,y)=" + str(x) + "," + str(y))
@@ -215,21 +224,24 @@ def predict(im, data, models, viz=True):
     """
     Pose estimation
     """
-    pose_estimator = PoseEstimator(models[1][0], models[1][1])
-
     im_humans = pose_estimator.get_boxes(im_bsize, person_coords, boxsize)
     if viz:
         display_boxes(im_humans)
 
     pose_maps = []
     pose_coords = []
+    if len(im_humans):
+        pose_t = 0
+    else:
+        pose_t = ""
     for im_human, person_coord in zip(im_humans, person_coords):
         gauss_map = pose_estimator.gen_gaussmap(boxsize, data["sigma"])
 
         start_t = time.time()
         pose_map = pose_estimator.estimate(im_human, gauss_map)
-        print("\nPose net took %.2f ms." % (1000 * (time.time()
-                                                    - start_t)))
+        pose_t += int(1000 * (time.time() - start_t))
+
+        print("\nPose net took %.2f ms." % int(1000 * (time.time() - start_t)))
 
         pose_map_resized = []
         joint_coords = []
@@ -258,7 +270,7 @@ def predict(im, data, models, viz=True):
     if viz:
         display_result(im_final)
 
-    return im_final, pose_coords
+    return im_final, pose_coords, (human_t, pose_t)
 
 
 if __name__ == "__main__":
@@ -278,7 +290,7 @@ if __name__ == "__main__":
     deploy_models = load_model(data["caffe_models"])
 
     start_time = time.time()
-    im_predicted, _ = predict(im_original, data, deploy_models, True)
+    im_predicted, _, _ = predict(im_original, data, deploy_models, True)
     print("\nTotal time (w/out loading) %.2f ms." % (1000 * (time.time()
                                                              - start_time)))
     plt.figure()

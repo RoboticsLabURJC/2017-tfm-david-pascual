@@ -37,11 +37,11 @@ class GUI(QWidget):
         self.im_live_label.show()
 
         # Pose image label.
-        self.im_pose_label = QLabel(self)
-        self.im_pose_label.resize(640, 480)
-        self.im_pose_label.move(700, 30)
-        self.im_pose_label.show()
-        self.im_pose = np.zeros((480, 640), dtype=np.uint8)
+        self.im_pred_label = QLabel(self)
+        self.im_pred_label.resize(640, 480)
+        self.im_pred_label.move(700, 30)
+        self.im_pred_label.show()
+        self.im_pred = np.zeros((480, 640), dtype=np.uint8)
 
         # Camera
         self.cam = cam
@@ -57,7 +57,7 @@ class GUI(QWidget):
         im_live = QPixmap.fromImage(im_live)
         self.im_live_label.setPixmap(im_live)
 
-        im_pose = QImage(self.im_pose, self.im_pose.shape[1],
-                         self.im_pose.shape[0], QImage.Format_RGB888)
+        im_pose = QImage(self.im_pred, self.im_pred.shape[1],
+                         self.im_pred.shape[0], QImage.Format_RGB888)
         im_pose = QPixmap.fromImage(im_pose)
-        self.im_pose_label.setPixmap(im_pose)
+        self.im_pred_label.setPixmap(im_pose)

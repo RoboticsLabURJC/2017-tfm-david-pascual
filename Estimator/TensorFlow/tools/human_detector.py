@@ -18,8 +18,7 @@ import scipy
 import tensorflow as tf
 import tensorflow.contrib.layers as layers
 
-
-def inference_person(image):
+def inference_human(image):
     """
     Human detection models.
     @param image: np.array - human image
@@ -143,32 +142,30 @@ def inference_person(image):
 
 
 class HumanDetector:
-    def __init__(self, im, config, model_path, boxsize):
+    def __init__(self, im_shape, config, model_path, boxsize):
         """
         Class for human detection.
-        @param im: image to be analyzed
+        @param im_shape: input images shape
         @param config: TensorFlow configuration
         @param model_path: human detection models path
         @param boxsize: int - boxsize
         """
-        self.im_original = im
-
-        self.factor = boxsize / float(im.shape[0])
-        self.im = cv2.resize(im, None, fx=self.factor, fy=self.factor,
+        self.im = np.zeros(im_shape)
+        self.factor = boxsize / float(self.im.shape[0])
+        self.im = cv2.resize(self.im, None, fx=self.factor, fy=self.factor,
                              interpolation=cv2.INTER_CUBIC)
-
-        self.im_norm = self.im[np.newaxis] / 255.0 - 0.5
 
         self.config = config
         self.model_path = model_path
         self.boxsize = boxsize
+        self.restorer = None
 
         h, w = self.im.shape[:2]
         with tf.variable_scope('CPM'):
             # Input dims for the human models
             self.image_in = tf.placeholder(tf.float32, [1, h, w, 3])
 
-            map_human = inference_person(self.image_in)
+            map_human = inference_human(self.image_in)
             self.map_human_large = tf.image.resize_images(map_human, [h, w])
 
         self.sess = tf.Session(config=self.config)
@@ -180,15 +177,20 @@ class HumanDetector:
         """
         model = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES,
                                   'CPM/PersonNet')
-        restorer = tf.train.Saver(model)
+        self.restorer = tf.train.Saver(model)
 
-        restorer.restore(self.sess, self.model_path)
+        self.restorer.restore(self.sess, self.model_path)
 
     def get_map(self):
         """
         Get human heatmap.
         @return: np.array - human heatmap
         """
+        self.im = cv2.resize(self.im, None, fx=self.factor, fy=self.factor,
+                             interpolation=cv2.INTER_CUBIC)
+
+        self.im_norm = self.im[np.newaxis] / 255.0 - 0.5
+
         start_time = time.time()
         map_human = self.sess.run(self.map_human_large,
                                   {self.image_in: self.im_norm})

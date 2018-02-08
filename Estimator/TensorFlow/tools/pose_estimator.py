@@ -6,6 +6,7 @@ Based on @psycharm code:
 https://github.com/psycharo/cpm/blob/master/example.ipynb
 """
 
+import math
 import time
 
 import cv2
@@ -15,7 +16,6 @@ import tensorflow.contrib.layers as layers
 
 __author__ = "David Pascual Hernandez"
 __date__ = "2018/01/18"
-
 
 def inference_pose(image, center_map):
     """
@@ -160,28 +160,27 @@ def inference_pose(image, center_map):
 
 
 class PoseEstimator:
-    def __init__(self, humans, config, model_path, boxsize):
+    def __init__(self, humans_shape, config, model_path, boxsize):
         """
         Class for human detection.
-        @param humans: human images and gaussian maps
+        @param humans_shape: human images and gaussian maps shape
         @param config: TensorFlow configuration
         @param model_path: human detection models path
         @param boxsize: int - boxsize
         """
+        self.humans = np.zeros(humans_shape)
+
         self.config = config
         self.model_path = model_path
         self.boxsize = boxsize
+        self.restorer = None
 
-        n, h, w = humans.shape[:3]
+        h, w = self.humans.shape[:2]
         with tf.variable_scope('CPM'):
             # input dims for the pose network
-            im_human = tf.placeholder(tf.float32, [n, h, w, 3])
-            map_human = tf.placeholder(tf.float32, [n, h, w, 1])
-            self.map_pose = inference_pose(im_human, map_human)
-
-        ims = humans[:, :, :, :3]
-        maps = humans[:, :, :, 3][:, :, :, np.newaxis]
-        self.feed_dict = {im_human: ims, map_human: maps}
+            self.im_human = tf.placeholder(tf.float32, [1, h, w, 3])
+            self.map_human = tf.placeholder(tf.float32, [1, h, w, 1])
+            self.map_pose = inference_pose(self.im_human, self.map_human)
 
         self.sess = tf.Session(config=self.config)
         self.set_model()
@@ -192,21 +191,32 @@ class PoseEstimator:
         """
         model = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES,
                                   'CPM/PoseNet')
-        restorer = tf.train.Saver(model)
+        self.restorer = tf.train.Saver(model)
 
-        restorer.restore(self.sess, self.model_path)
+        self.restorer.restore(self.sess, self.model_path)
 
     def get_map(self):
         """
         Get joint heatmaps.
         @return: np.array - joint heatmaps
         """
-
+        maps_poses = None
         start_time = time.time()
-        map_pose = self.sess.run(self.map_pose, self.feed_dict)
+        for i, human in enumerate(self.humans):
+            ims = human[np.newaxis, :, :, :3]
+            maps = human[np.newaxis, :, :, 3][:, :, :, np.newaxis]
+            feed_dict = {self.im_human: ims, self.map_human: maps}
+
+            map_pose = self.sess.run(self.map_pose, feed_dict)
+
+            if not i:
+                maps_poses = map_pose
+            else:
+                maps_poses = np.append(maps_poses, map_pose, axis=0)
+
         print("Pose estimated! (%.2f ms)" % (1000 * (time.time() - start_time)))
 
-        return self.resize_maps(map_pose)
+        return self.resize_maps(maps_poses)
 
     def resize_maps(self, maps):
         """
@@ -265,10 +275,23 @@ class PoseEstimator:
         """
         limbs = np.array(data["limbs"]).reshape((-1, 2)) - 1
         colors = data["colors"]
+        stickwidth = 6
 
         for i, (p, q) in enumerate(limbs):
             px, py = joints[p]
             qx, qy = joints[q]
-            cv2.line(im, (px, py), (qx, qy), colors[i], 2)
+
+            cv2.circle(im, (px, py), 3, (0, 0, 0), -1)
+            cv2.circle(im, (qx, qy), 3, (0, 0, 0), -1)
+
+            m_x = int(np.mean(np.array([px, qx])))
+            m_y = int(np.mean(np.array([py, qy])))
+
+            length = ((px - qx) ** 2. + (py - qy) ** 2.) ** 0.5
+            angle = math.degrees(math.atan2(py - qy, px - qx))
+            polygon = cv2.ellipse2Poly((m_x, m_y),
+                                       (int(length / 2), stickwidth),
+                                       int(angle), 0, 360, 1)
+            cv2.fillConvexPoly(im, polygon, colors[i])
 
         return im

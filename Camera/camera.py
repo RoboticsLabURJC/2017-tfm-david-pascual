@@ -18,19 +18,16 @@ import numpy as np
 
 
 class Camera:
-    def __init__(self, data):
+    def __init__(self):
         """
         Camera class gets images from live video and transform them
         in order to predict the digit in the image.
         @param data: parsed YAML config. file
         """
-        self.data = data
-
         cfg = config.load(sys.argv[1])
 
         # starting comm
         jdrc = comm.init(cfg, "HumanPose")
-        print(jdrc)
         self.cam = jdrc.getCameraClient("HumanPose.Camera")
 
         self.lock = threading.Lock()
@@ -66,7 +63,7 @@ class Camera:
         Get image from webcam.
         @return: np.array - Frame
         """
-        im = np.zeros((self.im_width, self.im_height, 3))
+        im = np.zeros((self.im_height, self.im_width, 3))
         if self.cam:
             im = np.frombuffer(self.im.data, dtype=np.uint8)
             im.shape = self.im_height, self.im_width, 3

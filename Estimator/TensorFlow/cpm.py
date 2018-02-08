@@ -10,6 +10,7 @@ __author__ = "David Pascual Hernandez"
 __date__ = "2017/12/26"
 
 import sys
+import time
 import yaml
 from matplotlib import pyplot as plt
 
@@ -20,26 +21,31 @@ import tensorflow as tf
 from tools.human_detector import HumanDetector
 from tools.pose_estimator import PoseEstimator
 
-
-def load_model(data):
+def load_model(data, human_shape, pose_shape, config, boxsize=None):
     """
-    Get person & pose models paths.
+    Get human & pose models.
     @param data: models paths
-    @return: models paths
+    @return: human & pose models
     """
-    human_path = data["model_human"]
-    pose_path = data["model_pose"]
+    if not boxsize:
+        boxsize = data["boxsize"]
 
-    return human_path, pose_path
+    human_path = data["tf_models"]["model_human"]
+    human_detector = HumanDetector(human_shape, config, human_path, boxsize)
+
+    pose_path = data["tf_models"]["model_pose"]
+    pose_estimator = PoseEstimator(pose_shape, config, pose_path, boxsize)
+
+    return human_detector, pose_estimator
 
 
-def set_dev(data):
+def set_dev(gpu):
     """
     GPU settings.
-    @param data: parsed YAML config. file
+    @param gpu: flag for GPU usage
     @return: TensorFlow configuration
     """
-    if data["GPU"]:
+    if gpu:
         dev = {"GPU": 1}
     else:
         dev = {"CPU": 1, "GPU": 0}
@@ -68,30 +74,31 @@ def get_sample_ready(im, boxsize):
     return im, s
 
 
-def predict(im, config, models, data, viz=True):
+def predict(im, models, data, viz=True):
     """
     Estimates human pose given an image.
     @param im: np.array - image
-    @param config: TensorFlow config
     @param models: TensorFlow human & pose models
     @param data: parsed YAML config. file
     @param viz: bool - Flag for visualization
-    @return: np.array, np.array - joint coordinates & final image
+    @return: np.array, np.array, tuple - joint coordinates, result
+    image & estimation times
     """
     tf.reset_default_graph()
 
-    human_model, pose_model = models
+    human_detector, pose_estimator = models
 
     full_coords_joints = []
-
-    bsize = data["boxsize"]
 
     """
     Human detection
     """
-    human_detector = HumanDetector(im, config, human_model, bsize)
+    human_detector.im = im
 
+    start_t = time.time()
     full_map_human = human_detector.get_map()
+    human_t = int(1000 * (time.time() - start_t))
+
     if viz:
         plt.figure(), plt.imshow(np.squeeze(full_map_human)), plt.show()
 
@@ -99,6 +106,7 @@ def predict(im, config, models, data, viz=True):
     for x, y in humans_coords:
         print("\t\t(x,y)=" + str(x) + "," + str(y))
 
+    pose_t = ""
     if len(humans_coords):
         im_humans = human_detector.crop_humans(humans_coords)
         map_gaussian = human_detector.gen_gaussmap(data["sigma"])
@@ -115,9 +123,11 @@ def predict(im, config, models, data, viz=True):
         """
         Pose estimation
         """
-        pose_estimator = PoseEstimator(pose_input, config, pose_model, bsize)
+        pose_estimator.humans = pose_input
 
+        start_t = time.time()
         full_maps_joints = pose_estimator.get_map()
+        pose_t = int(1000 * (time.time() - start_t))
 
         if len(humans_coords) > 1:
             for i, map_joints in enumerate(full_maps_joints):
@@ -135,7 +145,7 @@ def predict(im, config, models, data, viz=True):
                     for x, y in coords_joints:
                         cv2.circle(im, (int(x), int(y)), 2, (0, 0, 255), 2)
 
-                im = pose_estimator.draw_limbs(im, coords_joints)
+                im = pose_estimator.draw_limbs(im, coords_joints, data)
                 full_coords_joints.append(coords_joints)
         else:
             if viz:
@@ -155,7 +165,7 @@ def predict(im, config, models, data, viz=True):
             im = pose_estimator.draw_limbs(im, coords_joints, data)
             full_coords_joints.append(coords_joints)
 
-    return im, np.array(full_coords_joints)
+    return im, np.array(full_coords_joints), (human_t, pose_t)
 
 
 if __name__ == "__main__":
@@ -173,7 +183,7 @@ if __name__ == "__main__":
 
     tf_config = set_dev(data)
 
-    im_estimated, _ = predict(sample, tf_config, model_paths, data)
+    im_estimated, _, _ = predict(sample, tf_config, model_paths, data)
 
     plt.figure()
     plt.imshow(im_estimated)

@@ -8,7 +8,6 @@ Based on https://github.com/RoboticsURJC-students/2016-tfg-david-pascual
 __author__ = "David Pascual Hernandez"
 __date__ = "2017/11/16"
 
-import os
 import signal
 import sys
 import yaml
@@ -20,9 +19,6 @@ from Estimator.estimator import Estimator
 from Estimator.threadestimator import ThreadEstimator
 from GUI.gui import GUI
 from GUI.threadgui import ThreadGUI
-
-# Avoids verbosity when loading Caffe model
-os.environ["GLOG_minloglevel"] = "2"
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -38,7 +34,7 @@ if __name__ == "__main__":
     # Init objects
     app = QtWidgets.QApplication(sys.argv)
 
-    cam = Camera(data)
+    cam = Camera()
     window = GUI(cam)
     estimator = Estimator(window, cam, data)
     window.show()

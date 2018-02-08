@@ -11,7 +11,6 @@ __date__ = "2017/11/16"
 from Caffe import cpm as caffe_cpm
 from TensorFlow import cpm as tf_cpm
 
-
 class Estimator:
     def __init__(self, gui, cam, data):
         """
@@ -20,27 +19,30 @@ class Estimator:
         @param cam: Camera object
         @param data: parsed YAML config. file
         """
+        self.gui = gui
+        self.cam = cam
+
         self.data = data
         self.config = data["Settings"]
-        print(self.config["boxsize"])
         self.framework = self.data["Framework"]
 
         if self.framework == "caffe":
-            self.deploy_models = caffe_cpm.load_model(
-                self.config["caffe_models"])
+            self.models = caffe_cpm.load_model(self.config["caffe_models"])
 
         elif self.framework == "tensorflow":
-            self.model_paths = tf_cpm.load_model(self.config["tf_models"])
-            self.tf_config = tf_cpm.set_dev(self.config)
+            im_shape = (self.cam.im_height, self.cam.im_width, 3)
+            pose_shape = (self.config["boxsize"], self.config["boxsize"], 15)
+
+            self.tf_config = tf_cpm.set_dev(self.config["GPU"])
+            self.models = tf_cpm.load_model(self.config, im_shape, pose_shape,
+                                            self.tf_config)
 
         else:
             print(self.framework, " framework is not supported")
             print("Available frameworks: 'caffe', 'tensorflow'")
             exit()
 
-        self.gui = gui
-        self.cam = cam
-        self.set_caffe = False
+        self.caffe_set = False
 
     def estimate(self, im):
         """
@@ -51,23 +53,18 @@ class Estimator:
         """
         im_predicted, pose_coords = [None, None]
         if self.framework == "caffe":
-            if not self.set_caffe:
-                caffe_cpm.set_dev(self.config)
-                self.set_caffe = True
+            if not self.caffe_set:
+                caffe_cpm.set_dev(self.config["GPU"])
+                self.caffe_set = True
 
-            im_predicted, pose_coords = caffe_cpm.predict(im, self.config,
-                                                          self.deploy_models,
+            im_predicted, pose_coords, _ = caffe_cpm.predict(im, self.config,
+                                                             self.models,
+                                                             viz=False)
+
+        if self.framework == "tensorflow":
+            im_predicted, pose_coords, _ = tf_cpm.predict(im, self.models,
+                                                          self.config,
                                                           viz=False)
-
-        elif self.framework == "tensorflow":
-            im_predicted, pose_coords = tf_cpm.predict(im, self.tf_config,
-                                                       self.model_paths,
-                                                       self.config, viz=False)
-
-        else:
-            print(self.framework, " framework is not supported")
-            print("Available frameworks: 'caffe', 'tensorflow'")
-            exit()
 
         return im_predicted, pose_coords
 
@@ -76,4 +73,4 @@ class Estimator:
         im = self.cam.get_image()
         im, coords = self.estimate(im)
 
-        self.gui.im_pose = im
+        self.gui.im_pred = im
