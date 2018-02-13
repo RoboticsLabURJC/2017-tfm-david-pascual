@@ -8,10 +8,9 @@ Based on https://github.com/RoboticsURJC-students/2016-tfg-david-pascual
 __author__ = "David Pascual Hernandez"
 __date__ = "2017/11/16"
 
-import numpy as np
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtGui import QPixmap, QImage
-from PyQt5.QtWidgets import QWidget, QLabel
+from PyQt5.QtGui import QPixmap, QImage, QIcon
+from PyQt5.QtWidgets import QWidget, QLabel, QPushButton
 
 
 class GUI(QWidget):
@@ -19,45 +18,99 @@ class GUI(QWidget):
 
     def __init__(self, cam, parent=None):
         """
-        GUI class creates the GUI that we're going to use to preview
+        GUI class creates the GUI that we"re going to use to preview
         the live video as well as the estimation results.
+        @param cam: Camera object
+        @param estimator: Estimator object
         @param parent: bool
         """
-        QWidget.__init__(self, parent)
+        self.cam = cam
+        self.im_pred = self.cam.get_image()
+        self.live = True
 
-        self.setWindowTitle("Human pose estimation")
-        self.resize(1400, 800)
-        self.move(10, 20)
+        QWidget.__init__(self, parent)
+        self.setWindowTitle("JdeRobot - Human Pose Estimation w/ CPMs")
+        self.resize(1550, 610)
+        self.move(150, 50)
+        self.setWindowIcon(QIcon("GUI/resources/jderobot.png"))
         self.updGUI.connect(self.update)
 
         # Original image label.
-        self.im_live_label = QLabel(self)
-        self.im_live_label.resize(640, 480)
-        self.im_live_label.move(30, 30)
-        self.im_live_label.show()
+        self.im_label = QLabel(self)
+        self.im_label.resize(640, 480)
+        self.im_label.move(25, 90)
+        self.im_label.show()
 
-        # Pose image label.
+        # Processed image label.
         self.im_pred_label = QLabel(self)
         self.im_pred_label.resize(640, 480)
-        self.im_pred_label.move(700, 30)
+        self.im_pred_label.move(885, 90)
         self.im_pred_label.show()
-        self.im_pred = np.zeros((480, 640), dtype=np.uint8)
 
-        # Camera
-        self.cam = cam
+        # Button for configuring detection flow
+        self.button_cont_detection = QPushButton(self)
+        self.button_cont_detection.move(725, 100)
+        self.button_cont_detection.clicked.connect(self.pred_toggle)
+        self.button_cont_detection.setStyleSheet("QPushButton"
+                                                 "{color: red;}")
+        self.button_cont_detection.setText("Switch off\nContinuous"
+                                           "\nDetection")
+
+        # Button for processing a single frame
+        self.button_one_frame = QPushButton(self)
+        self.button_one_frame.move(725, 200)
+        self.button_one_frame.clicked.connect(self.single_pred)
+        self.button_one_frame.setText("On-demand\ndetection")
+
+        # Logo
+        self.logo_label = QLabel(self)
+        self.logo_label.resize(150, 150)
+        self.logo_label.move(700, 400)
+        self.logo_label.setScaledContents(True)
+
+        logo_img = QImage()
+        logo_img.load("GUI/resources/jderobot.png")
+        self.logo_label.setPixmap(QPixmap.fromImage(logo_img))
+        self.logo_label.show()
 
     # noinspection PyArgumentList
     def update(self):
         """ Updates the GUI. """
         # Get original image and display it
-        im_live = self.cam.get_image()
-        im_live = QImage(im_live, im_live.shape[1], im_live.shape[0],
-                         QImage.Format_RGB888)
+        im = self.cam.get_image()
+        im = QImage(im, im.shape[1], im.shape[0], QImage.Format_RGB888)
         # noinspection PyCallByClass
-        im_live = QPixmap.fromImage(im_live)
-        self.im_live_label.setPixmap(im_live)
+        im = QPixmap.fromImage(im)
+        self.im_label.setPixmap(im)
 
-        im_pose = QImage(self.im_pred, self.im_pred.shape[1],
+        if self.live:
+            im_pred = QImage(self.im_pred, self.im_pred.shape[1],
+                             self.im_pred.shape[0], QImage.Format_RGB888)
+            im_pred = QPixmap.fromImage(im_pred)
+            self.im_pred_label.setPixmap(im_pred)
+
+    def pred_toggle(self):
+        """
+        Toggles between live and single prediction modes.
+        """
+        self.live = not self.live
+
+        if self.live:
+            self.button_cont_detection.setStyleSheet("QPushButton"
+                                                     "{color: red;}")
+            self.button_cont_detection.setText("Switch off\nContinuous"
+                                               "\nDetection")
+        else:
+            self.button_cont_detection.setStyleSheet("QPushButton"
+                                                     "{color: green;}")
+            self.button_cont_detection.setText("Switch on\nContinuous"
+                                               "\nDetection")
+
+    def single_pred(self):
+        """
+        Single prediction.
+        """
+        im_pred = QImage(self.im_pred, self.im_pred.shape[1],
                          self.im_pred.shape[0], QImage.Format_RGB888)
-        im_pose = QPixmap.fromImage(im_pose)
-        self.im_pred_label.setPixmap(im_pose)
+        im_pred = QPixmap.fromImage(im_pred)
+        self.im_pred_label.setPixmap(im_pred)

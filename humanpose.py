@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     cam = Camera()
     window = GUI(cam)
-    estimator = Estimator(window, cam, data)
+    estimator = Estimator(cam, window, data)
     window.show()
 
     # Threading camera

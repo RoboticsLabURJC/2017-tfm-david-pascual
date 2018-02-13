@@ -11,16 +11,18 @@ __date__ = "2017/11/16"
 from Caffe import cpm as caffe_cpm
 from TensorFlow import cpm as tf_cpm
 
+
 class Estimator:
-    def __init__(self, gui, cam, data):
+    def __init__(self, cam, gui, data):
         """
         Estimator class gets human pose estimations for a given image.
-        @param gui: GUI object
         @param cam: Camera object
+        @param gui: GUI object
         @param data: parsed YAML config. file
         """
-        self.gui = gui
         self.cam = cam
+        self.gui = gui
+        self.live = gui.live
 
         self.data = data
         self.config = data["Settings"]
@@ -43,6 +45,7 @@ class Estimator:
             exit()
 
         self.caffe_set = False
+
 
     def estimate(self, im):
         """
