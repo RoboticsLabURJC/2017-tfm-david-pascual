@@ -9,7 +9,7 @@ __author__ = "David Pascual Hernandez"
 __date__ = "2017/11/16"
 
 from Caffe import cpm as caffe_cpm
-from TensorFlow import cpm as tf_cpm
+#from TensorFlow import cpm as tf_cpm
 
 
 class Estimator:

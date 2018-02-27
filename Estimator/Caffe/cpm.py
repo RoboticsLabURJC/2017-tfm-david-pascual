@@ -290,7 +290,7 @@ if __name__ == "__main__":
     deploy_models = load_model(data["caffe_models"])
 
     start_time = time.time()
-    im_predicted, _, _ = predict(im_original, data, deploy_models, True)
+    im_predicted, _, _ = predict(im_original, data, deploy_models)
     print("\nTotal time (w/out loading) %.2f ms." % (1000 * (time.time()
                                                              - start_time)))
     plt.figure()

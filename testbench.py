@@ -24,7 +24,7 @@ def get_args():
     Get program arguments and parse them.
     :return: dict - arguments
     """
-    ap = argparse.ArgumentParser(description="Detects faces and eyes in video")
+    ap = argparse.ArgumentParser(description="CPMs testbench")
     ap.add_argument("-v", "--video", type=str, required=True,
                     help="Input video")
     ap.add_argument("-c", "--config", type=str, required=False,
