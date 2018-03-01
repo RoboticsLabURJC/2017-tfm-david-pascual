@@ -1,7 +1,7 @@
 # CPU mode or GPU mode
 GPU: yes
 
-# GPU device number (doesn"t matter for CPU mode)
+# GPU device number (doesn't matter for CPU mode)
 device: 0
 
 caffe_models:
@@ -10,7 +10,7 @@ caffe_models:
   model_pose: "models/_trained_MPI/pose_iter_320000.caffemodel"
   deploy_pose: "models/_trained_MPI/pose_deploy_resize.prototxt"
 
-boxsize: 328
+boxsize: 128
 
 limbs: [1, 2, 3, 4, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14]
 

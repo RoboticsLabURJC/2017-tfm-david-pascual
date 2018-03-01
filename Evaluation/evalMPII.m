@@ -3,7 +3,7 @@
 %%% OPTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % IDs of prediction sets to include in results
-PRED_IDS = [6];
+PRED_IDS = [6 7 8];
 % Subset of the data that the predictions correspond to ('val' or 'train')
 SUBSET = 'val';
 

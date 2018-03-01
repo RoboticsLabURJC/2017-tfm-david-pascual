@@ -63,10 +63,19 @@ switch predidx
   case 5
     p.name = 'bearpaw-hg-s8-b1';
     p.predFilename = 'preds/reference/bearpaw-hg_s8_b1.mat';
-   
+    
   case 6
-    p.name = 'test_caffe_192';
+    p.name = 'Caffe; Boxsize = 128';
+    
+    p.predFilename = 'preds/pred_valid_caffe_128_20180228170900.h5'; 
+  case 7
+    p.name = 'Caffe; Boxsize = 192';
+    
     p.predFilename = 'preds/pred_valid_caffe_192_20180227224629.h5';
+  case 8
+    p.name = 'Caffe; Boxsize = 328';
+    
+    p.predFilename = 'preds/pred_valid_caffe_328_20180227230639.h5'; 
 end
 
 p.colorName = colours(mod(predidx - 1, size(colours, 1)) + 1, :);
