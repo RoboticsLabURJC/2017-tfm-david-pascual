@@ -1,0 +1,11 @@
+*.pyc
+*images/
+*latex/
+*plots/
+*preds/
+*.mp4
+related_repos/
+testbench_results/
+*.ckpt
+*.caffemodel
+.idea/

@@ -21,7 +21,7 @@ switch(SUBSET)
   case {'test'}
     subset_annot_file = 'annot_mpii/test.h5';
   otherwise
-    assert(false, ['unrecognised subset: ' SUBSET]);
+    assert(false, ['unrecogniimssed subset: ' SUBSET]);
 end
 
 range = 0:0.01:0.5;
