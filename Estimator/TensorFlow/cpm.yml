@@ -5,7 +5,7 @@ tf_models:
   model_human: "models/person_net.ckpt"
   model_pose: "models/pose_net.ckpt"
 
-boxsize: 184
+boxsize: 192
 
 limbs: [1, 2, 3, 4, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14]
 

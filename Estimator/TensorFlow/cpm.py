@@ -21,14 +21,14 @@ import tensorflow as tf
 from tools.human_detector import HumanDetector
 from tools.pose_estimator import PoseEstimator
 
-def load_model(data, human_shape, pose_shape, config, boxsize=None):
+def load_model(data, human_shape, config):
     """
     Get human & pose models.
     @param data: models paths
     @return: human & pose models
     """
-    if not boxsize:
-        boxsize = data["boxsize"]
+    boxsize = data["boxsize"]
+    pose_shape = (boxsize, boxsize, 15)
 
     human_path = data["tf_models"]["model_human"]
     human_detector = HumanDetector(human_shape, config, human_path, boxsize)
@@ -179,11 +179,10 @@ if __name__ == "__main__":
         except yaml.YAMLError as exc:
             print(exc)
 
-    model_paths = load_model(data["tf_models"])
-
     tf_config = set_dev(data)
+    models = load_model(data, sample.shape, tf_config)
 
-    im_estimated, _, _ = predict(sample, tf_config, model_paths, data)
+    im_estimated, _, _ = predict(sample, models, data)
 
     plt.figure()
     plt.imshow(im_estimated)

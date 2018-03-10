@@ -9,7 +9,7 @@ HumanPose:
 
 NodeName: HumanPose
 
-Framework: "caffe"  # "caffe" or "tensorflow"
+Framework: "tensorflow"  # "caffe" or "tensorflow"
 
 Settings:
   # CPU mode or GPU mode

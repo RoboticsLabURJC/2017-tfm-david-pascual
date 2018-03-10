@@ -9,7 +9,7 @@ __author__ = "David Pascual Hernandez"
 __date__ = "2017/11/16"
 
 from Caffe import cpm as caffe_cpm
-#from TensorFlow import cpm as tf_cpm
+from TensorFlow import cpm as tf_cpm
 
 
 class Estimator:
@@ -36,7 +36,7 @@ class Estimator:
             pose_shape = (self.config["boxsize"], self.config["boxsize"], 15)
 
             self.tf_config = tf_cpm.set_dev(self.config["GPU"])
-            self.models = tf_cpm.load_model(self.config, im_shape, pose_shape,
+            self.models = tf_cpm.load_model(self.config, im_shape,
                                             self.tf_config)
 
         else:

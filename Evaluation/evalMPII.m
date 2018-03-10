@@ -3,7 +3,7 @@
 %%% OPTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % IDs of prediction sets to include in results
-PRED_IDS = [6 7 8];
+PRED_IDS = [2 5];
 % Subset of the data that the predictions correspond to ('val' or 'train')
 SUBSET = 'val';
 
@@ -15,11 +15,11 @@ fprintf('# MPII single-person pose evaluation script\n')
 
 switch(SUBSET)
   case 'train'
-    subset_annot_file = 'annot_mpii/train.h5';
+    subset_annot_file = '../Datasets/train.h5';
   case {'val', 'valid'}
-    subset_annot_file = 'annot_mpii/valid.h5';
+    subset_annot_file = '../Datasets/valid.h5';
   case {'test'}
-    subset_annot_file = 'annot_mpii/test.h5';
+    subset_annot_file = '../Datasets/test.h5';
   otherwise
     assert(false, ['unrecogniimssed subset: ' SUBSET]);
 end
@@ -31,7 +31,7 @@ plotsDir = './plots'; if (~exist(plotsDir,'dir')), mkdir(plotsDir); end
 tableTex = cell(length(PRED_IDS)+1,1);
 
 % load ground truth
-load('annot_mpii/mpii_human_pose_v1_u12_1', 'RELEASE');
+load('mpii/mpii_human_pose_v1_u12_1', 'RELEASE');
 annolist = RELEASE.annolist;
 
 if exist ("OCTAVE_VERSION", "builtin") > 0
@@ -51,6 +51,7 @@ n = 0;
 for imgidx = 1:length(annolist_subset)
   rect_gt = annolist_subset(imgidx).annorect;
   ridx = subset_persons(imgidx);
+  return
   if (isfield(rect_gt(ridx),'objpos') && ~isempty(rect_gt(ridx).objpos))
     n = n + 1;
     annolist_subset_flat(n).image.name = annolist_subset(imgidx).image.name;
@@ -69,7 +70,8 @@ for i = 1:length(PRED_IDS);
   % load predictions
   p = getExpParamsNew(PRED_IDS(i));
   try
-    load(p.predFilename, 'preds/');
+    preds_struct = load('-hdf5', p.predFilename);
+    preds = preds_struct.preds;
   catch
     preds = h5read(p.predFilename, '/preds');
   end

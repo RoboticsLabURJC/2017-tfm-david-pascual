@@ -8,10 +8,12 @@ __author__ = "David Pascual Hernandez"
 __date__ = "2017/02/24"
 
 import argparse
+import math
 import os
 import sys
 import time
 import yaml
+from matplotlib import pyplot as plt
 
 import cv2
 import h5py
@@ -33,7 +35,9 @@ def get_args():
                     default="caffe", choices=available_fw,
                     help="Framework to test")
     ap.add_argument("-s", "--subset", type=str, required=False,
-                    default="annot_mpii/test.h5")
+                    default="../Datasets/valid.h5")
+    ap.add_argument("-v", "--viz", type=bool, required=False,
+                    default=False)
 
     return vars(ap.parse_args())
 
@@ -99,6 +103,37 @@ def load_caffe_model(models):
     return PoseEstimator(models["deploy_pose"], models["model_pose"])
 
 
+def load_tf_model(config, dev_config):
+    """
+    Load TensorFlow pose estimation model.
+    @param models: dict - TensorFlow model & weights
+    @param dev_config: TensorFlow device configuration object
+    @return: pose estimator object
+    """
+    boxsize = config["boxsize"]
+    models = config["tf_models"]
+    pose_shape = (boxsize, boxsize, 15)
+
+    return PoseEstimator(pose_shape, dev_config, models["model_pose"], boxsize)
+
+
+def gen_gaussmap(boxsize, sigma):
+    """
+    Generates a grayscale image with a centered Gaussian
+    @param sigma: float - Gaussian sigma
+    @return: np.array - Gaussian map
+    """
+    gaussmap = np.zeros((boxsize, boxsize, 1))
+    for x in range(boxsize):
+        for y in range(boxsize):
+            dist_sq = (x - boxsize / 2) * (x - boxsize / 2) \
+                      + (y - boxsize / 2) * (y - boxsize / 2)
+            exponent = dist_sq / 2.0 / sigma / sigma
+            gaussmap[y, x, :] = math.exp(-exponent)
+
+    return gaussmap
+
+
 def estimate_caffe_pose(sample, human, config, model, c, s, viz):
     """
     Estimate human pose given an input image.
@@ -111,13 +146,7 @@ def estimate_caffe_pose(sample, human, config, model, c, s, viz):
     @param viz: bool - flag for joint visualization
     @return: np.array - joint coords
     """
-    """
-    Pose estimation
-    """
-    pose_maps = []
-    pose_coords = []
-
-    gauss_map = model.gen_gaussmap(config["boxsize"], config["sigma"])
+    gauss_map = np.squeeze(gen_gaussmap(config["boxsize"], config["sigma"]))
 
     pose_map = model.estimate(human, gauss_map)
 
@@ -136,6 +165,37 @@ def estimate_caffe_pose(sample, human, config, model, c, s, viz):
     if viz:
         cpm.display_joints(sample, joint_coords)
 
+    joint_coords = [[x, y] for y, x in joint_coords]
+
+    return joint_coords
+
+
+def estimate_tf_pose(sample, human, config, model, c, s, viz):
+    """
+    Estimate human pose given an input image.
+    @param sample: np.array - original input image
+    @param human: np.array - cropped human image
+    @param config: dict - CPM settings
+    @param model: pose estimator object
+    @param c: np.array - human center
+    @param s: int - human scale
+    @param viz: bool - flag for joint visualization
+    @return: np.array - joint coords
+    """
+    human = human / 256.0 - 0.5
+    gauss_map = gen_gaussmap(config["boxsize"], config["sigma"])
+
+    humans = np.dstack((np.squeeze(human), gauss_map))
+    pose_estimator.humans = np.array([humans])
+
+    pose_map = model.get_map()
+
+    joint_coords = pose_estimator.get_joints(pose_map, c, s)
+
+    if viz:
+        im_drawn = model.draw_limbs(sample, joint_coords, config)
+        plt.figure(), plt.imshow(im_drawn), plt.show()
+
     return joint_coords
 
 
@@ -151,6 +211,8 @@ if __name__ == '__main__':
 
     if args["framework"] == "tensorflow":
         base_path = "../Estimator/TensorFlow/"
+        from Estimator.TensorFlow import cpm
+        from Estimator.TensorFlow.tools.pose_estimator import PoseEstimator
 
     # Read YAML file containing model info.
     data = None
@@ -169,11 +231,18 @@ if __name__ == '__main__':
         cpm.set_dev(data["GPU"])
         pose_estimator = load_caffe_model(data["caffe_models"])
 
+    if args["framework"] == "tensorflow":
+        for k, v in data["tf_models"].items():
+            data["tf_models"][k] = base_path + v
+
+        dev = cpm.set_dev(data["GPU"])
+        pose_estimator = load_tf_model(data, dev)
+
     # Load .h5 file with subset annotations
     filename = args["subset"]
     f = h5py.File(filename, "r")
 
-    im_folder = "images/"
+    im_folder = "../Datasets/mpii/images/"
     preds = np.zeros((2, 16, len(f["imgname"])))
     pred_idx = 0
     for im_name, center, scale in zip(f["imgname"], f["center"], f["scale"]):
@@ -182,9 +251,10 @@ if __name__ == '__main__':
         im = cv2.imread(im_path)
 
         # Image preprocessing
-        target_dist = 41 / 35  # Mysterious parameter from original repo, maybe adjusted during training??
+        target_dist = 41. / 35.  # Mysterious parameter from original repo, maybe adjusted during training??
         scale = target_dist / scale
         center = np.uint(center * scale)
+
 
         im_human = crop_human(im, center, scale, data["boxsize"])
 
@@ -192,12 +262,14 @@ if __name__ == '__main__':
         joints = None
         if args["framework"] == "caffe" and pose_estimator is not None:
             joints = estimate_caffe_pose(im, im_human, data, pose_estimator,
-                                         center, scale, viz=False)
+                                         center, scale, args["viz"])
+
+        if args["framework"] == "tensorflow" and pose_estimator is not None:
+            joints = estimate_tf_pose(im, im_human, data, pose_estimator,
+                                      center, scale, args["viz"])
 
         if joints is not None:
             # Get joint coordinates ready for evaluation
-            joints = [[x, y] for y, x in joints]
-
             joints_standard = np.zeros((2, 16))
             joints_standard[:, 0] = joints[10]  # right ankle
             joints_standard[:, 1] = joints[9]  # right knee

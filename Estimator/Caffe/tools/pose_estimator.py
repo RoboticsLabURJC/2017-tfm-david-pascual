@@ -102,6 +102,7 @@ class PoseEstimator:
         # Get coordinates
         joint_coord = list(
             np.unravel_index(joint_map.argmax(), joint_map.shape))
+
         # Back to full coordinates
         joint_coord[0] = (joint_coord[0] - (boxsize / 2) + person_coord[1]) / r
         joint_coord[1] = (joint_coord[1] - (boxsize / 2) + person_coord[0]) / r
