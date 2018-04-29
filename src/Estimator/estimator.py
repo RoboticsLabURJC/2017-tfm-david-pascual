@@ -8,21 +8,24 @@ Based on https://github.com/RoboticsURJC-students/2016-tfg-david-pascual
 __author__ = "David Pascual Hernandez"
 __date__ = "2017/11/16"
 
-from Models.Caffe import cpm as caffe_cpm
-from Models.TensorFlow import cpm as tf_cpm
+import numpy as np
+
+from Frameworks.Caffe import cpm as caffe_cpm
+from Frameworks.TensorFlow import cpm as tf_cpm
 
 
 class Estimator:
-    def __init__(self, cam, gui, data):
+    def __init__(self, cam, viz3d, gui, data):
         """
         Estimator class gets human pose estimations for a given image.
         @param cam: Camera object
+        @param viz3d: Viz3D object
         @param gui: GUI object
         @param data: parsed YAML config. file
         """
         self.cam = cam
+        self.viz3d = viz3d
         self.gui = gui
-        self.live = gui.live
 
         self.data = data
         self.config = data["Settings"]
@@ -45,7 +48,6 @@ class Estimator:
             exit()
 
         self.caffe_set = False
-
 
     def estimate(self, im):
         """
@@ -77,3 +79,22 @@ class Estimator:
         im, coords = self.estimate(im)
 
         self.gui.im_pred = im
+
+        if len(coords) and self.gui.display:
+            for human_coords in coords:
+                limbs = np.array(self.config["limbs"]).reshape((-1, 2)) - 1
+                for l, (p, q) in enumerate(limbs):
+                    point_a = np.array([human_coords[p][1], 0,
+                                        im.shape[0] - human_coords[p][0]])
+                    point_b = np.array([human_coords[q][1], 0,
+                                        im.shape[0] - human_coords[q][0]])
+
+                    color = self.config["colors"][l]
+                    self.viz3d.drawSegment(point_a, point_b, color)
+
+                for y, x in human_coords[:-1]:
+                    y = im.shape[0] - y
+                    self.viz3d.drawPoint(np.array([int(x), 0, int(y)]),
+                                         (255, 255, 255))
+
+            self.gui.display = False

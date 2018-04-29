@@ -26,7 +26,8 @@ class GUI(QWidget):
         """
         self.cam = cam
         self.im_pred = self.cam.get_image()
-        self.live = True
+        self.live = False
+        self.display = False
 
         QWidget.__init__(self, parent)
         self.setWindowTitle("JdeRobot - Human Pose Estimation w/ CPMs")
@@ -52,8 +53,8 @@ class GUI(QWidget):
         self.button_cont_detection.move(725, 100)
         self.button_cont_detection.clicked.connect(self.pred_toggle)
         self.button_cont_detection.setStyleSheet("QPushButton"
-                                                 "{color: red;}")
-        self.button_cont_detection.setText("Switch off\nContinuous"
+                                                 "{color: green;}")
+        self.button_cont_detection.setText("Switch on\nContinuous"
                                            "\nDetection")
 
         # Button for processing a single frame
@@ -89,6 +90,8 @@ class GUI(QWidget):
             im_pred = QPixmap.fromImage(im_pred)
             self.im_pred_label.setPixmap(im_pred)
 
+            self.display = True
+
     def pred_toggle(self):
         """
         Toggles between live and single prediction modes.
@@ -114,3 +117,5 @@ class GUI(QWidget):
                          self.im_pred.shape[0], QImage.Format_RGB888)
         im_pred = QPixmap.fromImage(im_pred)
         self.im_pred_label.setPixmap(im_pred)
+
+        self.display = True

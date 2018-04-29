@@ -206,12 +206,12 @@ if __name__ == '__main__':
     base_path = ""
     sys.path.append("..")
     if args["framework"] == "caffe":
-        base_path = "../Models/Caffe/"
+        base_path = "../Frameworks/Caffe/"
         from Models.Caffe import cpm
         from Models.Caffe.pose_estimator import PoseEstimator
 
     if args["framework"] == "tensorflow":
-        base_path = "../Models/TensorFlow/"
+        base_path = "../Frameworks/TensorFlow/"
         from Models.TensorFlow import cpm
         from Models.TensorFlow.pose_estimator import PoseEstimator
 

@@ -20,6 +20,8 @@ from Estimator.threadestimator import ThreadEstimator
 from GUI.gui import GUI
 from GUI.threadgui import ThreadGUI
 
+from Viz3D.viz3d import Viz3D
+
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 if __name__ == "__main__":
@@ -35,9 +37,10 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
 
     cam = Camera()
+    viz3d = Viz3D()
     window = GUI(cam)
-    estimator = Estimator(cam, window, data)
     window.show()
+    estimator = Estimator(cam, viz3d, window, data)
 
     # Threading camera
     t_cam = ThreadCamera(cam)

@@ -9,21 +9,21 @@ HumanPose:
 
 NodeName: HumanPose
 
-Framework: "tensorflow"  # "caffe" or "tensorflow"
+Framework: "caffe"  # "caffe" or "tensorflow"
 
 Settings:
   # CPU mode or GPU mode
   GPU: 1
 
   caffe_models:
-    model_human: "Estimator/Caffe/models/_trained_person_MPI/pose_iter_70000.caffemodel"
-    deploy_human: "Estimator/Caffe/models/_trained_person_MPI/pose_deploy_copy_4sg_resize.prototxt"
-    model_pose: "Estimator/Caffe/models/_trained_MPI/pose_iter_320000.caffemodel"
-    deploy_pose: "Estimator/Caffe/models/_trained_MPI/pose_deploy_resize.prototxt"
+    model_human: "Estimator/Frameworks/Caffe/models/_trained_person_MPI/pose_iter_70000.caffemodel"
+    deploy_human: "Estimator/Frameworks/Caffe/models/_trained_person_MPI/pose_deploy_copy_4sg_resize.prototxt"
+    model_pose: "Estimator/Frameworks/Caffe/models/_trained_MPI/pose_iter_320000.caffemodel"
+    deploy_pose: "Estimator/Frameworks/Caffe/models/_trained_MPI/pose_deploy_resize.prototxt"
 
   tf_models:
-    model_human: "Estimator/TensorFlow/models/person_net.ckpt"
-    model_pose: "Estimator/TensorFlow/models/pose_net.ckpt"
+    model_human: "Estimator/Frameworks/TensorFlow/models/person_net.ckpt"
+    model_pose: "Estimator/Frameworks/TensorFlow/models/pose_net.ckpt"
 
   boxsize: 192
 
