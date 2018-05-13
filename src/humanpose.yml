@@ -1,13 +1,22 @@
 HumanPose:
-  Camera:
+  CameraRGB:
     Server: 1 # 0 -> Deactivate, 1 -> Ice , 2 -> ROS
     Proxy: "cameraA:tcp -h localhost -p 9999"
     Format: RGB8
-    Topic: "/TurtlebotROS/cameraL/image_raw"
+    Topic: "/camera/rgb/image_raw"
     Name: cameraA
-    Fps: 20
 
-NodeName: HumanPose
+  CameraDEPTH:
+    Server: 1 # 0 -> Deactivate, 1 -> Ice , 2 -> ROS
+    Proxy: "cameraB:tcp -h localhost -p 9999"
+    Format: RGB8
+    Topic: "/camera/depth_registered/image_raw"
+    Name: cameraB
+
+  NodeName: HumanPose
+  Width: 640
+  Height: 480
+  Fps: 20
 
 Framework: "caffe"  # "caffe" or "tensorflow"
 

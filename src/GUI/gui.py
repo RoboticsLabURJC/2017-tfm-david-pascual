@@ -25,7 +25,7 @@ class GUI(QWidget):
         @param parent: bool
         """
         self.cam = cam
-        self.im_pred = self.cam.get_image()
+        self.im_pred, _ = self.cam.get_image()
         self.live = False
         self.display = False
 
@@ -78,7 +78,7 @@ class GUI(QWidget):
     def update(self):
         """ Updates the GUI. """
         # Get original image and display it
-        im = self.cam.get_image()
+        im, _ = self.cam.get_image()
         im = QImage(im, im.shape[1], im.shape[0], QImage.Format_RGB888)
         # noinspection PyCallByClass
         im = QPixmap.fromImage(im)

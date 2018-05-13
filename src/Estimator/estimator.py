@@ -36,7 +36,6 @@ class Estimator:
 
         elif self.framework == "tensorflow":
             im_shape = (self.cam.im_height, self.cam.im_width, 3)
-            pose_shape = (self.config["boxsize"], self.config["boxsize"], 15)
 
             self.tf_config = tf_cpm.set_dev(self.config["GPU"])
             self.models = tf_cpm.load_model(self.config, im_shape,
@@ -73,9 +72,26 @@ class Estimator:
 
         return im_predicted, pose_coords
 
+    def get_depth_point(self, point, depth):
+        """
+        Get joints depth information.
+        """
+        y, x = point
+
+        x = np.clip(int(x), 0, depth.shape[0])
+        y = depth.shape[0] - np.clip(int(y), 0, depth.shape[0])
+
+        # wsize = 11
+        # z = np.median(depth[wsize / 2 - y:wsize / 2 + y,
+        #                     wsize / 2 - x:wsize / 2 + x])
+
+        z = depth[y, x]
+
+        return np.array((x, z, y))
+
     def update(self):
         """ Update estimator. """
-        im = self.cam.get_image()
+        im, im_depth = self.cam.get_image()
         im, coords = self.estimate(im)
 
         self.gui.im_pred = im
@@ -84,17 +100,14 @@ class Estimator:
             for human_coords in coords:
                 limbs = np.array(self.config["limbs"]).reshape((-1, 2)) - 1
                 for l, (p, q) in enumerate(limbs):
-                    point_a = np.array([human_coords[p][1], 0,
-                                        im.shape[0] - human_coords[p][0]])
-                    point_b = np.array([human_coords[q][1], 0,
-                                        im.shape[0] - human_coords[q][0]])
+                    point_a = self.get_depth_point(human_coords[p], im_depth)
+                    point_b = self.get_depth_point(human_coords[q], im_depth)
 
                     color = self.config["colors"][l]
                     self.viz3d.drawSegment(point_a, point_b, color)
 
-                for y, x in human_coords[:-1]:
-                    y = im.shape[0] - y
-                    self.viz3d.drawPoint(np.array([int(x), 0, int(y)]),
-                                         (255, 255, 255))
+                for joint in human_coords[:-1]:
+                    point = self.get_depth_point(joint, im_depth)
+                    self.viz3d.drawPoint(point, (255, 255, 255))
 
             self.gui.display = False
