@@ -12,7 +12,7 @@ import threading
 import time
 from datetime import datetime
 
-t_cycle = 100  # ms
+t_cycle = 150  # ms
 
 
 class ThreadEstimator(threading.Thread):

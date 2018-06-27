@@ -18,23 +18,27 @@ HumanPose:
   Height: 480
   Fps: 20
 
-Framework: "caffe"  # "caffe" or "tensorflow"
-
 Settings:
+  human_framework: "caffe"
+  pose_framework: "caffe"
+
   # CPU mode or GPU mode
   GPU: 1
 
   caffe_models:
-    model_human: "Estimator/Frameworks/Caffe/models/_trained_person_MPI/pose_iter_70000.caffemodel"
-    deploy_human: "Estimator/Frameworks/Caffe/models/_trained_person_MPI/pose_deploy_copy_4sg_resize.prototxt"
-    model_pose: "Estimator/Frameworks/Caffe/models/_trained_MPI/pose_iter_320000.caffemodel"
-    deploy_pose: "Estimator/Frameworks/Caffe/models/_trained_MPI/pose_deploy_resize.prototxt"
+    human: ["Estimator/Human/models/caffe/pose_deploy_copy_4sg_resize.prototxt",
+            "Estimator/Human/models/caffe/pose_iter_70000.caffemodel"]
+    pose: ["Estimator/Pose/models/caffe/pose_deploy_resize.prototxt",
+           "Estimator/Pose/models/caffe/pose_iter_320000.caffemodel"]
 
   tf_models:
-    model_human: "Estimator/Frameworks/TensorFlow/models/person_net.ckpt"
-    model_pose: "Estimator/Frameworks/TensorFlow/models/pose_net.ckpt"
+    human: "Estimator/Human/models/tf/person_net.ckpt"
+    pose: "Estimator/Frameworks/TensorFlow/models/pose_net.ckpt"
 
-  boxsize: 192
+  naxvm_models:
+    human: "Estimator/Human/models/naxvm/ssd_mobilenet_v2_coco_2018_03_29.pb"
+
+  boxsize: 128 # 192
 
   limbs: [1, 2, 3, 4, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14]
 

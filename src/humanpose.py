@@ -19,7 +19,6 @@ from Estimator.estimator import Estimator
 from Estimator.threadestimator import ThreadEstimator
 from GUI.gui import GUI
 from GUI.threadgui import ThreadGUI
-
 from Viz3D.viz3d import Viz3D
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)

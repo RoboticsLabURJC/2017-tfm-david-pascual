@@ -1,17 +1,71 @@
 #!/usr/bin/env python
 
 """
-estimator.py: Estimator class.
-
-Based on https://github.com/RoboticsURJC-students/2016-tfg-david-pascual
+foo.py: bar.
 """
-__author__ = "David Pascual Hernandez"
-__date__ = "2017/11/16"
 
+import math
+import sys
+import time
+
+import cv2
+from matplotlib import pyplot as plt
 import numpy as np
 
-from Frameworks.Caffe import cpm as caffe_cpm
-from Frameworks.TensorFlow import cpm as tf_cpm
+__author__ = "David Pascual Hernandez"
+__date__ = "2018/27/05"
+
+
+def draw_estimation(im, bbox, joints, limbs, colors, stickwidth=6):
+    upper, lower = bbox
+    cv2.rectangle(im, tuple(upper), tuple(lower), (0, 255, 0), 3)
+
+    for i, (p, q) in enumerate(limbs):
+        px, py = joints[p]
+        qx, qy = joints[q]
+
+        m_x = int(np.mean(np.array([px, qx])))
+        m_y = int(np.mean(np.array([py, qy])))
+
+        length = ((px - qx) ** 2. + (py - qy) ** 2.) ** 0.5
+        angle = math.degrees(math.atan2(py - qy, px - qx))
+        polygon = cv2.ellipse2Poly((m_x, m_y),
+                                   (int(length / 2), stickwidth),
+                                   int(angle), 0, 360, 1)
+        cv2.fillConvexPoly(im, polygon, colors[i])
+
+        cv2.circle(im, (px, py), 3, (0, 0, 0), -1)
+        cv2.circle(im, (qx, qy), 3, (0, 0, 0), -1)
+
+    return im
+
+
+def get_depth_point(point, depth):
+    """
+    Get joints depth information.
+    """
+    y, x = point
+
+    x = np.clip(int(x), 0, depth.shape[1] - 1)
+    y = np.clip(int(depth.shape[0] - y), 0, depth.shape[0] - 1)
+
+    z = depth[y, x]
+
+    return np.array((x, z, y))
+
+
+def draw_3d_estimation(viz3d, im_depth, joints, limbs, colors):
+    limbs = np.array(limbs).reshape((-1, 2)) - 1
+    for l, (p, q) in enumerate(limbs):
+        point_a = get_depth_point(joints[p], im_depth)
+        point_b = get_depth_point(joints[q], im_depth)
+
+        color = colors[l]
+        viz3d.drawSegment(point_a, point_b, color)
+
+    for joint in joints[:-1]:
+        point = get_depth_point(joint, im_depth)
+        viz3d.drawPoint(point, (255, 255, 255))
 
 
 class Estimator:
@@ -27,87 +81,76 @@ class Estimator:
         self.viz3d = viz3d
         self.gui = gui
 
-        self.data = data
         self.config = data["Settings"]
-        self.framework = self.data["Framework"]
+        sigma = self.config["sigma"]
+        boxsize = self.config["boxsize"]
+        human_framework = self.config["human_framework"]
+        pose_framework = self.config["pose_framework"]
 
-        if self.framework == "caffe":
-            self.models = caffe_cpm.load_model(self.config["caffe_models"])
+        available_human_fw = ["caffe", "tf", "naxvm"]
+        available_pose_fw = ["caffe"]
 
-        elif self.framework == "tensorflow":
-            im_shape = (self.cam.im_height, self.cam.im_width, 3)
+        HumanDetector, PoseEstimator = (None, None)
+        human_model, pose_model = (None, None)
 
-            self.tf_config = tf_cpm.set_dev(self.config["GPU"])
-            self.models = tf_cpm.load_model(self.config, im_shape,
-                                            self.tf_config)
-
+        if human_framework == "caffe":
+            from Human.human_caffe import HumanDetector
+            human_model = self.config["caffe_models"]["human"]
+        elif human_framework == "tf":
+            from Human.human_tf import HumanDetector
+            human_model = self.config["tf_models"]["human"]
+        elif human_framework == "naxvm":
+            from Human.human_naxvm import HumanDetector
+            human_model = self.config["naxvm_models"]["human"]
         else:
-            print(self.framework, " framework is not supported")
-            print("Available frameworks: 'caffe', 'tensorflow'")
+            print("'%s' is not supported for human detection" % human_framework)
+            print("Available frameworks: " + str(available_human_fw))
             exit()
 
-        self.caffe_set = False
+        if pose_framework == "caffe":
+            from Pose.pose_caffe import PoseEstimator
+            pose_model = self.config["caffe_models"]["pose"]
+        else:
+            print("'%s' is not supported for pose detection" % pose_framework)
+            print("Available frameworks: " + str(available_pose_fw))
+            exit()
 
-    def estimate(self, im):
+        self.hd = HumanDetector(human_model, boxsize)
+        self.pe = PoseEstimator(pose_model, boxsize, sigma)
+
+    def estimate(self, frame):
         """
         Estimate human pose.
-        @param im: np.array - Image, preferably with humans
+        @param frame: np.array - Image, preferably with humans
         @return: np.array, np.array - joint coordinates & limbs drawn
         over original image
         """
-        im_predicted, pose_coords = [None, None]
-        if self.framework == "caffe":
-            if not self.caffe_set:
-                caffe_cpm.set_dev(self.config["GPU"])
-                self.caffe_set = True
+        print("-" * 80)
+        t = time.time()
+        human_bboxes = self.hd.get_bboxes(frame)
+        print("Human detection: %d ms" % int((time.time() - t) * 1000))
 
-            im_predicted, pose_coords, _ = caffe_cpm.predict(im, self.config,
-                                                             self.models,
-                                                             viz=False)
+        all_joints = []
+        for bbox in human_bboxes:
+            t = time.time()
+            joints = self.pe.get_coords(frame, bbox)
+            all_joints.append(joints)
+            print("\tPose estimation: %d ms" % int((time.time() - t) * 1000))
 
-        if self.framework == "tensorflow":
-            im_predicted, pose_coords, _ = tf_cpm.predict(im, self.models,
-                                                          self.config,
-                                                          viz=False)
-
-        return im_predicted, pose_coords
-
-    def get_depth_point(self, point, depth):
-        """
-        Get joints depth information.
-        """
-        y, x = point
-
-        x = np.clip(int(x), 0, depth.shape[0])
-        y = depth.shape[0] - np.clip(int(y), 0, depth.shape[0])
-
-        # wsize = 11
-        # z = np.median(depth[wsize / 2 - y:wsize / 2 + y,
-        #                     wsize / 2 - x:wsize / 2 + x])
-
-        z = depth[y, x]
-
-        return np.array((x, z, y))
+        return human_bboxes, np.array(all_joints)
 
     def update(self):
         """ Update estimator. """
         im, im_depth = self.cam.get_image()
-        im, coords = self.estimate(im)
+        all_humans, all_joints = self.estimate(im)
+
+        limbs = np.array(self.config["limbs"]).reshape((-1, 2)) - 1
+        colors = self.config["colors"]
+        for bbox, joints in zip(all_humans, all_joints):
+            im = draw_estimation(im, bbox, joints, limbs, colors)
+
+            if len(joints) and self.gui.display:
+                draw_3d_estimation(self.viz3d, im_depth, joints, limbs, colors)
 
         self.gui.im_pred = im
-
-        if len(coords) and self.gui.display:
-            for human_coords in coords:
-                limbs = np.array(self.config["limbs"]).reshape((-1, 2)) - 1
-                for l, (p, q) in enumerate(limbs):
-                    point_a = self.get_depth_point(human_coords[p], im_depth)
-                    point_b = self.get_depth_point(human_coords[q], im_depth)
-
-                    color = self.config["colors"][l]
-                    self.viz3d.drawSegment(point_a, point_b, color)
-
-                for joint in human_coords[:-1]:
-                    point = self.get_depth_point(joint, im_depth)
-                    self.viz3d.drawPoint(point, (255, 255, 255))
-
-            self.gui.display = False
+        self.gui.display = False
