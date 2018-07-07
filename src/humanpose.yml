@@ -1,25 +1,30 @@
 HumanPose:
-  CameraRGB:
-    Server: 1 # 0 -> Deactivate, 1 -> Ice , 2 -> ROS
-    Proxy: "cameraA:tcp -h localhost -p 9999"
-    Format: RGB8
-    Topic: "/camera/rgb/image_raw"
-    Name: cameraA
+  Source: Stream # Local (local camera), Video (local file), Stream (ROS/ICE)
 
-  CameraDEPTH:
-    Server: 1 # 0 -> Deactivate, 1 -> Ice , 2 -> ROS
-    Proxy: "cameraB:tcp -h localhost -p 9999"
-    Format: RGB8
-    Topic: "/camera/depth_registered/image_raw"
-    Name: cameraB
+  Local:
+    DeviceNo: 0 # Device number for the desired webcam
 
-  NodeName: HumanPose
-  Width: 640
-  Height: 480
-  Fps: 20
+  Video:
+    Path: "curling_full.mp4"
 
-Settings:
-  human_framework: "caffe"
+  Stream:
+    CameraRGB:
+      Server: 1 # 0 -> Deactivate, 1 -> Ice , 2 -> ROS
+      Proxy: "cameraA:tcp -h localhost -p 9999"
+      Format: RGB8
+      Topic: "/camera/rgb/image_raw"
+      Name: cameraA
+
+    CameraDEPTH:
+      Server: 1 # 0 -> Deactivate, 1 -> Ice , 2 -> ROS
+      Proxy: "cameraB:tcp -h localhost -p 9999"
+      Format: RGB8
+      Topic: "/camera/depth_registered/image_raw"
+      Name: cameraB
+NodeName: human_pose
+
+Estimator:
+  human_framework: "naxvm"
   pose_framework: "caffe"
 
   # CPU mode or GPU mode
@@ -38,7 +43,7 @@ Settings:
   naxvm_models:
     human: "Estimator/Human/models/naxvm/ssd_mobilenet_v2_coco_2018_03_29.pb"
 
-  boxsize: 128 # 192
+  boxsize: 192
 
   limbs: [1, 2, 3, 4, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14]
 

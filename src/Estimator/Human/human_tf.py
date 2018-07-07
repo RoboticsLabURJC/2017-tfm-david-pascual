@@ -155,7 +155,7 @@ class HumanDetector(Human):
         self.config = tf.ConfigProto(device_count={"GPU": 1},
                                      allow_soft_placement=True,
                                      log_device_placement=False)
-        self.config.gpu_options.per_process_gpu_memory_fraction = 0.6
+        self.config.gpu_options.per_process_gpu_memory_fraction = 0.5
 
         self.sess = None
 

@@ -81,7 +81,7 @@ class Estimator:
         self.viz3d = viz3d
         self.gui = gui
 
-        self.config = data["Settings"]
+        self.config = data
         sigma = self.config["sigma"]
         boxsize = self.config["boxsize"]
         human_framework = self.config["human_framework"]
@@ -142,6 +142,7 @@ class Estimator:
     def update(self):
         """ Update estimator. """
         im, im_depth = self.cam.get_image()
+        im, im_depth = (im.copy(), im_depth.copy())
         all_humans, all_joints = self.estimate(im)
 
         limbs = np.array(self.config["limbs"]).reshape((-1, 2)) - 1
@@ -152,5 +153,5 @@ class Estimator:
             if len(joints) and self.gui.display:
                 draw_3d_estimation(self.viz3d, im_depth, joints, limbs, colors)
 
-        self.gui.im_pred = im
+        self.gui.im_pred = im.copy()
         self.gui.display = False

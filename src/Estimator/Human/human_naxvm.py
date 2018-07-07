@@ -37,7 +37,7 @@ class HumanDetector(Human):
         self.config = tf.ConfigProto(device_count={"GPU": 1},
                                      allow_soft_placement=True,
                                      log_device_placement=False)
-        self.config.gpu_options.per_process_gpu_memory_fraction = 0.6
+        self.config.gpu_options.per_process_gpu_memory_fraction = 0.5
 
         labels_file = LABELS_DICT[DB]
         lbl_map = label_map_util.load_labelmap(labels_file) # loads the labels map.
@@ -60,7 +60,7 @@ class HumanDetector(Human):
                 tf.import_graph_def(od_graph_def, name='')
 
 
-        self.sess = tf.Session(graph=detection_graph)
+        self.sess = tf.Session(graph=detection_graph, config=self.config)
         self.image_tensor = detection_graph.get_tensor_by_name('image_tensor:0')
         # NCHW conversion. not possible
         #self.image_tensor = tf.transpose(self.image_tensor, [0, 3, 1, 2])

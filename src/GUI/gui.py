@@ -8,6 +8,8 @@ Based on https://github.com/RoboticsURJC-students/2016-tfg-david-pascual
 __author__ = "David Pascual Hernandez"
 __date__ = "2017/11/16"
 
+import numpy as np
+
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QPixmap, QImage, QIcon
 from PyQt5.QtWidgets import QWidget, QLabel, QPushButton
@@ -25,7 +27,10 @@ class GUI(QWidget):
         @param parent: bool
         """
         self.cam = cam
-        self.im_pred, _ = self.cam.get_image()
+
+        w, h = (640, 480)
+        self.im_pred = np.zeros((h, w, 3), dtype=np.uint8)
+
         self.live = False
         self.display = False
 
@@ -38,13 +43,13 @@ class GUI(QWidget):
 
         # Original image label.
         self.im_label = QLabel(self)
-        self.im_label.resize(640, 480)
+        self.im_label.resize(w, h)
         self.im_label.move(25, 90)
         self.im_label.show()
 
         # Processed image label.
         self.im_pred_label = QLabel(self)
-        self.im_pred_label.resize(640, 480)
+        self.im_pred_label.resize(w, h)
         self.im_pred_label.move(885, 90)
         self.im_pred_label.show()
 
@@ -79,14 +84,17 @@ class GUI(QWidget):
         """ Updates the GUI. """
         # Get original image and display it
         im, _ = self.cam.get_image()
-        im = QImage(im, im.shape[1], im.shape[0], QImage.Format_RGB888)
+        h, w, d = im.shape
+        im = QImage(im, w, h, QImage.Format_RGB888)
+        im = im.scaled(self.im_label.size())
         # noinspection PyCallByClass
         im = QPixmap.fromImage(im)
         self.im_label.setPixmap(im)
 
-        if self.live:
-            im_pred = QImage(self.im_pred, self.im_pred.shape[1],
-                             self.im_pred.shape[0], QImage.Format_RGB888)
+        if self.live and len(self.im_pred):
+            h, w, d = self.im_pred.shape
+            im_pred = QImage(self.im_pred, w, h, QImage.Format_RGB888)
+            im_pred = im_pred.scaled(self.im_pred_label.size())
             im_pred = QPixmap.fromImage(im_pred)
             self.im_pred_label.setPixmap(im_pred)
 
@@ -113,8 +121,9 @@ class GUI(QWidget):
         """
         Single prediction.
         """
-        im_pred = QImage(self.im_pred, self.im_pred.shape[1],
-                         self.im_pred.shape[0], QImage.Format_RGB888)
+        h, w, d = self.im_pred.shape
+        im_pred = QImage(self.im_pred, w, h, QImage.Format_RGB888)
+        im_pred = im_pred.scaled(self.im_pred_label.size())
         im_pred = QPixmap.fromImage(im_pred)
         self.im_pred_label.setPixmap(im_pred)
 
