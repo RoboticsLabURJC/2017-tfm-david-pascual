@@ -83,7 +83,7 @@ class GUI(QWidget):
     def update(self):
         """ Updates the GUI. """
         # Get original image and display it
-        im, _ = self.cam.get_image()
+        im = self.cam.get_image()
         h, w, d = im.shape
         im = QImage(im, w, h, QImage.Format_RGB888)
         im = im.scaled(self.im_label.size())

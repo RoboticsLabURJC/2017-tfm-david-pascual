@@ -1,5 +1,5 @@
 HumanPose:
-  Source: Stream # Local (local camera), Video (local file), Stream (ROS/ICE)
+  Source: ros # local (local camera), video (local file), jder, ROS
 
   Local:
     DeviceNo: 0 # Device number for the desired webcam
@@ -7,7 +7,7 @@ HumanPose:
   Video:
     Path: "curling_full.mp4"
 
-  Stream:
+  JdeR:
     CameraRGB:
       Server: 1 # 0 -> Deactivate, 1 -> Ice , 2 -> ROS
       Proxy: "cameraA:tcp -h localhost -p 9999"
@@ -19,9 +19,17 @@ HumanPose:
       Server: 1 # 0 -> Deactivate, 1 -> Ice , 2 -> ROS
       Proxy: "cameraB:tcp -h localhost -p 9999"
       Format: RGB8
-      Topic: "/camera/depth_registered/image_raw"
+      Topic: "/camera/depth/image_raw"
       Name: cameraB
-NodeName: human_pose
+    NodeName: human_pose
+
+  ROS:
+    CameraRGB:
+      Topic: "/camera/rgb/image_raw"
+      Format: rgb8
+    CameraDEPTH:
+      Topic: "/camera/depth/image_raw"
+      Format: 16UC1
 
 Estimator:
   human_framework: "naxvm"

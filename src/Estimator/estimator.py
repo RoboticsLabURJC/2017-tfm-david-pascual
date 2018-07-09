@@ -69,15 +69,17 @@ def draw_3d_estimation(viz3d, im_depth, joints, limbs, colors):
 
 
 class Estimator:
-    def __init__(self, cam, viz3d, gui, data):
+    def __init__(self, cam, cam_depth, viz3d, gui, data):
         """
         Estimator class gets human pose estimations for a given image.
         @param cam: Camera object
+        @param cam_depth: Depth camera object
         @param viz3d: Viz3D object
         @param gui: GUI object
         @param data: parsed YAML config. file
         """
         self.cam = cam
+        self.cam_depth = cam_depth
         self.viz3d = viz3d
         self.gui = gui
 
@@ -141,16 +143,20 @@ class Estimator:
 
     def update(self):
         """ Update estimator. """
-        im, im_depth = self.cam.get_image()
-        im, im_depth = (im.copy(), im_depth.copy())
+        im = self.cam.get_image().copy()
+
+        im_depth = None
+        if self.cam_depth:
+            im_depth = self.cam.get_image().copy()
+
         all_humans, all_joints = self.estimate(im)
 
-        limbs = np.array(self.config["limbs"]).reshape((-1, 2)) - 1
         colors = self.config["colors"]
+        limbs = np.array(self.config["limbs"]).reshape((-1, 2)) - 1
         for bbox, joints in zip(all_humans, all_joints):
             im = draw_estimation(im, bbox, joints, limbs, colors)
 
-            if len(joints) and self.gui.display:
+            if len(joints) and self.gui.display and im_depth:
                 draw_3d_estimation(self.viz3d, im_depth, joints, limbs, colors)
 
         self.gui.im_pred = im.copy()
