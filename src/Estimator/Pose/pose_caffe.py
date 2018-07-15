@@ -97,6 +97,8 @@ class PoseEstimator:
         self.sigma = sigma
         self.gauss_map = self.gen_gaussmap()
 
+        self.confidence_th = 0.5
+
 
     def init_net(self):
         caffe.set_mode_gpu()
@@ -170,7 +172,6 @@ class PoseEstimator:
         im_human = crop_human(sample, (cx, cy), scale, self.boxsize)
 
         self.im = im_human.copy()
-        im_display = self.im.copy()
 
         pose_map = self.estimate()
 
@@ -179,15 +180,14 @@ class PoseEstimator:
             joint_map_resized = map_resize(self.im.shape, joint_map)
 
             # Find joint heatmap maxima
-            joint = list(np.unravel_index(joint_map_resized.argmax(),
-                                          joint_map_resized.shape))
+            joint = [-1, -1]
+            if joint_map_resized.max() >= self.confidence_th:
+                joint = list(np.unravel_index(joint_map_resized.argmax(),
+                                              joint_map_resized.shape))
 
-            cv2.circle(im_display, tuple((joint[1], joint[0])), 2, (0, 0, 255),
-                       -1)
-
-            # Back to full coordinates
-            joint[0] = (joint[0] - (self.boxsize / 2) + cy) / scale
-            joint[1] = (joint[1] - (self.boxsize / 2) + cx) / scale
+                # Back to full coordinates
+                joint[0] = (joint[0] - (self.boxsize / 2) + cy) / scale
+                joint[1] = (joint[1] - (self.boxsize / 2) + cx) / scale
 
             joint_coords.append(joint)
 

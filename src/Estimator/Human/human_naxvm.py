@@ -80,7 +80,7 @@ class HumanDetector(Human):
                 [self.detection_boxes, self.detection_scores, self.detection_classes, self.num_detections],
                 feed_dict={self.image_tensor: dummy_tensor})
 
-        self.confidence_threshold = 0.5
+        self.confidence_threshold = 0.75
 
     def detect(self):
         """

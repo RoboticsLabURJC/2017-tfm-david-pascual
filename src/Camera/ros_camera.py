@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from __future__ import print_function
 
+import numpy as np
 import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
@@ -15,7 +15,7 @@ class image_converter:
         if topic not in topics_list:
             raise Exception("Topic %s not found!" % topic)
 
-        self.cv_image = None
+        self.cv_image = np.zeros((0))
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber(topic, Image,
                                           self.callback)
@@ -28,8 +28,16 @@ class Camera:
         self.ic = image_converter(topic, im_format)
         rospy.init_node('image_converter', anonymous=True)
 
+        # Get first frame when ready to set width/height attributes
+        while not len(self.ic.cv_image):
+            pass
+        im = self.ic.cv_image
+        self.im_width = im.shape[1]
+        self.im_height = im.shape[0]
+
     def get_image(self):
         return self.ic.cv_image
 
     def update(self):
-        rospy.spin()
+        # do nothing, image is updated by callback
+        pass

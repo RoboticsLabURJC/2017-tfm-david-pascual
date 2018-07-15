@@ -119,14 +119,17 @@ if __name__ == "__main__":
 
     # Threading camera
     t_cam = ThreadCamera(cam)
+    t_cam.setDaemon(True)
     t_cam.start()
 
     # Threading estimator
     t_estimator = ThreadEstimator(estimator)
+    t_estimator.setDaemon(True)
     t_estimator.start()
 
     # Threading GUI
     t_gui = ThreadGUI(window)
+    t_gui.setDaemon(True)
     t_gui.start()
 
     sys.exit(app.exec_())

@@ -40,7 +40,7 @@ class Camera:
         ''' Gets the image from the webcam and returns it. '''
         im_depth = np.zeros((self.im_height, self.im_width, 1))
 
-        return self.image, im_depth
+        return self.image
 
     def update(self):
         ''' Updates the camera with a frame from the device every time the thread changes. '''
