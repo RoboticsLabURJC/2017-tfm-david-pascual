@@ -26,7 +26,7 @@ class image_converter:
 class Camera:
     def __init__(self, topic, im_format):
         self.ic = image_converter(topic, im_format)
-        rospy.init_node('image_converter', anonymous=True)
+        rospy.init_node('converter', anonymous=True)
 
         # Get first frame when ready to set width/height attributes
         while not len(self.ic.cv_image):

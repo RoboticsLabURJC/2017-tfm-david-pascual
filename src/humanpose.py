@@ -121,6 +121,9 @@ if __name__ == "__main__":
     t_cam = ThreadCamera(cam)
     t_cam.setDaemon(True)
     t_cam.start()
+    t_cam_depth = ThreadCamera(cam_depth)
+    t_cam_depth.setDaemon(True)
+    t_cam_depth.start()
 
     # Threading estimator
     t_estimator = ThreadEstimator(estimator)

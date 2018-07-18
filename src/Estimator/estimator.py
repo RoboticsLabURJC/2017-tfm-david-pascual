@@ -50,12 +50,33 @@ def get_depth_point(point, depth):
     x, y = point
 
     x = np.clip(int(x), 0, depth.shape[1] - 1)
-    y = np.clip(int(depth.shape[0] - y), 0, depth.shape[0] - 1)
+    y = np.clip(int(y), 0, depth.shape[0] - 1)
 
-    z = depth[y, x]
-    # z = 1
+    # Median of the neighbors to find noiseless depth estimation
+    if y - 5 >= 0:
+        lower = y - 5
+    else:
+        lower = 0
 
-    return np.array((x, z, y))
+    if y + 5 < depth.shape[0]:
+        upper = y + 5
+    else:
+        upper = depth.shape[0] - 1
+
+    if x - 5 >= 0:
+        lefter = x - 5
+    else:
+        lefter = 0
+
+    if x + 5 < depth.shape[1]:
+        righter = x + 5
+    else:
+        righter = depth.shape[1] - 1
+    z = np.nanmedian(depth[lower:upper, lefter:righter])
+
+    y = depth.shape[0] - y
+
+    return np.array((x, -int(z), y))
 
 
 def draw_3d_estimation(viz3d, im_depth, joints, limbs, colors):
@@ -64,8 +85,8 @@ def draw_3d_estimation(viz3d, im_depth, joints, limbs, colors):
         qx, qy = joints[q]
 
         if px >= 0 and py >= 0 and qx >= 0 and qy >= 0:
-            point_a = get_depth_point(joints[p], im_depth)
-            point_b = get_depth_point(joints[q], im_depth)
+            point_a = get_depth_point(joints[p], im_depth, median=True)
+            point_b = get_depth_point(joints[q], im_depth, median=True)
 
             color = colors[l]
             viz3d.drawSegment(point_a, point_b, color)
@@ -158,11 +179,26 @@ class Estimator:
         if self.cam_depth:
             im_depth = self.cam_depth.get_image().copy()
 
-            # We must get rid of this conversion!
-            # im_depth = im_depth.astype(float)
-            # im_depth = (im_depth / float(im_depth.max())) * 255
-            # cv2.imshow("Depth image", im_depth.astype(np.uint8))
+            # # We must get rid of this conversion!
+            # im_depth_disp = im_depth.astype(float)
+            # im_depth_disp = (im_depth_disp / float(4096)) * 255
+            # im_depth_disp =  im_depth_disp.astype(np.uint8)
+            # cv2.imshow("Depth image", im_depth_disp)
             # cv2.waitKey(1)
+            #
+            # self.viz3d.drawPoint(np.array((0, 0, 0)), (0, 0, 0))
+            # self.viz3d.drawPoint(np.array((640, 0, 0)), (255, 0, 0))
+            # self.viz3d.drawPoint(np.array((640, 4096, 0)), (255, 255, 0))
+            # self.viz3d.drawPoint(np.array((640, 0, 480)), (255, 0, 255))
+            # self.viz3d.drawPoint(np.array((640, 4096, 480)), (255, 255, 255))
+            # self.viz3d.drawPoint(np.array((0, 4096, 0)), (0, 255, 0))
+            # self.viz3d.drawPoint(np.array((0, 4096, 480)), (0, 255, 255))
+            # self.viz3d.drawPoint(np.array((0, 0, 480)), (0, 0, 255))
+            # for i in range(140, 460, 5):  # im_depth.shape[1]):
+            #     for j in range(100, 400, 5):  # im_depth.shape[0]):
+            #         point = get_depth_point((i, j), im_depth)
+            #         print(i,j, im_depth[j, i], point)
+            #         self.viz3d.drawPoint(point, tuple(im[j, i]/255.))
 
         all_humans, all_joints = self.estimate(im)
 

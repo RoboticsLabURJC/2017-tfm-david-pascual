@@ -25,10 +25,10 @@ HumanPose:
 
   ROS:
     CameraRGB:
-      Topic: "/camera/rgb/image_raw"
+      Topic: "/camera/rgb/image_color"
       Format: rgb8
     CameraDEPTH:
-      Topic: "/camera/depth/image_raw"
+      Topic: "/camera/depth/image_raw" #"/camera/depth_registered/points"
       Format: 16UC1
 
 Estimator:
