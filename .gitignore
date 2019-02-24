@@ -9,3 +9,4 @@ testbench_results/
 *.ckpt
 *.caffemodel
 .idea/
+src/Viz3D/3DVizWeb/node_modules

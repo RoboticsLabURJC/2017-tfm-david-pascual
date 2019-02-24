@@ -15,7 +15,7 @@ class image_converter:
         if topic not in topics_list:
             raise Exception("Topic %s not found!" % topic)
 
-        self.cv_image = np.zeros((0))
+        self.cv_image = []
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber(topic, Image,
                                           self.callback)
@@ -24,7 +24,8 @@ class image_converter:
         self.cv_image = self.bridge.imgmsg_to_cv2(data, self.im_format)
 
 class Camera:
-    def __init__(self, topic, im_format):
+    def __init__(self, topic, im_format, fx=0, cx=0, fy=0, cy=0):
+        print(topic, im_format)
         self.ic = image_converter(topic, im_format)
         rospy.init_node('converter', anonymous=True)
 
@@ -34,6 +35,12 @@ class Camera:
         im = self.ic.cv_image
         self.im_width = im.shape[1]
         self.im_height = im.shape[0]
+
+        self.calib_data = {}
+        self.calib_data["fx"] = fx
+        self.calib_data["cx"] = cx
+        self.calib_data["fy"] = fy
+        self.calib_data["cy"] = cy
 
     def get_image(self):
         return self.ic.cv_image

@@ -14,7 +14,7 @@ from human import Human
 from utils.naxvm import label_map_util
 
 LABELS_DICT = {'voc': 'models/naxvm/labels/pascal_label_map.pbtxt',
-               'coco': '/home/dpascualhe/PycharmProjects/2017-tfm-david-pascual/src/Estimator/Human/models/naxvm/labels/mscoco_label_map.pbtxt',
+               'coco': '/home/dpascualhe/repos/2017-tfm-david-pascual/src/Estimator/Human/models/naxvm/mscoco_label_map.pbtxt',
                'kitti': 'models/naxvm/labels/kitti_label_map.txt',
                'oid': 'models/naxvm/labels/oid_bboc_trainable_label_map.pbtxt',
                'pet': 'models/naxvm/labels/pet_label_map.pbtxt'}

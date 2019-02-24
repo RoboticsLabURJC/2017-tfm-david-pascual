@@ -12,11 +12,18 @@ import cv2
 from matplotlib import pyplot as plt
 import numpy as np
 
+from random import randint
+
 __author__ = "David Pascual Hernandez"
 __date__ = "2018/27/05"
 
 
-def draw_estimation(im, bbox, joints, limbs, colors, stickwidth=6):
+def draw_estimation(im, im_depth, bbox, joints, limbs, colors, stickwidth=6):
+    if np.sum(im_depth):
+        cv2.normalize(im_depth, im_depth, 0, 1, cv2.NORM_MINMAX)
+        im_depth *= 255
+        im_depth = np.dstack((im_depth, im_depth, im_depth)).astype(np.uint8)
+
     upper, lower = bbox
     cv2.rectangle(im, tuple(upper), tuple(lower), (0, 255, 0), 3)
 
@@ -34,68 +41,72 @@ def draw_estimation(im, bbox, joints, limbs, colors, stickwidth=6):
                                        (int(length / 2), stickwidth),
                                        int(angle), 0, 360, 1)
             cv2.fillConvexPoly(im, polygon, colors[i])
+            if np.sum(im_depth):
+                cv2.fillConvexPoly(im_depth, polygon, colors[i])
 
         if px >= 0 and py >= 0:
             cv2.circle(im, (px, py), 3, (0, 0, 0), -1)
+            if np.sum(im_depth):
+                cv2.circle(im_depth, (px, py), 3, (0, 0, 0), -1)
         if qx >= 0 and qy >= 0:
             cv2.circle(im, (qx, qy), 3, (0, 0, 0), -1)
+            if np.sum(im_depth):
+                cv2.circle(im_depth, (qx, qy), 3, (0, 0, 0), -1)
+
+    if np.sum(im_depth):
+        cv2.imshow("Depth map", im_depth)
 
     return im
 
 
-def get_depth_point(point, depth):
+def get_depth_point(point, depth, calib_data=None):
     """
     Get joints depth information.
     """
+    height, width = depth.shape
     x, y = point
+    y = height - y
 
-    x = np.clip(int(x), 0, depth.shape[1] - 1)
-    y = np.clip(int(y), 0, depth.shape[0] - 1)
+    if x >= width:
+        x = width - 1
+    if y >= height:
+        y = height - 1
 
-    # Median of the neighbors to find noiseless depth estimation
-    if y - 5 >= 0:
-        lower = y - 5
-    else:
-        lower = 0
+    z = depth[y, x]
 
-    if y + 5 < depth.shape[0]:
-        upper = y + 5
-    else:
-        upper = depth.shape[0] - 1
+    if calib_data:
+        x = (x - calib_data["cx"]) * z / calib_data["fx"]
+        y = (y - calib_data["cy"]) * z / calib_data["fy"]
 
-    if x - 5 >= 0:
-        lefter = x - 5
-    else:
-        lefter = 0
-
-    if x + 5 < depth.shape[1]:
-        righter = x + 5
-    else:
-        righter = depth.shape[1] - 1
-    z = np.nanmedian(depth[lower:upper, lefter:righter])
-
-    y = depth.shape[0] - y
-
-    return np.array((x, -int(z), y))
+    return np.array((x, z, y))
 
 
-def draw_3d_estimation(viz3d, im_depth, joints, limbs, colors):
+def draw_3d_estimation(viz3d, im_depth, joints, limbs, colors, calib_data=None):
+    # tronco_idx = 0
+    # tronco_limb_idx = 0
+
     for l, (p, q) in enumerate(limbs):
         px, py = joints[p]
         qx, qy = joints[q]
 
         if px >= 0 and py >= 0 and qx >= 0 and qy >= 0:
-            point_a = get_depth_point(joints[p], im_depth, median=True)
-            point_b = get_depth_point(joints[q], im_depth, median=True)
+            point_a = get_depth_point(joints[p], im_depth, calib_data)
+            point_b = get_depth_point(joints[q], im_depth, calib_data)
 
             color = colors[l]
             viz3d.drawSegment(point_a, point_b, color)
 
+    # real_world_joints = []
     for joint in joints[:-1]:
         x, y = joint
         if x >= 0 and y >= 0:
-            point = get_depth_point(joint, im_depth)
+            point = get_depth_point(joint, im_depth, calib_data)
             viz3d.drawPoint(point, (255, 255, 255))
+            # real_world_joints.append(point)
+
+    # if len(real_world_joints):
+    #     viz3d.drawPose3d(tronco_idx, real_world_joints[tronco_limb_idx], (0, 0, 0, 0), 0)
+
 
 
 class Estimator:
@@ -174,41 +185,24 @@ class Estimator:
     def update(self):
         """ Update estimator. """
         im = self.cam.get_image().copy()
+        im_depth = np.zeros(im.shape[:2], np.float16)
 
-        im_depth = []
         if self.cam_depth:
             im_depth = self.cam_depth.get_image().copy()
-
-            # # We must get rid of this conversion!
-            # im_depth_disp = im_depth.astype(float)
-            # im_depth_disp = (im_depth_disp / float(4096)) * 255
-            # im_depth_disp =  im_depth_disp.astype(np.uint8)
-            # cv2.imshow("Depth image", im_depth_disp)
-            # cv2.waitKey(1)
-            #
-            # self.viz3d.drawPoint(np.array((0, 0, 0)), (0, 0, 0))
-            # self.viz3d.drawPoint(np.array((640, 0, 0)), (255, 0, 0))
-            # self.viz3d.drawPoint(np.array((640, 4096, 0)), (255, 255, 0))
-            # self.viz3d.drawPoint(np.array((640, 0, 480)), (255, 0, 255))
-            # self.viz3d.drawPoint(np.array((640, 4096, 480)), (255, 255, 255))
-            # self.viz3d.drawPoint(np.array((0, 4096, 0)), (0, 255, 0))
-            # self.viz3d.drawPoint(np.array((0, 4096, 480)), (0, 255, 255))
-            # self.viz3d.drawPoint(np.array((0, 0, 480)), (0, 0, 255))
-            # for i in range(140, 460, 5):  # im_depth.shape[1]):
-            #     for j in range(100, 400, 5):  # im_depth.shape[0]):
-            #         point = get_depth_point((i, j), im_depth)
-            #         print(i,j, im_depth[j, i], point)
-            #         self.viz3d.drawPoint(point, tuple(im[j, i]/255.))
 
         all_humans, all_joints = self.estimate(im)
 
         colors = self.config["colors"]
         limbs = np.array(self.config["limbs"]).reshape((-1, 2)) - 1
-        for bbox, joints in zip(all_humans, all_joints):
-            im = draw_estimation(im, bbox, joints, limbs, colors)
 
-            if len(joints) and len(im_depth) and self.gui.display:
-                draw_3d_estimation(self.viz3d, im_depth, joints, limbs, colors)
+        if self.gui.display:
+            for bbox, joints in zip(all_humans, all_joints):
+                if len(joints):
+                    if self.cam_depth:
+                        draw_3d_estimation(self.viz3d, im_depth, joints, limbs, colors, self.cam_depth.calib_data)
+                    else:
+                        draw_3d_estimation(self.viz3d, im_depth, joints, limbs, colors)
+                    im = draw_estimation(im, im_depth, bbox, joints, limbs, colors)
 
         self.gui.im_pred = im.copy()
         self.gui.display = False

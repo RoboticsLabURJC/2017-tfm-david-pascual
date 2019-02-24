@@ -8,6 +8,7 @@ Based on https://github.com/RoboticsURJC-students/2016-tfg-david-pascual
 __author__ = "David Pascual Hernandez"
 __date__ = "2017/11/16"
 
+import Ice
 import signal
 import sys
 import traceback
@@ -19,7 +20,7 @@ from Estimator.estimator import Estimator
 from Estimator.threadestimator import ThreadEstimator
 from GUI.gui import GUI
 from GUI.threadgui import ThreadGUI
-from Viz3D.viz3d import Viz3D
+from Viz.viz3d import Viz3D
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -74,7 +75,7 @@ def selectVideoSource(cfg):
             raise SystemExit("No RGB camera found!")
 
         try:
-            prx_depth = jdrc.getCameraClient('HumanPose.Stream.CameraDEPTH')
+            prx_depth = jdrc.getCameraClient('HumanPose.JdeR.CameraDEPTH')
             cam_depth = Camera(prx_depth)
         except:
             traceback.print_exc()
@@ -92,7 +93,7 @@ def selectVideoSource(cfg):
 
         depth = cfg['HumanPose']['ROS']['CameraDEPTH']
         try:
-            cam_depth = Camera(depth["Topic"], depth["Format"])
+            cam_depth = Camera(depth["Topic"], depth["Format"], depth["fx"], depth["cx"], depth["fy"], depth["cy"])
         except:
             traceback.print_exc()
             print("No depth camera found!")
@@ -104,6 +105,21 @@ def selectVideoSource(cfg):
 
     return cam, cam_depth
 
+def init_viz():
+    object = Viz3D()
+
+    endpoint = "default -h localhost -p 9957:ws -h localhost -p 11000"
+    print("Connect: " + endpoint)
+
+    id = Ice.InitializationData()
+    ic = Ice.initialize(None, id)
+
+    adapter = ic.createObjectAdapterWithEndpoints("3DVizA", endpoint)
+    adapter.add(object, ic.stringToIdentity("3DViz"))
+    adapter.activate()
+
+    return object
+
 
 if __name__ == "__main__":
     # Init objects
@@ -112,7 +128,7 @@ if __name__ == "__main__":
     data = readConfig()
     cam, cam_depth = selectVideoSource(data)
 
-    viz3d = Viz3D()
+    viz3d = init_viz()
     window = GUI(cam)
     window.show()
     estimator = Estimator(cam, cam_depth, viz3d, window, data["Estimator"])

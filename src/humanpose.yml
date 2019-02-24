@@ -1,11 +1,11 @@
 HumanPose:
-  Source: ros # local (local camera), video (local file), jder, ROS
+  Source: local # local (local camera), video (local file), jder, ros
 
   Local:
     DeviceNo: 0 # Device number for the desired webcam
 
   Video:
-    Path: "curling_full.mp4"
+    Path: "curling.mp4"
 
   JdeR:
     CameraRGB:
@@ -25,11 +25,15 @@ HumanPose:
 
   ROS:
     CameraRGB:
-      Topic: "/camera/rgb/image_color"
+      Topic: "/camera/rgb/image_raw"
       Format: rgb8
     CameraDEPTH:
-      Topic: "/camera/depth/image_raw" #"/camera/depth_registered/points"
-      Format: 16UC1
+      Topic: "/camera/depth_registered/image"
+      Format: 32FC1
+      fx: 606
+      cx: 321
+      fy: 609
+      cy: 238
 
 Estimator:
   human_framework: "naxvm"
@@ -49,7 +53,7 @@ Estimator:
     pose: "Estimator/Frameworks/TensorFlow/models/pose_net.ckpt"
 
   naxvm_models:
-    human: "Estimator/Human/models/naxvm/ssd_mobilenet_v2_coco_2018_03_29.pb"
+    human: "Estimator/Human/models/naxvm/ssdlite_mobilenet_v2_coco_2018_05_09/frozen_inference_graph.pb"
 
   boxsize: 192
 
