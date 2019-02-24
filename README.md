@@ -39,23 +39,33 @@ chmod +x get_models.sh
 ./get_models.sh
 </pre>
 
-Then you must open a terminal and run:
-<pre>
-cameraserver cameraserver.cfg
-</pre>
-This will launch <code>cameraserver</code>, which will serve live video from your webcam (or any other source of video).
-Now, from another terminal run:
+You can choose different video sources to feed the CPM (ROS, JdeRobot, local webcam, video file). The video source, as
+well as other settings can be modified from the <code>humanpose.yml</code> file. When you have set your desired
+parameters, from another terminal run:
 <pre>
 python humanpose.py humanpose.yml
 </pre>
 
-This will launch a GUI where live video and estimated pose are shown and you should see something like this:
-![Alt text](http://jderobot.org/store/dpascual/uploads/images/tfm/humapose.png)
+This will launch a GUI where live video and estimated poses are shown.
 
-If you want to change the framework that will be used for live estimation or any other parameter related with the 
-CPMs, you must edit the YAML configuration file.
+### 3D Visualization
+RGBD camera can be used in order to get the pose 3D coordinates. 3DVizWeb, developed within JdeRobot, allow us to project
+the estimated joints and limbs in 3D. If you want to use this feature, you must follow the instructions available
+[here](https://github.com/RoboticsURJC-students/2017-tfm-david-pascual/tree/master/src/Viz/3DVizWeb) and run: 
+<pre>
+cd Viz/3DVizWeb/
+npm start
+</pre>
 
+right after launching <code>humanpose</code>.
 
- 
+## Demo
+Click in the image below to watch a real-time demo:
+[![Watch the video](https://img.youtube.com/vi/926rJOixlFA/maxresdefault.jpg)](https://youtu.be/926rJOixlFA)
+
+The input data for this demo is available as a
+[rosbag file](https://mega.nz/#!4U8nXAib!1zbaeYGGraTqdUVbbQneG28PA50gr6U3WeqIKzoIup0), containing
+the registered depth map and color images.
+
 
 More info: http://jderobot.org/Dpascual-tfm
