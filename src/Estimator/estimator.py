@@ -65,15 +65,24 @@ def get_depth_point(point, depth, calib_data=None):
     """
     height, width = depth.shape
     x, y = point
+
+    search_area = 10  # search area for given coordinates to avoid noisy estimations
+
+    if x < search_area:
+        x = search_area
+    if x > width - search_area:
+        x = width - search_area
+    if y < search_area:
+        y = search_area
+    if y > height - search_area:
+        y = height - search_area
+
+    depth_estimation = depth.copy()
+    depth_estimation[np.where(depth_estimation == 0)] = np.nan
+    z = np.nanmin(depth_estimation[y - search_area:y + search_area, x - search_area:x + search_area])
+
     y = height - y
-
-    if x >= width:
-        x = width - 1
-    if y >= height:
-        y = height - 1
-
-    z = depth[y, x]
-
+    x = width - x
     if calib_data:
         x = (x - calib_data["cx"]) * z / calib_data["fx"]
         y = (y - calib_data["cy"]) * z / calib_data["fy"]
@@ -82,9 +91,7 @@ def get_depth_point(point, depth, calib_data=None):
 
 
 def draw_3d_estimation(viz3d, im_depth, joints, limbs, colors, calib_data=None):
-    # tronco_idx = 0
-    # tronco_limb_idx = 0
-
+    drawn_joints = []
     for l, (p, q) in enumerate(limbs):
         px, py = joints[p]
         qx, qy = joints[q]
@@ -96,13 +103,14 @@ def draw_3d_estimation(viz3d, im_depth, joints, limbs, colors, calib_data=None):
             color = colors[l]
             viz3d.drawSegment(point_a, point_b, color)
 
-    # real_world_joints = []
-    for joint in joints[:-1]:
-        x, y = joint
-        if x >= 0 and y >= 0:
-            point = get_depth_point(joint, im_depth, calib_data)
-            viz3d.drawPoint(point, (255, 255, 255))
-            # real_world_joints.append(point)
+            if p not in drawn_joints:
+                point = get_depth_point(joints[p], im_depth, calib_data)
+                viz3d.drawPoint(point, (255, 255, 255))
+                drawn_joints.append(p)
+            if q not in drawn_joints:
+                point = get_depth_point(joints[q], im_depth, calib_data)
+                viz3d.drawPoint(point, (255, 255, 255))
+                drawn_joints.append(q)
 
     # if len(real_world_joints):
     #     viz3d.drawPose3d(tronco_idx, real_world_joints[tronco_limb_idx], (0, 0, 0, 0), 0)

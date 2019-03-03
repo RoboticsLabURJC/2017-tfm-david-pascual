@@ -97,7 +97,7 @@ class PoseEstimator:
         self.sigma = sigma
         self.gauss_map = self.gen_gaussmap()
 
-        self.confidence_th = 0.5
+        self.confidence_th = 0.3
 
 
     def init_net(self):
