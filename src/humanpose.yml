@@ -1,5 +1,5 @@
 HumanPose:
-  Source: local # local (local camera), video (local file), jder, ros
+  Source: ros # local (local camera), video (local file), jder, ros
 
   Local:
     DeviceNo: 0 # Device number for the desired webcam

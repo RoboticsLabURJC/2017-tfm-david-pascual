@@ -2,11 +2,29 @@ import jderobot
 from random import uniform
 from random import randrange
 
+import numpy as np
+import pyquaternion as pq
+
 bufferpoints = []
 bufferline = []
 bufferpose3D = []
 id_list = []
-obj_list = ["https://raw.githubusercontent.com/JdeRobot/WebSim/master/bones/tronco2.obj"]
+obj_list = ["https://raw.githubusercontent.com/JdeRobot/WebSim/master/bones/tronco2.obj",
+            "https://raw.githubusercontent.com/JdeRobot/WebSim/master/bones/femur_derecho.obj",
+            "https://raw.githubusercontent.com/JdeRobot/WebSim/master/bones/femur_izquierdo.obj",
+            "https://raw.githubusercontent.com/JdeRobot/WebSim/master/bones/tibia_d.obj",
+            "https://raw.githubusercontent.com/JdeRobot/WebSim/master/bones/tibia_i.obj",
+            "https://raw.githubusercontent.com/JdeRobot/WebSim/master/bones/pie_izquierdo.obj",
+            "https://raw.githubusercontent.com/JdeRobot/WebSim/master/bones/pie_derecho.obj"]
+scales = [2.75, 2.75, 2.75, 2.75, 2.75, 2.75, 2.75]
+init_pos = [(75, 80, -20), (-20, 60, 10), (-20, 60, 10), (-20, 60, 10), (-20, 60, 10), (-20, 60, 10), (-20, 60, 10)]
+init_quat = [pq.Quaternion(axis=[0, 1, 0], degrees=np.pi),
+             pq.Quaternion(axis=[0, 1, 0], degrees=np.pi),
+             pq.Quaternion(axis=[0, 1, 0], degrees=np.pi),
+             pq.Quaternion(axis=[0, 1, 0], degrees=np.pi),
+             pq.Quaternion(axis=[0, 1, 0], degrees=np.pi),
+             pq.Quaternion(axis=[0, 1, 0], degrees=np.pi),
+             pq.Quaternion(axis=[0, 1, 0], degrees=np.pi)]
 refresh = True
 
 
@@ -16,9 +34,9 @@ class Viz3D(jderobot.Visualization):
 
     def drawPoint(self, point, color=(0, 0, 0), current=None):
         pointJde = jderobot.Point()
-        pointJde.x = float(point[0] / 1000.0)
-        pointJde.y = float(point[1] / 1000.0)
-        pointJde.z = float(point[2] / 1000.0)
+        pointJde.x = float(point[0] / 100.0)
+        pointJde.y = float(point[1] / 100.0)
+        pointJde.z = float(point[2] / 100.0)
 
         colorJDE = jderobot.Color()
         colorJDE.r = float(color[0])
@@ -28,14 +46,14 @@ class Viz3D(jderobot.Visualization):
 
     def drawSegment(self, point_a, point_b, color=(0, 0, 0)):
         pointJde_a = jderobot.Point()
-        pointJde_a.x = float(point_a[0] / 1000.0)
-        pointJde_a.y = float(point_a[1] / 1000.0)
-        pointJde_a.z = float(point_a[2] / 1000.0)
+        pointJde_a.x = float(point_a[0] / 100.0)
+        pointJde_a.y = float(point_a[1] / 100.0)
+        pointJde_a.z = float(point_a[2] / 100.0)
 
         pointJde_b = jderobot.Point()
-        pointJde_b.x = float(point_b[0] / 1000.0)
-        pointJde_b.y = float(point_b[1] / 1000.0)
-        pointJde_b.z = float(point_b[2] / 1000.0)
+        pointJde_b.x = float(point_b[0] / 100.0)
+        pointJde_b.y = float(point_b[1] / 100.0)
+        pointJde_b.z = float(point_b[2] / 100.0)
 
         segJde = jderobot.Segment()
         segJde.fromPoint = pointJde_a
@@ -49,9 +67,9 @@ class Viz3D(jderobot.Visualization):
 
     def drawPose3d(self, obj_id, point, quaternion, h):
         pose3d = jderobot.Pose3DData()
-        pose3d.x = float(point[0] / 1000.0)
-        pose3d.y = float(point[1] / 1000.0)
-        pose3d.z = float(point[2] / 1000.0)
+        pose3d.x = float(point[0] / 100.0)
+        pose3d.y = float(point[2] / 100.0)
+        pose3d.z = float(point[1] / 100.0)
         pose3d.h = h
         pose3d.q0 = quaternion[0]
         pose3d.q1 = quaternion[1]
@@ -95,19 +113,19 @@ class Viz3D(jderobot.Visualization):
                 obj3D.obj = obj
                 print "Sending model by file: " + name + "." + form
             pose3d = jderobot.Pose3DData()
-            pose3d.x = randrange(0,20)
-            pose3d.y = randrange(0,20)
-            pose3d.z = randrange(0,20)
-            pose3d.h = uniform(0,10)
-            pose3d.q0 = uniform(0,1)
-            pose3d.q1 = uniform(0,1-pose3d.q0)
-            pose3d.q2 = uniform(0,1-pose3d.q0-pose3d.q1)
-            pose3d.q3 = uniform(0,1-pose3d.q0-pose3d.q1-pose3d.q2)
+            pose3d.x = float(init_pos[self.cont][0] / 100.)
+            pose3d.y = float(init_pos[self.cont][1] / 100.)
+            pose3d.z = float(init_pos[self.cont][2] / 100.)
+            pose3d.h = 1
+            pose3d.q0 = init_quat[self.cont][0]
+            pose3d.q1 = init_quat[self.cont][1]
+            pose3d.q2 = init_quat[self.cont][2]
+            pose3d.q3 = init_quat[self.cont][3]
             id_list.append(id)
             obj3D.id = id
             obj3D.format = form
             obj3D.pos = pose3d
-            obj3D.scale = 1
+            obj3D.scale = scales[self.cont]
             self.cont = self.cont + 1
             return obj3D
 

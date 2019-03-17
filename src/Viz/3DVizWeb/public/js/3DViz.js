@@ -131,7 +131,7 @@ try{
 				addObj(event.data.obj,pos);
 				posInterval = setInterval(function(){
 					setPose3D();
-				}, 5000);
+				}, 200);
 
 			} else if (event.data.func == "pose3d") {
 				for (var i = 0; i < event.data.bpose3d.length; i += 1){

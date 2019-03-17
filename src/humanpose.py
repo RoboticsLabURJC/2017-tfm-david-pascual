@@ -19,6 +19,7 @@ from Camera.threadcamera import ThreadCamera
 from Estimator.estimator import Estimator
 from Estimator.threadestimator import ThreadEstimator
 from GUI.gui import GUI
+from GUI.gui_3d import GUI3D
 from GUI.threadgui import ThreadGUI
 from Viz.viz3d import Viz3D
 
@@ -128,9 +129,14 @@ if __name__ == "__main__":
     data = readConfig()
     cam, cam_depth = selectVideoSource(data)
 
-    viz3d = init_viz()
-    window = GUI(cam)
+    viz3d = None
+    if cam_depth:
+        viz3d = init_viz()
+        window = GUI3D(cam, cam_depth)
+    else:
+        window = GUI(cam)
     window.show()
+
     estimator = Estimator(cam, cam_depth, viz3d, window, data["Estimator"])
 
     # Threading camera
