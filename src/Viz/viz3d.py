@@ -1,4 +1,5 @@
 import jderobot
+import math
 from random import uniform
 from random import randrange
 
@@ -9,22 +10,33 @@ bufferpoints = []
 bufferline = []
 bufferpose3D = []
 id_list = []
-obj_list = ["https://raw.githubusercontent.com/JdeRobot/WebSim/master/bones/tronco2.obj",
-            "https://raw.githubusercontent.com/JdeRobot/WebSim/master/bones/femur_derecho.obj",
-            "https://raw.githubusercontent.com/JdeRobot/WebSim/master/bones/femur_izquierdo.obj",
-            "https://raw.githubusercontent.com/JdeRobot/WebSim/master/bones/tibia_d.obj",
-            "https://raw.githubusercontent.com/JdeRobot/WebSim/master/bones/tibia_i.obj",
-            "https://raw.githubusercontent.com/JdeRobot/WebSim/master/bones/pie_izquierdo.obj",
-            "https://raw.githubusercontent.com/JdeRobot/WebSim/master/bones/pie_derecho.obj"]
-scales = [2.75, 2.75, 2.75, 2.75, 2.75, 2.75, 2.75]
-init_pos = [(75, 80, -20), (-20, 60, 10), (-20, 60, 10), (-20, 60, 10), (-20, 60, 10), (-20, 60, 10), (-20, 60, 10)]
-init_quat = [pq.Quaternion(axis=[0, 1, 0], degrees=np.pi),
-             pq.Quaternion(axis=[0, 1, 0], degrees=np.pi),
-             pq.Quaternion(axis=[0, 1, 0], degrees=np.pi),
-             pq.Quaternion(axis=[0, 1, 0], degrees=np.pi),
-             pq.Quaternion(axis=[0, 1, 0], degrees=np.pi),
-             pq.Quaternion(axis=[0, 1, 0], degrees=np.pi),
-             pq.Quaternion(axis=[0, 1, 0], degrees=np.pi)]
+
+obj_list = ["/home/dpascualhe/repos/2017-tfm-david-pascual/src/Viz/3DVizWeb/skeleton/head.obj",
+            "/home/dpascualhe/repos/2017-tfm-david-pascual/src/Viz/3DVizWeb/skeleton/torso.obj",
+            "/home/dpascualhe/repos/2017-tfm-david-pascual/src/Viz/3DVizWeb/skeleton/arm_right.obj",
+            "/home/dpascualhe/repos/2017-tfm-david-pascual/src/Viz/3DVizWeb/skeleton/arm_left.obj",
+            "/home/dpascualhe/repos/2017-tfm-david-pascual/src/Viz/3DVizWeb/skeleton/forearm_right.obj",
+            "/home/dpascualhe/repos/2017-tfm-david-pascual/src/Viz/3DVizWeb/skeleton/forearm_left.obj",
+            "/home/dpascualhe/repos/2017-tfm-david-pascual/src/Viz/3DVizWeb/skeleton/thigh_right.obj",
+            "/home/dpascualhe/repos/2017-tfm-david-pascual/src/Viz/3DVizWeb/skeleton/thigh_left.obj",
+            "/home/dpascualhe/repos/2017-tfm-david-pascual/src/Viz/3DVizWeb/skeleton/leg_right.obj",
+            "/home/dpascualhe/repos/2017-tfm-david-pascual/src/Viz/3DVizWeb/skeleton/leg_left.obj"]
+
+scales = [3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2]
+
+init_pos = [(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
+
+init_quat = [pq.Quaternion(axis=[1, 0, 0], degrees=0),
+             pq.Quaternion(axis=[1, 0, 0], degrees=0),
+             pq.Quaternion(axis=[1, 0, 0], degrees=0),
+             pq.Quaternion(axis=[1, 0, 0], degrees=0),
+             pq.Quaternion(axis=[1, 0, 0], degrees=0),
+             pq.Quaternion(axis=[1, 0, 0], degrees=0),
+             pq.Quaternion(axis=[1, 0, 0], degrees=0),
+             pq.Quaternion(axis=[1, 0, 0], degrees=0),
+             pq.Quaternion(axis=[1, 0, 0], degrees=0),
+             pq.Quaternion(axis=[1, 0, 0], degrees=0)]
+
 refresh = True
 
 
