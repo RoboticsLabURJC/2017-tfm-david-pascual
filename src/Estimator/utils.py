@@ -1,6 +1,9 @@
+import math
+
 import cv2
-import PIL.Image
 import numpy as np
+import pyquaternion as pq
+
 
 def getJetColor(v, vmin, vmax):
     c = np.zeros((3))
@@ -56,6 +59,7 @@ def padRightDownCorner(img):
 
     return img_padded, pad
 
+
 def map_resize(new_shape, heatmap):
     # Resizes the output back to the size of the test image
     scale_y = new_shape[0] / float(heatmap.shape[0])
@@ -64,3 +68,29 @@ def map_resize(new_shape, heatmap):
                              interpolation=cv2.INTER_CUBIC)
 
     return map_resized
+
+
+def get_quaternion(p, q, orientation="front"):
+    dx, dy, dz = p - q
+    dx = -dx
+    dy = -dy
+
+    available_orientations = ["front", "back"]
+    if orientation not in available_orientations:
+        print("WARNING: '%s' orientation not valid! Assuming 'front")
+
+    if orientation == "back":
+        yaw = pq.Quaternion(axis=[0, 1, 0], degrees=-math.pi)
+    else:
+        yaw = pq.Quaternion(axis=[0, 1, 0], degrees=0)
+
+
+    if dz > 0:
+        roll = pq.Quaternion(axis=[0, 0, 1], degrees=-math.atan2(dx, dz))
+        pitch = pq.Quaternion(axis=[1, 0, 0], degrees=-math.atan2(dy, dz))
+    else:
+        roll = pq.Quaternion(axis=[0, 0, 1], degrees=math.pi + math.atan2(dx, dz))
+        yaw = pq.Quaternion(axis=[0, 1, 0], degrees=-math.pi)
+        pitch = pq.Quaternion(axis=[1, 0, 0], degrees=-math.atan2(dy, dz))
+
+    return roll * yaw * pitch

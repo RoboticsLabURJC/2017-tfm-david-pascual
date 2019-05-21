@@ -5,18 +5,50 @@ foo.py: bar.
 """
 
 import math
-import sys
 import time
 
 import cv2
-from matplotlib import pyplot as plt
 import numpy as np
-import pyquaternion as pq
 
-from random import randint
+from kfilter import KFilter3D
+import utils
 
 __author__ = "David Pascual Hernandez"
 __date__ = "2018/27/05"
+
+
+def get_depth_point(point, depth, calib_data=None, kfilter=None):
+    """
+    Get joints depth information.
+    """
+    height, width = depth.shape
+    x, y = point
+
+    search_area = 10  # search area for given coordinates to avoid noisy estimations
+
+    if x < search_area:
+        x = search_area
+    if x > width - search_area:
+        x = width - search_area
+    if y < search_area:
+        y = search_area
+    if y > height - search_area:
+        y = height - search_area
+
+    depth_estimation = depth.copy()
+    depth_estimation[np.where(depth_estimation == 0)] = np.nan
+    z = np.nanmin(depth_estimation[y - search_area:y + search_area, x - search_area:x + search_area])
+
+    y = height - y
+    x = width - x
+    if calib_data:
+        x = (x - calib_data["cx"]) * z / calib_data["fx"]
+        y = (y - calib_data["cy"]) * z / calib_data["fy"]
+
+    if kfilter is not None:
+        kfilter.update()
+
+    return x, z, y
 
 
 def draw_estimation(im, bbox, joints, limbs, colors, stickwidth=6):
@@ -46,241 +78,6 @@ def draw_estimation(im, bbox, joints, limbs, colors, stickwidth=6):
     return im
 
 
-def get_depth_point(point, depth, calib_data=None):
-    """
-    Get joints depth information.
-    """
-    height, width = depth.shape
-    x, y = point
-
-    search_area = 10  # search area for given coordinates to avoid noisy estimations
-
-    if x < search_area:
-        x = search_area
-    if x > width - search_area:
-        x = width - search_area
-    if y < search_area:
-        y = search_area
-    if y > height - search_area:
-        y = height - search_area
-
-    depth_estimation = depth.copy()
-    depth_estimation[np.where(depth_estimation == 0)] = np.nan
-    z = np.nanmin(depth_estimation[y - search_area:y + search_area, x - search_area:x + search_area])
-
-    y = height - y
-    x = width - x
-    if calib_data:
-        x = (x - calib_data["cx"]) * z / calib_data["fx"]
-        y = (y - calib_data["cy"]) * z / calib_data["fy"]
-
-    return np.array((x, z, y))
-
-def get_quaternion(p, q):
-    dx, dy, dz = p - q
-    dx = -dx
-    dy = -dy
-
-    if dz > 0:
-        roll = pq.Quaternion(axis=[0, 0, 1], degrees=-math.atan2(dx, dz))
-        yaw = pq.Quaternion(axis=[0, 1, 0], degrees=-math.pi)
-        pitch = pq.Quaternion(axis=[1, 0, 0], degrees=-math.atan2(dy, dz))
-    else:
-        roll = pq.Quaternion(axis=[0, 0, 1], degrees=math.pi + math.atan2(dx, dz))
-        yaw = pq.Quaternion(axis=[0, 1, 0], degrees=-math.pi)
-        pitch = pq.Quaternion(axis=[1, 0, 0], degrees=-math.atan2(dy, dz))
-
-    return roll * yaw * pitch
-
-
-def draw_3d_estimation(viz3d, im_depth, joints, limbs, colors, calib_data=None, draw_segments=False):
-    viz3d.drawPoint((0, 0, 0), (0, 0, 0))
-    viz3d.drawSegment((0, 0, 0), (200, 0, 0), (255, 0, 0))
-    viz3d.drawSegment((0, 0, 0), (0, 200, 0), (0, 255, 0))
-    viz3d.drawSegment((0, 0, 0), (0, 0, 200), (0, 0, 255))
-
-    if draw_segments:
-        drawn_joints = []
-        for l, (p, q) in enumerate(limbs):
-            px, py = joints[p]
-            qx, qy = joints[q]
-
-            if px >= 0 and py >= 0 and qx >= 0 and qy >= 0:
-                point_a = get_depth_point(joints[p], im_depth, calib_data)
-                point_b = get_depth_point(joints[q], im_depth, calib_data)
-
-                color = colors[l]
-                viz3d.drawSegment(point_a, point_b, color)
-                if p not in drawn_joints:
-                    point = get_depth_point(joints[p], im_depth, calib_data)
-                    viz3d.drawPoint(point, (255, 255, 255))
-                    drawn_joints.append(p)
-                if q not in drawn_joints:
-                    point = get_depth_point(joints[q], im_depth, calib_data)
-                    viz3d.drawPoint(point, (255, 255, 255))
-                    drawn_joints.append(q)
-    try:
-        # Head
-        upper_neck = get_depth_point(joints[1], im_depth, calib_data)
-        head_top = get_depth_point(joints[0], im_depth, calib_data)
-        head_quaternion = get_quaternion(head_top, upper_neck)
-        viz3d.drawPose3d(0, upper_neck, head_quaternion, 0)
-
-        # Torso
-        hip_right = get_depth_point(joints[8], im_depth, calib_data)
-        hip_left = get_depth_point(joints[11], im_depth, calib_data)
-        hip = np.mean((hip_right, hip_left), axis=0)
-        torso_quaternion = get_quaternion(upper_neck, hip)
-        viz3d.drawPose3d(1, hip, torso_quaternion, 0)
-
-        # Right arm
-        shoulder_right = get_depth_point(joints[2], im_depth, calib_data)
-        elbow_right = get_depth_point(joints[3], im_depth, calib_data)
-        arm_right_quaternion = get_quaternion(shoulder_right, elbow_right)
-        viz3d.drawPose3d(2, elbow_right, arm_right_quaternion, 0)
-
-        # Left arm
-        shoulder_left = get_depth_point(joints[5], im_depth, calib_data)
-        elbow_left = get_depth_point(joints[6], im_depth, calib_data)
-        arm_left_quaternion = get_quaternion(shoulder_left, elbow_left)
-        viz3d.drawPose3d(3, elbow_left, arm_left_quaternion, 0)
-
-        # Right forearm
-        wrist_right = get_depth_point(joints[4], im_depth, calib_data)
-        forearm_right_quaternion = get_quaternion(elbow_right, wrist_right)
-        viz3d.drawPose3d(4, wrist_right, forearm_right_quaternion, 0)
-
-        # Left forearm
-        wrist_left = get_depth_point(joints[7], im_depth, calib_data)
-        forearm_left_quaternion = get_quaternion(elbow_left, wrist_left)
-        viz3d.drawPose3d(5, wrist_left, forearm_left_quaternion, 0)
-
-        # Right thigh
-        knee_right = get_depth_point(joints[9], im_depth, calib_data)
-        arm_right_quaternion = get_quaternion(hip_right, knee_right)
-        viz3d.drawPose3d(6, knee_right, arm_right_quaternion, 0)
-
-        # Left thigh
-        knee_left = get_depth_point(joints[12], im_depth, calib_data)
-        arm_left_quaternion = get_quaternion(hip_left, knee_left)
-        viz3d.drawPose3d(7, knee_left, arm_left_quaternion, 0)
-
-        # Right leg
-        ankle_right = get_depth_point(joints[10], im_depth, calib_data)
-        forearm_right_quaternion = get_quaternion(knee_right, ankle_right)
-        viz3d.drawPose3d(8, ankle_right, forearm_right_quaternion, 0)
-
-        # Left leg
-        ankle_left = get_depth_point(joints[13], im_depth, calib_data)
-        forearm_left_quaternion = get_quaternion(knee_left, ankle_left)
-        viz3d.drawPose3d(9, ankle_left, forearm_left_quaternion, 0)
-        
-
-    except IndexError:
-        print("\tWARNING: Not all bones are ready yet!")
-
-# def draw_3d_estimation(viz3d, im_depth, joints, limbs, colors, calib_data=None, draw_segments=False):
-#     if draw_segments:
-#         drawn_joints = []
-#         for l, (p, q) in enumerate(limbs):
-#             px, py = joints[p]
-#             qx, qy = joints[q]
-#
-#             if px >= 0 and py >= 0 and qx >= 0 and qy >= 0:
-#                 point_a = get_depth_point(joints[p], im_depth, calib_data)
-#                 point_b = get_depth_point(joints[q], im_depth, calib_data)
-#
-#                 color = colors[l]
-#                 viz3d.drawSegment(point_a, point_b, color)
-#                 print(p, q, color)
-#                 if p not in drawn_joints:
-#                     point = get_depth_point(joints[p], im_depth, calib_data)
-#                     viz3d.drawPoint(point, (255, 255, 255))
-#                     drawn_joints.append(p)
-#                 if q not in drawn_joints:
-#                     point = get_depth_point(joints[q], im_depth, calib_data)
-#                     viz3d.drawPoint(point, (255, 255, 255))
-#                     drawn_joints.append(q)
-#
-#     else:
-#         try:
-#             # TRONCO
-#             right_hip = get_depth_point(joints[8], im_depth, calib_data)
-#             left_hip = get_depth_point(joints[11], im_depth, calib_data)
-#             head = (get_depth_point(joints[1], im_depth, calib_data) + get_depth_point(joints[1], im_depth,
-#                                                                                        calib_data)) / 2
-#
-#             tronco = (right_hip + left_hip) / 2
-#             tronco[0] += 75
-#             tronco[1] += 80
-#             tronco[2] -= 20
-#
-#             yaw = math.atan2(tronco[1] - head[1], tronco[0] - head[0])
-#             roll = np.pi / 2
-#             pitch = math.atan2(math.sqrt((tronco[1] - head[1]) ** 2 + (tronco[0] - head[0]) ** 2),
-#                                tronco[0] - head[0]) + np.pi
-#
-#             tronco_pitch = pq.Quaternion(axis=[1, 0, 0], degrees=0)
-#             tronco_roll = pq.Quaternion(axis=[0, 1, 0], degrees=np.pi)
-#             tronco_yaw = pq.Quaternion(axis=[0, 0, 1], degrees=np.pi)
-#             tronco_quat = tronco_roll
-#
-#             viz3d.drawPose3d(0, tronco, tronco_quat, 0)
-#
-#             # FEMUR DERECHO
-#             femur_dcho = right_hip
-#             femur_dcho[0] -= 20
-#             femur_dcho[1] += 60
-#             femur_dcho[2] += 10
-#             viz3d.drawPose3d(1, femur_dcho, tronco_quat, 0)
-#
-#             # FEMUR IZQUIERDO
-#             femur_izqdo = left_hip
-#             femur_izqdo[0] += 50  # dcha / izqda
-#             femur_izqdo[1] += 80  # alante / atras
-#             femur_izqdo[2] += 10  # arriba / abajo
-#             viz3d.drawPose3d(2, femur_izqdo, tronco_quat, 0)
-#
-#             # TIBIA DERECHA
-#             tibia_dcho = get_depth_point(joints[9], im_depth, calib_data)
-#             tibia_dcho[0] -= 20
-#             tibia_dcho[1] += 30
-#             tibia_dcho[2] += 20
-#             viz3d.drawPose3d(3, tibia_dcho, tronco_quat, 0)
-#
-#             # TIBIA IZQUIERDA
-#             tibia_izqdo = get_depth_point(joints[12], im_depth, calib_data)
-#             tibia_izqdo[0] += 20
-#             tibia_izqdo[1] += 30
-#             tibia_izqdo[2] += 20
-#             viz3d.drawPose3d(4, tibia_izqdo, tronco_quat, 0)
-#
-#             # PIE DERECHO
-#             pie_dcho = get_depth_point(joints[10], im_depth, calib_data)
-#             pie_dcho[0] -= 0
-#             pie_dcho[1] += 30
-#             pie_dcho[2] += 10
-#             viz3d.drawPose3d(5, pie_dcho, tronco_yaw * tronco_roll, 0)
-#
-#             # PIE IZQUIERDO
-#             pie_izqdo = get_depth_point(joints[13], im_depth, calib_data)
-#             pie_izqdo[0] -= 0
-#             pie_izqdo[1] += 30
-#             pie_izqdo[2] += 10
-#             viz3d.drawPose3d(6, pie_izqdo, tronco_yaw * tronco_roll, 0)
-#
-#             # HUMERO DERECHO
-#             hum_dcho = get_depth_point(joints[2], im_depth, calib_data)
-#             viz3d.drawPose3d(7, hum_dcho, tronco_quat, 0)
-#
-#             # HUMERO IZQUIERDO
-#             hum_izqdo = get_depth_point(joints[5], im_depth, calib_data)
-#             viz3d.drawPose3d(8, hum_izqdo, tronco_quat, 0)
-#
-#         except IndexError:
-#             print("\tWARNING: Not all bones are ready yet!")
-
-
 class Estimator:
     def __init__(self, cam, cam_depth, viz3d, gui, data):
         """
@@ -291,6 +88,8 @@ class Estimator:
         @param gui: GUI object
         @param data: parsed YAML config. file
         """
+        self.idx = 0
+
         self.cam = cam
         self.cam_depth = cam_depth
         self.viz3d = viz3d
@@ -333,6 +132,8 @@ class Estimator:
         self.hd = HumanDetector(human_model, boxsize)
         self.pe = PoseEstimator(pose_model, boxsize, sigma)
 
+        self.pos3d_kfilters = [KFilter3D() for idx in self.config["limbs"]]
+
     def estimate(self, frame):
         """
         Estimate human pose.
@@ -340,9 +141,10 @@ class Estimator:
         @return: np.array, np.array - joint coordinates & limbs drawn
         over original image
         """
-        print("-" * 80)
+        # print("-" * 80)
         t = time.time()
-        human_bboxes = self.hd.get_bboxes(frame)
+        human_bboxes = self.hd.get_bboxes(frame)[:1]
+        print(human_bboxes)
         print("Human detection: %d ms" % int((time.time() - t) * 1000))
 
         all_joints = []
@@ -353,6 +155,140 @@ class Estimator:
             print("\tPose estimation: %d ms" % int((time.time() - t) * 1000))
 
         return human_bboxes, np.array(all_joints)
+
+    def draw_3d_segments(self, im_depth, joints, limbs, colors, filter=True):
+        def get_joint_depth(idx):
+            pos = get_depth_point(joints[0], im_depth, self.cam_depth.calib_data)
+            if filter:
+                pos = self.pos3d_kfilters[idx].update_filter(pos)
+            return np.array(pos)
+
+        drawn_joints = []
+        for l, (p, q) in enumerate(limbs):
+            px, py = joints[p]
+            qx, qy = joints[q]
+
+            if px >= 0 and py >= 0 and qx >= 0 and qy >= 0:
+                point_a = get_joint_depth(p)
+                point_b = get_joint_depth(q)
+
+                color = colors[l]
+                self.viz3d.drawSegment(point_a, point_b, color)
+                if p not in drawn_joints:
+                    point = get_joint_depth(p)
+                    self.viz3d.drawPoint(point, (255, 255, 255))
+                    drawn_joints.append(p)
+                if q not in drawn_joints:
+                    point = get_joint_depth(q)
+                    self.viz3d.drawPoint(point, (255, 255, 255))
+                    drawn_joints.append(q)
+
+    def draw_3d_skeleton(self, im_depth, joints, filter=True):
+        def get_joint_depth(idx):
+            print("Joint %d" % idx)
+            print("pos2d", joints[idx])
+            if np.count_nonzero(np.where(joints[idx] == -1)):
+                pos = (np.nan, np.nan, np.nan)
+            else:
+                pos = get_depth_point(joints[idx], im_depth, self.cam_depth.calib_data)
+            print("pos3d", pos)
+            if filter:
+                pos = self.pos3d_kfilters[idx].update_filter(pos)
+            print("posFiltered", pos)
+            return np.array(pos)
+
+        head_top = get_joint_depth(0)
+        upper_neck = get_joint_depth(1)
+        shoulder_right = get_joint_depth(2)
+        elbow_right = get_joint_depth(3)
+        wrist_right = get_joint_depth(4)
+        shoulder_left = get_joint_depth(5)
+        elbow_left = get_joint_depth(6)
+        wrist_left = get_joint_depth(7)
+        hip_right = get_joint_depth(8)
+        knee_right = get_joint_depth(9)
+        ankle_right = get_joint_depth(10)
+        hip_left = get_joint_depth(11)
+        knee_left = get_joint_depth(12)
+        ankle_left = get_joint_depth(13)
+
+        front_votes = 0
+        back_votes = 0
+        if shoulder_right[0] > shoulder_left[0]:
+            back_votes +=1
+        else:
+            front_votes += 1
+        if elbow_right[0] > elbow_left[0]:
+            back_votes +=1
+        else:
+            front_votes += 1
+        if wrist_right[0] > wrist_left[0]:
+            back_votes +=1
+        else:
+            front_votes += 1
+        if hip_right[0] > hip_left[0]:
+            back_votes +=1
+        else:
+            front_votes += 1
+        if knee_right[0] > knee_left[0]:
+            back_votes +=1
+        else:
+            front_votes += 1
+        if knee_right[0] > knee_left[0]:
+            back_votes +=1
+        else:
+            front_votes += 1
+        if ankle_right[0] > ankle_left[0]:
+            back_votes +=1
+        else:
+            front_votes += 1
+
+        orientation = "front"
+        if back_votes > front_votes:
+            orientation = "back"
+
+        # Head
+        head_quaternion = utils.get_quaternion(head_top, upper_neck, orientation)
+        self.viz3d.drawPose3d(0, upper_neck, head_quaternion, 0)
+
+        # Torso
+        hip = np.mean((hip_right, hip_left), axis=0)
+        torso_quaternion = utils.get_quaternion(upper_neck, hip, orientation)
+        self.viz3d.drawPose3d(1, hip, torso_quaternion, 0)
+
+        # Right arm
+        arm_right_quaternion = utils.get_quaternion(shoulder_right, elbow_right, orientation)
+        self.viz3d.drawPose3d(2, elbow_right, arm_right_quaternion, 0)
+
+        # Left arm
+        arm_left_quaternion = utils.get_quaternion(shoulder_left, elbow_left, orientation)
+        self.viz3d.drawPose3d(3, elbow_left, arm_left_quaternion, 0)
+
+        # Right forearm
+        forearm_right_quaternion = utils.get_quaternion(elbow_right, wrist_right, orientation)
+        self.viz3d.drawPose3d(4, wrist_right, forearm_right_quaternion, 0)
+
+        # Left forearm
+        forearm_left_quaternion = utils.get_quaternion(elbow_left, wrist_left, orientation)
+        self.viz3d.drawPose3d(5, wrist_left, forearm_left_quaternion, 0)
+
+        # Right thigh
+        arm_right_quaternion = utils.get_quaternion(hip_right, knee_right, orientation)
+        self.viz3d.drawPose3d(6, knee_right, arm_right_quaternion, 0)
+
+        # Left thigh
+        arm_left_quaternion = utils.get_quaternion(hip_left, knee_left, orientation)
+        self.viz3d.drawPose3d(7, knee_left, arm_left_quaternion, 0)
+
+        # Right leg
+        forearm_right_quaternion = utils.get_quaternion(knee_right, ankle_right, orientation)
+        self.viz3d.drawPose3d(8, ankle_right, forearm_right_quaternion, 0)
+
+        # Left leg
+        forearm_left_quaternion = utils.get_quaternion(knee_left, ankle_left, orientation)
+        self.viz3d.drawPose3d(9, ankle_left, forearm_left_quaternion, 0)
+
+
 
     def update(self):
         """ Update estimator. """
@@ -365,11 +301,21 @@ class Estimator:
         if self.cam_depth:
             im_depth = self.cam_depth.get_image().copy()
             for bbox, joints in zip(all_humans, all_joints):
-                draw_3d_estimation(self.viz3d, im_depth, joints, limbs, colors, self.cam_depth.calib_data)
+                try:
+                    self.viz3d.drawPoint((0, 0, 0), (0, 0, 0))
+                    self.viz3d.drawSegment((0, 0, 0), (200, 0, 0), (255, 0, 0))
+                    self.viz3d.drawSegment((0, 0, 0), (0, 200, 0), (0, 255, 0))
+                    self.viz3d.drawSegment((0, 0, 0), (0, 0, 200), (0, 0, 255))
+
+                    self.draw_3d_skeleton(im_depth, joints)
+                except IndexError:
+                    print("\tWARNING: Not all bones are ready yet!")
         else:
-            if self.gui.display:
-                for bbox, joints in zip(all_humans, all_joints):
-                    im = draw_estimation(im, bbox, joints, limbs, colors)
+            # if self.gui.display:
+            for bbox, joints in zip(all_humans, all_joints):
+                im = draw_estimation(im, bbox, joints, limbs, colors)
+                cv2.imwrite("results/im_pose_%02d.png" % self.idx, im)
+                self.idx += 1
 
             self.gui.im_pred = im.copy()
             self.gui.display = False
