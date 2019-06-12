@@ -79,10 +79,14 @@ class GUI3D(QWidget):
         self.im_label.setPixmap(im)
 
         im_depth = self.cam_depth.get_image()
-        cv2.normalize(im_depth, im_depth, 0, 1, cv2.NORM_MINMAX)
-        im_depth *= 255
-        im_depth = np.dstack((im_depth, im_depth, im_depth)).astype(np.uint8)
 
+        # convert to 8-bit for visualization (dealing with NaN values)
+        im_depth -= np.nanmin(im_depth)
+        im_depth /= np.nanmax(im_depth)
+        im_depth *= 255
+        im_depth = im_depth.astype(np.uint8)
+
+        im_depth = cv2.merge((im_depth, im_depth, im_depth))
         h, w, d = im_depth.shape
         im_depth = QImage(im_depth, w, h, QImage.Format_RGB888)
         im_depth = im_depth.scaled(self.im_depth_label.size())
