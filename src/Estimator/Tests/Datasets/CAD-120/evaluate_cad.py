@@ -1,8 +1,11 @@
 import math
 import os
 import sys
+import traceback
 
 sys.path.append("../../../../../")
+
+from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
 
 import cv2
 import h5py
@@ -10,6 +13,8 @@ from matplotlib import pyplot as plt
 import numpy as np
 from src.Estimator.Pose.pose_caffe import PoseEstimator
 from src.Estimator.Human.human_naxvm import HumanDetector
+from src.Estimator.estimator import get_depth_point
+from src.Estimator.kfilter import KFilter3D
 
 LIMBS = np.array([1, 2, 3, 4, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14]).reshape((-1, 2)) - 1
 
@@ -91,6 +96,10 @@ def get_dist(joint_pred, joint_real, hsize):
     return dist
 
 
+def get_mpjpe(joints_pred, joints_real):
+    return np.mean(np.linalg.norm(joints_pred - joints_real))
+
+
 def get_dists_2d(data, debug=True):
     rgb = data["rgb"]
     depth = data["depth"]
@@ -106,6 +115,7 @@ def get_dists_2d(data, debug=True):
     pe = PoseEstimator(pose_model, boxsize, sigma, confidence_th=0.)
 
     dists = np.zeros(anno.shape)
+
     for i, (frame_rgb, frame_depth, frame_anno) in enumerate(zip(rgb, depth, anno)):
         joints_px_coords = reorder_joints(frame_anno["pixel_pos"])
         try:
@@ -176,11 +186,80 @@ def evaluate_2d(data, debug=False):
     plt.show()
 
 
+def get_joint_depth(joint, k_filter, im_depth, cam_calib):
+    print("pos2d", joint)
+    if np.count_nonzero(np.where(joint == -1)):
+        pos = (np.nan, np.nan, np.nan)
+    else:
+        pos = get_depth_point(joint, im_depth, cam_calib)
+    print("pos3d", pos)
+    if filter:
+        pos = k_filter.update_filter(pos)
+    print("posFiltered", pos)
+    return np.array(pos)
+
+
+def evaluate_3d(data, debug=True):
+    rgb = data["rgb"]
+    depth = data["depth"]
+    anno = data["anno"]
+
+    human_model = "../../../Human/models/naxvm/ssdlite_mobilenet_v2_coco_2018_05_09/frozen_inference_graph.pb"
+    pose_model = ["../../../Pose/models/caffe/pose_deploy_resize.prototxt",
+                  "../../../Pose/models/caffe/pose_iter_320000.caffemodel"]
+    boxsize = 192
+    sigma = 21
+
+    hd = HumanDetector(human_model, boxsize)
+    pe = PoseEstimator(pose_model, boxsize, sigma, confidence_th=0.)
+
+    num_joints = 16
+    kfilters = [KFilter3D() for _ in range(num_joints)]
+
+    total_mpjpe = []
+    for i, (frame_rgb, frame_depth, frame_anno) in enumerate(zip(rgb, depth, anno)):
+        frame_depth_meters = frame_depth.astype(np.float) / 1000.
+        joints_px_coords = reorder_joints(frame_anno["pixel_pos"])
+        try:
+            bbox_estimate, joints_estimate = estimate(frame_rgb.copy(), hd, pe)
+
+            joints_estimate_3d = np.zeros((16, 3), np.float)
+            for idx, joint in enumerate(joints_estimate):
+                joints_estimate_3d[idx] = get_joint_depth(joint, kfilters[idx], frame_depth_meters, cam_calib=None)
+
+            if debug:
+                fig1 = plt.figure()
+
+                ax1 = fig1.add_subplot(121)
+                ax1.imshow(draw_joints(frame_rgb.copy(), ((0, 0), (640, 480)), joints_px_coords))
+                ax2 = fig1.add_subplot(122)
+                ax2.imshow(draw_joints(frame_rgb.copy(), bbox_estimate, joints_estimate))
+
+                fig2 = plt.figure()
+                ax = fig2.add_subplot(111, projection='3d')
+                ax.scatter(joints_estimate_3d[:, 0], joints_estimate_3d[:, 1], joints_estimate_3d[:, 2])
+                plt.show()
+
+            total_mpjpe.append(get_mpjpe(joints_estimate_3d, joints_px_coords))
+        except:
+            traceback.print_exc()
+            print("WARNING: No human detected (frame %03d)" % i)
+
+    print("Total MPJPE (mm): %f" % np.mean(total_mpjpe))
+
+
 if __name__ == "__main__":
     subject_id = "1"
     action_id = "arranging_objects"
     sequence_id = "0510175411"
+    evaluation_mode = "3d"
 
     global_folder = "/home/dpascualhe/repos/2017-tfm-david-pascual/src/Estimator/Tests/Datasets/CAD-120/"
     data = read_hdf5(global_folder, subject_id, action_id, sequence_id)
-    evaluate_2d(data)
+
+    if evaluation_mode == "2d":
+        evaluate_2d(data)
+    elif evaluation_mode == "3d":
+        evaluate_3d(data)
+    else:
+        raise Exception("Unknown evaluation mode!")
