@@ -82,7 +82,7 @@ def map_resize(new_shape, heatmap):
 
 
 class PoseEstimator:
-    def __init__(self, model, boxsize, sigma):
+    def __init__(self, model, boxsize, sigma, confidence_th=0.3):
         """
         Constructs Estimator class.
         @param model: Caffe models
@@ -97,7 +97,7 @@ class PoseEstimator:
         self.sigma = sigma
         self.gauss_map = self.gen_gaussmap()
 
-        self.confidence_th = 0.3
+        self.confidence_th = confidence_th
 
 
     def init_net(self):

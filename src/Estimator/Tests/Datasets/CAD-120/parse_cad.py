@@ -26,20 +26,16 @@ def parse_sequence(subject, action, sequence, folder=""):
     return data
 
 
-def x_pixel_from_coords(x, y, z):
+def pixel_from_coords(x, y, z):
     k_realworld_x_to_z = 1.122133
     k_resolution_x = 640
     f_coeff_x = k_resolution_x / k_realworld_x_to_z
 
-    return int((f_coeff_x * x / z) + (k_resolution_x / 2))
-
-
-def y_pixel_from_coords(x, y, z):
     k_realworld_y_to_z = 0.84176
-    k_resolution_y = 640
-    f_coeff_x = k_resolution_y / k_realworld_y_to_z
+    k_resolution_y = 480
+    f_coeff_y = k_resolution_y / k_realworld_y_to_z
 
-    return int((f_coeff_x * x / z) + (k_resolution_y / 2))
+    return int((f_coeff_x * x / z) + (k_resolution_x / 2)), int((k_resolution_y /2) - (f_coeff_y * y / z))
 
 
 def read_annotation_line(line):
@@ -63,14 +59,14 @@ def read_annotation_line(line):
             counter += 14
         else:
             anno_joint = {"joint_id": joint_id,
-                          "orientation": [] * 9,
+                          "orientation": np.array([np.nan] * 9),
                           "orientation_conf": 0,
                           "real_world_pos": np.array(raw_data[1 + counter: 4 + counter], np.float),
                           "pos_conf": float(raw_data[4 + counter])}
             counter += 4
 
         x_real, y_real, z_real = anno_joint["real_world_pos"]
-        anno_joint["pixel_pos"] = np.array((x_pixel_from_coords(x_real, y_real, z_real)), np.int)
+        anno_joint["pixel_pos"] = np.array((pixel_from_coords(x_real, y_real, z_real)), np.int)
         anno["joints"].append(anno_joint)
 
     return anno
@@ -88,17 +84,17 @@ def data_dict_to_hdf5(data, subject_id, action_id, sequence_id):
     rgb_data_shape = (len(data), 480, 640, 3)
     depth_data_shape = (len(data), 480, 640)
     anno_type = np.dtype([("joint_id", np.str, 15),
-                          ("orientation", np.float16, 2),
-                          ("orientation_conf", np.float16, 9),
+                          ("orientation", np.float16, 9),
+                          ("orientation_conf", np.float16, 1),
                           ("real_world_pos", np.float16, 3),
                           ("pixel_pos", np.uint32, 2),
-                          ("pixel_conf", np.float16, 1)])
+                          ("pos_conf", np.float16, 1)])
 
     f = h5py.File("cad120-%s_%s_%s.h5" % (subject_id, action_id, sequence_id), mode="w")
 
     rgb = f.create_dataset("rgb", rgb_data_shape, np.uint8)
     depth = f.create_dataset("depth", depth_data_shape, np.uint16)
-    labels = f.create_dataset("anno", (len(data), 14), anno_type)
+    labels = f.create_dataset("anno", (len(data), 15), anno_type)
 
     for idx, frame_data in enumerate(data):
         rgb[idx] = frame_data["rgb"]
@@ -106,12 +102,13 @@ def data_dict_to_hdf5(data, subject_id, action_id, sequence_id):
 
         full_anno = frame_data["anno"]
         for idx_joint, anno in enumerate(full_anno["joints"]):
-            labels[idx, idx_joint] = np.array((anno["joint_id"],
-                                               anno["orientation"],
-                                               anno["orientation_conf"],
-                                               anno["real_world_pos"],
-                                               anno["pixel_pos"],
-                                               anno["pixel_conf"]), dtype=anno_type)
+            anno_formatted = np.array((anno["joint_id"],
+                                       anno["orientation"],
+                                       anno["orientation_conf"],
+                                       anno["real_world_pos"],
+                                       anno["pixel_pos"],
+                                       anno["pos_conf"]), dtype=anno_type)
+            labels[idx, idx_joint] = anno_formatted
 
     f.close()
 
@@ -119,7 +116,7 @@ def data_dict_to_hdf5(data, subject_id, action_id, sequence_id):
 if __name__ == "__main__":
     subject_id = "1"
     action_id = "arranging_objects"
-    sequence_id = "0510175411"
+    sequence_id = "0510175431"
 
     global_folder = "/home/dpascualhe/repos/2017-tfm-david-pascual/src/Estimator/Tests/Datasets/CAD-120/"
 

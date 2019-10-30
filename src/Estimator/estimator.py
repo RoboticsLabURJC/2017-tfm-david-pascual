@@ -307,7 +307,7 @@ class Estimator:
                     self.viz3d.drawSegment((0, 0, 0), (0, 200, 0), (0, 255, 0))
                     self.viz3d.drawSegment((0, 0, 0), (0, 0, 200), (0, 0, 255))
 
-                    self.draw_3d_skeleton(im_depth, joints)
+                    self.draw_3d_skeleton(im_depth, joints, filter=True)
                 except IndexError:
                     print("\tWARNING: Not all bones are ready yet!")
         else:

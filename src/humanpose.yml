@@ -5,7 +5,7 @@ HumanPose:
     DeviceNo: 0 # Device number for the desired webcam
 
   Video:
-    Path: "curling.mp4"
+    Path: "../docs/curling.mp4"
 
   JdeR:
     CameraRGB:
