@@ -120,9 +120,9 @@ class Estimator:
         self.hd = HumanDetector(human_model, boxsize)
 
         if pose_framework == "cpm_caffe":
-            from Pose.pose_cpm import PoseEstimator
+            from Pose.pose_cpm import PoseCPM
             sigma = self.config["cpm_config"]["sigma"]
-            self.pe = PoseEstimator(pose_model, boxsize, sigma)
+            self.pe = PoseCPM(pose_model, boxsize, sigma)
         else:
             print("'%s' is not supported for pose detection" % pose_framework)
             print("Available frameworks: " + str(available_pose_fw))

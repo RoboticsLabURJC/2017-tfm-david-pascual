@@ -18,6 +18,8 @@ import caffe
 import cv2
 import numpy as np
 
+from pose import PoseEstimator
+
 
 def crop_human(sample, c, s, bsize):
     """
@@ -81,24 +83,16 @@ def map_resize(new_shape, heatmap):
     return map_resized
 
 
-class PoseEstimator:
+class PoseCPM(PoseEstimator):
     def __init__(self, model, boxsize, sigma, confidence_th=0.3):
         """
         Constructs Estimator class.
         @param model: Caffe models
         @param weights: Caffe models weights
         """
-
-        self.model, self.weights = model
-        self.net = None
-
-        self.im = None
-        self.boxsize = boxsize
+        PoseEstimator.__init__(self, model, boxsize, confidence_th)
         self.sigma = sigma
         self.gauss_map = self.gen_gaussmap()
-
-        self.confidence_th = confidence_th
-
 
     def init_net(self):
         caffe.set_mode_gpu()

@@ -11,7 +11,7 @@ import cv2
 import h5py
 from matplotlib import pyplot as plt
 import numpy as np
-from src.Estimator.Pose.pose_cpm import PoseEstimator
+from src.Estimator.Pose.pose_cpm import PoseCPM
 from src.Estimator.Human.human_naxvm import HumanDetector
 from src.Estimator.estimator import get_depth_point
 from src.Estimator.kfilter import KFilter3D
@@ -112,7 +112,7 @@ def get_dists_2d(data, debug=True):
     sigma = 21
 
     hd = HumanDetector(human_model, boxsize)
-    pe = PoseEstimator(pose_model, boxsize, sigma, confidence_th=0.)
+    pe = PoseCPM(pose_model, boxsize, sigma, confidence_th=0.)
 
     dists = np.zeros(anno.shape)
 
@@ -211,7 +211,7 @@ def evaluate_3d(data, debug=True):
     sigma = 21
 
     hd = HumanDetector(human_model, boxsize)
-    pe = PoseEstimator(pose_model, boxsize, sigma, confidence_th=0.)
+    pe = PoseCPM(pose_model, boxsize, sigma, confidence_th=0.)
 
     num_joints = 16
     kfilters = [KFilter3D() for _ in range(num_joints)]
