@@ -11,7 +11,7 @@ import cv2
 import h5py
 from matplotlib import pyplot as plt
 import numpy as np
-from src.Estimator.Pose.pose_caffe import PoseEstimator
+from src.Estimator.Pose.pose_cpm import PoseEstimator
 from src.Estimator.Human.human_naxvm import HumanDetector
 from src.Estimator.estimator import get_depth_point
 from src.Estimator.kfilter import KFilter3D

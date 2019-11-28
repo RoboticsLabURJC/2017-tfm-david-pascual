@@ -1,5 +1,5 @@
 HumanPose:
-  Source: ros # local (local camera), video (local file), jder, ros
+  Source: video # local (local camera), video (local file), jder, ros
 
   Local:
     DeviceNo: 0 # Device number for the desired webcam
@@ -37,30 +37,29 @@ HumanPose:
 
 Estimator:
   human_framework: "naxvm"
-  pose_framework: "caffe"
+  pose_framework: "cpm_caffe"
 
   # CPU mode or GPU mode
   GPU: 1
 
-  caffe_models:
-    human: ["Estimator/Human/models/caffe/pose_deploy_copy_4sg_resize.prototxt",
-            "Estimator/Human/models/caffe/pose_iter_70000.caffemodel"]
-    pose: ["Estimator/Pose/models/caffe/pose_deploy_resize.prototxt",
-           "Estimator/Pose/models/caffe/pose_iter_320000.caffemodel"]
+  human_models:
+    naxvm: "Estimator/Human/models/naxvm/ssdlite_mobilenet_v2_coco_2018_05_09/frozen_inference_graph.pb"
+    cpm_caffe: ["Estimator/Human/models/caffe/pose_deploy_copy_4sg_resize.prototxt",
+                "Estimator/Human/models/caffe/pose_iter_70000.caffemodel"]
+    cpm_tf: "Estimator/Human/models/tf/person_net.ckpt"
 
-  tf_models:
-    human: "Estimator/Human/models/tf/person_net.ckpt"
-    pose: "Estimator/Frameworks/TensorFlow/models/pose_net.ckpt"
 
-  naxvm_models:
-    human: "Estimator/Human/models/naxvm/ssdlite_mobilenet_v2_coco_2018_05_09/frozen_inference_graph.pb"
+  pose_models:
+    cpm_caffe: ["Estimator/Pose/models/caffe/pose_deploy_resize.prototxt",
+                "Estimator/Pose/models/caffe/pose_iter_320000.caffemodel"]
 
-  boxsize: 192
 
   limbs: [1, 2, 3, 4, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14]
 
   colors: [[0, 0, 255], [0, 170, 255], [0, 255, 170], [0, 255, 0],
-           [170, 255, 0], [255, 170, 0], [255, 0, 0], [255, 0, 170],
-           [170, 0, 255]]
+             [170, 255, 0], [255, 170, 0], [255, 0, 0], [255, 0, 170],
+             [170, 0, 255]]
+  boxsize: 192
 
-  sigma: 21
+  cpm_config:
+    sigma: 21

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-pose_caffe.py: Module for estimating human pose with Caffe.
+pose_cpm.py: Convolutional Pose Machines.
 Based on @shihenw code:
 https://github.com/shihenw/convolutional-pose-machines-release/blob/master/testing/python/demo.ipynb
 """

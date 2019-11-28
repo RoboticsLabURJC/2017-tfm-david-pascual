@@ -96,42 +96,37 @@ class Estimator:
         self.gui = gui
 
         self.config = data
-        sigma = self.config["sigma"]
         boxsize = self.config["boxsize"]
         human_framework = self.config["human_framework"]
         pose_framework = self.config["pose_framework"]
 
-        available_human_fw = ["caffe", "tf", "naxvm"]
-        available_pose_fw = ["caffe"]
+        available_human_fw = ["cpm_caffe", "cpm_tf", "naxvm"]
+        available_pose_fw = ["cpm_caffe"]
 
         HumanDetector, PoseEstimator = (None, None)
-        human_model, pose_model = (None, None)
+        human_model = self.config["human_models"][human_framework]
+        pose_model = self.config["pose_models"][pose_framework]
 
-        if human_framework == "caffe":
-            from Human.human_caffe import HumanDetector
-            human_model = self.config["caffe_models"]["human"]
-        elif human_framework == "tf":
-            from Human.human_tf import HumanDetector
-            human_model = self.config["tf_models"]["human"]
+        if human_framework == "cpm_caffe":
+            from Human.human_cpm_caffe import HumanDetector
+        elif human_framework == "cpm_tf":
+            from Human.human_cpm_tf import HumanDetector
         elif human_framework == "naxvm":
             from Human.human_naxvm import HumanDetector
-            human_model = self.config["naxvm_models"]["human"]
         else:
             print("'%s' is not supported for human detection" % human_framework)
             print("Available frameworks: " + str(available_human_fw))
             exit()
+        self.hd = HumanDetector(human_model, boxsize)
 
-        if pose_framework == "caffe":
-            from Pose.pose_caffe import PoseEstimator
-            pose_model = self.config["caffe_models"]["pose"]
+        if pose_framework == "cpm_caffe":
+            from Pose.pose_cpm import PoseEstimator
+            sigma = self.config["cpm_config"]["sigma"]
+            self.pe = PoseEstimator(pose_model, boxsize, sigma)
         else:
             print("'%s' is not supported for pose detection" % pose_framework)
             print("Available frameworks: " + str(available_pose_fw))
             exit()
-
-        self.hd = HumanDetector(human_model, boxsize)
-        self.pe = PoseEstimator(pose_model, boxsize, sigma)
-
         self.pos3d_kfilters = [KFilter3D() for idx in self.config["limbs"]]
 
     def estimate(self, frame):
