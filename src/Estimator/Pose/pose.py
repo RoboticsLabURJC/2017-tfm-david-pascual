@@ -8,9 +8,9 @@ __date__ = "2019/11/28"
 
 
 class PoseEstimator:
-    def __init__(self, model, boxsize, confidence_th=0.3):
+    def __init__(self, model_fname, boxsize, confidence_th=0.3):
         """ Constructs Pose Estimator class. """
-        self.model, self.weights = model
+        self.model_fname = model_fname
         self.net = None
 
         self.im = None

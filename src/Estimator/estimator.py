@@ -123,6 +123,9 @@ class Estimator:
             from Pose.pose_cpm import PoseCPM
             sigma = self.config["cpm_config"]["sigma"]
             self.pe = PoseCPM(pose_model, boxsize, sigma)
+        elif pose_framework == "stacked":
+            from Pose.pose_stacked import PoseStacked
+            self.pe = PoseStacked(pose_model, boxsize)
         else:
             print("'%s' is not supported for pose detection" % pose_framework)
             print("Available frameworks: " + str(available_pose_fw))
@@ -139,7 +142,6 @@ class Estimator:
         # print("-" * 80)
         t = time.time()
         human_bboxes = self.hd.get_bboxes(frame)[:1]
-        print(human_bboxes)
         print("Human detection: %d ms" % int((time.time() - t) * 1000))
 
         all_joints = []
@@ -309,7 +311,7 @@ class Estimator:
             # if self.gui.display:
             for bbox, joints in zip(all_humans, all_joints):
                 im = draw_estimation(im, bbox, joints, limbs, colors)
-                cv2.imwrite("results/im_pose_%02d.png" % self.idx, im)
+                # cv2.imwrite("results/im_pose_%02d.png" % self.idx, im)
                 self.idx += 1
 
             self.gui.im_pred = im.copy()

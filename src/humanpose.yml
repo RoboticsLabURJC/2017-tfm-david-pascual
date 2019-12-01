@@ -37,7 +37,7 @@ HumanPose:
 
 Estimator:
   human_framework: "naxvm"
-  pose_framework: "cpm_caffe"
+  pose_framework: "stacked"
 
   # CPU mode or GPU mode
   GPU: 1
@@ -52,6 +52,7 @@ Estimator:
   pose_models:
     cpm_caffe: ["Estimator/Pose/models/caffe/pose_deploy_resize.prototxt",
                 "Estimator/Pose/models/caffe/pose_iter_320000.caffemodel"]
+    stacked: "Estimator/Pose/models/pytorch/simpleHG.pth"
 
 
   limbs: [1, 2, 3, 4, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14]
@@ -59,7 +60,8 @@ Estimator:
   colors: [[0, 0, 255], [0, 170, 255], [0, 255, 170], [0, 255, 0],
              [170, 255, 0], [255, 170, 0], [255, 0, 0], [255, 0, 170],
              [170, 0, 255]]
-  boxsize: 192
+#  boxsize: 192
+  boxsize: 256
 
   cpm_config:
     sigma: 21

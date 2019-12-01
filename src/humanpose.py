@@ -11,6 +11,7 @@ __date__ = "2017/11/16"
 import Ice
 import signal
 import sys
+import torch  # import here to avoid bugs
 import traceback
 import yaml
 from PyQt5 import QtWidgets
