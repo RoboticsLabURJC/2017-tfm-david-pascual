@@ -122,27 +122,24 @@ analytics:
 # PROFILE
 # Site Author
 author:
-  name             : "Your Name"
+  name             : "David Pascual"
   avatar           : "/assets/images/profile.jpg"
-  bio              : "Site for my documentation"
-  location         : "Location"
+  bio              : "Media studies and Audiovisual Systems Engineer. Currently enrolled in Computer Vision Master @ URJC."
+  location         : "Madrid"
   email            :
   links:
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
-      url: yourmail@domain.com
-    - label: "About Me"
-      icon: "fas fa-fw fa-link"
-      url: "yoursite.com"
-    - label: "Twitter"
-      icon: "fab fa-fw fa-twitter-square"
-      url: "https://twitter.com/"
+      url: d.pascualhe@alumnos.urjc.es
+    - label: "LinkedIn"
+      icon: "fas fa-fw fa-linkedin"
+      url: "https://www.linkedin.com/in/dpascualhe/"
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
-      url: "https://github.com/RoboticsLabURJC"
-    #- label: "Youtube"
-    #  icon: "fab fa-fw fa-youtube"
-    #  url: "https://www.youtube.com/channel/UCgmUgpircYAv_QhLQziHJOQ"
+      url: "https://github.com/dpascualhe"
+    - label: "Youtube"
+      icon: "fab fa-fw fa-youtube"
+      url: "https://www.youtube.com/channel/UC00Y98RkCqqnL6DgKepCtfA"
 
 
 #################################################################################

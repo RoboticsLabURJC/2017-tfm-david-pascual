@@ -38,14 +38,12 @@ youTube_id: ID7qaEcIu4k
 
 {% include feature_row %}
 
-Hello, everybody.
+Hi there!
 
-You can write an introduction about the work you are going to do, links, something about yourself, etc.
+I'm David Pascual and this is the place where I will be writing down the latest advances in my master's thesis.
 
-In the `README.md` file at the root of the project are the steps to replicate the Minimal mistakes template on your local machine. This way you don't need to upload it to GitHub to be represented until it's ready.
+The main subject of this work is the real-time estimation of human poses in RGBD videos. We will evaluate several state-of-the-art methods for 2D and 3D pose estimation and implement a straight-forward pipeline for augmenting 2D poses into 3D.
 
-Uploading content to GitHub automatically displays your documentation in the link with a structure of the type:
-
-```
-https://github_user_name.github.io/repository_name/
-```
+This project is tutored by:
+- [Jose María Cañas](https://gsyc.urjc.es/jmplaza/)
+- [Inmaculada Mora](https://gestion2.urjc.es/pdi/ver/inmaculada.mora)
