@@ -132,7 +132,7 @@ author:
       icon: "fas fa-fw fa-envelope-square"
       url: d.pascualhe@alumnos.urjc.es
     - label: "LinkedIn"
-      icon: "fas fa-fw fa-linkedin"
+      icon: "fab fa-fw fa-linkedin"
       url: "https://www.linkedin.com/in/dpascualhe/"
     - label: "GitHub"
       icon: "fab fa-fw fa-github"

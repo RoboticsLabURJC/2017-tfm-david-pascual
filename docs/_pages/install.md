@@ -27,17 +27,17 @@ In order to test CPMs with live video feed, we have built <code>humanpose</code>
 [JdeRobot](http://jderobot.org/), a middleware that provides several tools and drivers for robotics and computer vision tasks.
 
 Once all the dependencies have been installed and the repo has been cloned, download the trained Caffe and TensorFlow models (provided by their authors):
-<pre>
+```bash
 chmod +x get_models.sh
 ./get_models.sh
-</pre>
+```
 
 You can choose different video sources to feed the CPM (ROS, JdeRobot, local webcam, video file). The video source, as
 well as other settings can be modified from the <code>humanpose.yml</code> file. When you have set your desired
 parameters, from another terminal run:
-<pre>
+```bash
 python humanpose.py humanpose.yml
-</pre>
+```
 
 This will launch a GUI where live video and estimated poses are shown.
 
@@ -45,10 +45,10 @@ This will launch a GUI where live video and estimated poses are shown.
 RGBD camera can be used in order to get the pose 3D coordinates. 3DVizWeb, developed within JdeRobot, allow us to project
 the estimated joints and limbs in 3D. If you want to use this feature, you must follow the instructions available
 [here](https://github.com/RoboticsURJC-students/2017-tfm-david-pascual/tree/master/src/Viz/3DVizWeb) and run: 
-<pre>
+```bash
 cd Viz/3DVizWeb/
 npm start
-</pre>
+```
 
 right after launching <code>humanpose</code>.
 
