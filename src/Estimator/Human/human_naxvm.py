@@ -26,7 +26,7 @@ class HumanDetector(Human):
     Class for person detection.
     """
 
-    def __init__(self, model, boxsize=192):
+    def __init__(self, model, boxsize=192, confidence_threshold=0.75):
         """
         Class constructor.
         @param model: tf models
@@ -80,7 +80,7 @@ class HumanDetector(Human):
                 [self.detection_boxes, self.detection_scores, self.detection_classes, self.num_detections],
                 feed_dict={self.image_tensor: dummy_tensor})
 
-        self.confidence_threshold = 0.75
+        self.confidence_threshold = confidence_threshold
 
     def detect(self):
         """

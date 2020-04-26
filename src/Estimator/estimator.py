@@ -90,6 +90,9 @@ class Estimator:
         """
         self.idx = 0
 
+        self.accum_pos = [[] for _ in range(14)]
+        self.accum_pos_filtered = [[] for _ in range(14)]
+
         self.cam = cam
         self.cam_depth = cam_depth
         self.viz3d = viz3d
@@ -126,6 +129,9 @@ class Estimator:
         elif pose_framework == "stacked":
             from Pose.pose_stacked import PoseStacked
             self.pe = PoseStacked(pose_model, boxsize)
+        elif pose_framework == "chained":
+            from Pose.pose_chained import PoseChained
+            self.pe = PoseChained(pose_model, boxsize)
         else:
             print("'%s' is not supported for pose detection" % pose_framework)
             print("Available frameworks: " + str(available_pose_fw))
@@ -190,7 +196,11 @@ class Estimator:
                 pos = get_depth_point(joints[idx], im_depth, self.cam_depth.calib_data)
             print("pos3d", pos)
             if filter:
+                self.accum_pos[idx].append(pos)
+                # np.save("/home/dpascualhe/repos/notebooks/data/pos/accum_pos-%02d.npy" % idx, self.accum_pos[idx])
                 pos = self.pos3d_kfilters[idx].update_filter(pos)
+                self.accum_pos_filtered[idx].append(pos)
+                # np.save("/home/dpascualhe/repos/notebooks/data/pos/accum_pos_filtered-%02d.npy" % idx, self.accum_pos_filtered[idx])
             print("posFiltered", pos)
             return np.array(pos)
 

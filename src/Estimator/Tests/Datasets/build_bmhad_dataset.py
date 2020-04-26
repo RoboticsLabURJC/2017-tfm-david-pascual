@@ -1,5 +1,6 @@
 from glob import glob
 import os
+from subprocess import call
 
 import cv2
 import h5py
@@ -51,39 +52,59 @@ def parse_mocap(fname, joints_names, frames_indices):
     :param num_frames_in_video: int, number of frames in video
     :return: np.arrays, 2d and 3d joints
     """
-
     data = np.genfromtxt(fname, dtype=float, delimiter=',', names=True)
     full_pose_3d = []
-
     for frame_idx in frames_indices:
         frame_idx = int(frame_idx) + 1
         pose_3d = []
         for joint in joints_names:
-            pose_3d.append((data[joint + "X"][frame_idx], data[joint + "Y"][frame_idx], data[joint + "Z"][frame_idx]))
+            joint_pos = (data[joint + "X"][frame_idx], data[joint + "Y"][frame_idx], data[joint + "Z"][frame_idx])
+            pose_3d.append(joint_pos)
         full_pose_3d.append(pose_3d)
 
     return np.array(full_pose_3d) * 10
 
 
-def get_cam_world_coords():
+def bmhad_to_ours(joints):
+    num_frames = joints.shape[0]
+    new_joints = np.zeros((num_frames, 12, joints.shape[2]))
+    head_sizes = np.zeros((num_frames))
+
+    for idx, current_joints in enumerate(joints):
+        new_joints[idx, 0] = np.mean(current_joints[:2], axis=0).astype(joints.dtype)  # head
+        new_joints[idx, 1:7] = current_joints[2:8]
+        new_joints[idx, 7:9] = current_joints[9:11]
+        new_joints[idx, 9:11] = current_joints[12:14]
+        new_joints[idx, 11] = np.mean(current_joints[np.array([8, 11])], axis=0).astype(joints.dtype)  # pelvis
+        head_sizes[idx] = np.linalg.norm(current_joints[0] - current_joints[1])
+
+    return new_joints, head_sizes
+
+
+def get_cam_params(cam):
     """
-    Generate camera world coordinates
+    Get camera parameters
+    :param cam: str, cam ID
     :return: dict, np.array - camera parameters, camera world coordinates
     """
     # KINECT params
     K = {}
-    K["R"] = np.reshape([-0.798016667, - 0.041981064, 0.601171315, -0.059102636, -0.987309396, -0.147400886, 0.599730134, -0.153159171, 0.785408199], (3, 3)).T
-    K["t"] = np.array([[26.147224426, 853.124328613, 2533.297607422]]).T
-    K["T"] = np.append(np.append(K["R"],  K["t"], axis=1), np.array([[0, 0, 0, 1]]), axis=0)
-    K["Tinv"] = np.append(np.append(K["R"].T, np.dot(-K["R"].T, K["t"]), axis=1), np.array([[0, 0, 0, 1]]), axis=0)
-    K["K"] = np.reshape([532.33691406, 0., 323.22338867, 0., 532.80218506, 265.27493286, 0., 0., 1.], (3, 3))
-    K["d"] = np.array([0.18276334, -0.35502717, -6.75550546e-004, -9.90863307e-004]).T
+    if cam == "k02":
+        K["R"] = np.reshape([-0.798016667, - 0.041981064, 0.601171315, -0.059102636, -0.987309396, -0.147400886, 0.599730134, -0.153159171, 0.785408199], (3, 3)).T.astype(np.float64)
+        K["t"] = np.array([[26.147224426, 853.124328613, 2533.297607422]]).T.astype(np.float64)
+        K["K"] = np.reshape([532.33691406, 0., 323.22338867, 0., 532.80218506, 265.27493286, 0., 0., 1.], (3, 3)).astype(np.float64)
+        K["d"] = np.array([0.18276334, -0.35502717, -6.75550546e-004, -9.90863307e-004]).T.astype(np.float64)
+    elif cam == "k01":
+        K["R"] = np.reshape([0.869593024, 0.005134047, -0.493742496, 0.083783410, -0.986979902, 0.137298822, -0.486609042, -0.160761520, -0.858700991], (3, 3)).T.astype(np.float64)
+        K["t"] = np.array([[-844.523864746, 763.838439941, 3232.193359375]]).T.astype(np.float64)
+        K["K"] = np.reshape([531.49230957, 0., 314.63775635, 0., 532.39190674, 252.53335571, 0., 0., 1.], (3, 3)).astype(np.float64)
+        K["d"] = np.array([0.19607373, -0.36734107, -2.47962005e-003, -1.89774996e-003]).T.astype(np.float64)
+    else:
+        raise Exception("Unknown cam: %s" % cam)
 
-    # compute camera position in the woorld coordinate frame
-    z = np.array([0, 0, 0, 1]).T
-    K["p"] = np.dot(K["Tinv"], z)
+    K["T"] = np.append(np.append(K["R"].T,  K["t"], axis=1), np.array([[0, 0, 0, 1]]).astype(np.float64), axis=0).astype(np.float64)
 
-    return K, K["p"][:3]
+    return K
 
 def project_points(K, joints):
     """
@@ -98,10 +119,14 @@ def project_points(K, joints):
     new_joints[:, 0] = joints[:, 1]
     new_joints[:, 1] = joints[:, 2]
     new_joints[:, 2] = joints[:, 0]
-    rvec = cv2.Rodrigues(K["R"])[0]
+    rvec = cv2.Rodrigues(K["R"].T)[0]
 
-    joints_2d, _ = cv2.projectPoints(new_joints, rvec, K["t"], K["K"], K["d"])  #, cv2.Rodrigues(K["R"]), K["t"], K["K"], K["d"])
-    return np.squeeze(joints_2d)
+    joints_2d, _ = cv2.projectPoints(new_joints, rvec, K["t"], K["K"], K["d"])
+    joints_3d = np.zeros_like(joints)
+    for idx, joint in enumerate(new_joints):
+        joints_3d[idx] = np.dot(K["T"], np.append(joint, [1]).T)[:3]
+
+    return np.squeeze(joints_2d), joints_3d
 
 
 def build_dataset(fname, data_dir, scene_code, debug=False):
@@ -118,10 +143,17 @@ def build_dataset(fname, data_dir, scene_code, debug=False):
     joint_order += ["RightUpLeg", "RightLeg", "RightFoot"]
     joint_order += ["LeftUpLeg", "LeftLeg", "LeftFoot"]
 
+    joint_order_fancier = ["head"]
+    joint_order_fancier += ["right_shoulder", "right_elbow", "right_hand"]
+    joint_order_fancier += ["left_shoulder", "left_elbow", "left_hand"]
+    joint_order_fancier += ["right_knee", "right_foot"]
+    joint_order_fancier += ["left_knee", "left_foot"]
+    joint_order_fancier += ["pelvis"]
+
     scene_dir = os.path.join(data_dir, scene_code)
 
     f = h5py.File(fname, mode="w")
-    f.attrs["joint_order"] = joint_order
+    f.attrs["joint_order"] = joint_order_fancier
 
     # Calibration
     calibration_dtype = np.dtype([
@@ -132,9 +164,8 @@ def build_dataset(fname, data_dir, scene_code, debug=False):
         ("resolution", np.uint16, (2)),
     ])
 
-    f.create_dataset("calibration", (1,), calibration_dtype)
-
-    cam_cfg_fname = glob(os.path.join(data_dir, "camcfg*.yml"))[0]
+    cam_id = "k" + scene_code.split("k")[-1]
+    cam_cfg_fname = os.path.join(data_dir, "camcfg_%s.yml" % cam_id)
     cam_cfg = parse_cam_cfg(cam_cfg_fname)
 
     # Pose and image data
@@ -143,14 +174,19 @@ def build_dataset(fname, data_dir, scene_code, debug=False):
 
     im_height, im_width = cam_cfg["resolution"]
     pose_dtype = np.dtype([
+        ("camera_id", np.str_, 20),
         ("subject_id", np.str_, 20),
         ("action_id", np.str_, 20),
         ("repetition_id", np.str_, 20),
         ("rgb_video", np.uint8, (num_frames, im_height, im_width, 3)),
         ("depth_video", np.uint16, (num_frames, im_height, im_width)),
-        ("pose_2d", np.float32, (num_frames, 14, 2)),
-        ("pose_3d", np.float32, (num_frames, 14, 3)),
+        ("pose_2d", np.float32, (num_frames, 12, 2)),
+        ("pose_3d", np.float32, (num_frames, 12, 3)),
+        ("pose_3d_world", np.float32, (num_frames, 12, 3)),
+        ("head_sizes_2d", np.float32, (num_frames)),
+        ("head_sizes_3d", np.float32, (num_frames)),
     ])
+    f.create_dataset("calibration", (1,), calibration_dtype)
 
     f.create_dataset("pose", (1,), pose_dtype)
 
@@ -158,59 +194,75 @@ def build_dataset(fname, data_dir, scene_code, debug=False):
     rgb, depth = parse_video(os.path.join(scene_dir, "video"), video_frames)
 
     mocap_frames = corr_frames[:, 2]
-    joints_3d = parse_mocap(glob(os.path.join(scene_dir, "*.csv"))[0], joint_order, mocap_frames)
 
-    K, cam_coords = get_cam_world_coords()
+    call(["bvh-converter", glob(os.path.join(scene_dir, "*.bvh"))[0]])
+    joints_3d_world = parse_mocap(glob(os.path.join(scene_dir, "*.csv"))[0], joint_order, mocap_frames)
 
-    joints_3d_aux = joints_3d.copy()
-    joints_3d[:, :, 0] = joints_3d_aux[:, :, 2]
-    joints_3d[:, :, 1] = joints_3d_aux[:, :, 0]
-    joints_3d[:, :, 2] = joints_3d_aux[:, :, 1]
-    joints_2d = np.zeros((joints_3d.shape[0], joints_3d.shape[1], 2))
-    for frame_idx, skel in enumerate(joints_3d):
-        joints_2d[frame_idx] = project_points(K, skel)
+    K = get_cam_params(cam_id)
+
+    joints_3d_aux = joints_3d_world.copy()
+    joints_3d_world[:, :, 0] = joints_3d_aux[:, :, 2]
+    joints_3d_world[:, :, 1] = joints_3d_aux[:, :, 0]
+    joints_3d_world[:, :, 2] = joints_3d_aux[:, :, 1]
+    joints_2d = np.zeros((joints_3d_world.shape[0], joints_3d_world.shape[1], 2))
+    joints_3d_camera = np.zeros_like(joints_3d_world)
+    for frame_idx, skel in enumerate(joints_3d_world):
+        joints_2d[frame_idx], joints_3d_camera[frame_idx] = project_points(K, skel)
+
+    joints_3d_world, _ = bmhad_to_ours(joints_3d_world)
+    joints_3d_camera, head_sizes_3d = bmhad_to_ours(joints_3d_camera)
+    joints_2d, head_sizes_2d = bmhad_to_ours(joints_2d)
 
     if debug:
         fig = plt.figure()
         ax1 = fig.add_subplot(121)
         ax2 = fig.add_subplot(122, projection='3d')
+
         def animate(i):
             ax1.clear()
-            ax1.scatter(joints_2d[i, :, 0], joints_2d[i, :, 1], s=50)
+            ax1.scatter(joints_2d[i, :, 0], joints_2d[i, :, 1], s=30)
             for idx, joint_2d in enumerate(joints_2d[i]):
-                ax1.text(joint_2d[0] + 5, joint_2d[1] + 5, str(idx), color="red", fontsize=11)
+                ax1.text(joint_2d[0] + 5, joint_2d[1] + 5, str(idx), color="red", fontsize=9)
             ax1.imshow(rgb[i])
 
             ax2.clear()
-            ax2.scatter(joints_3d[i, :, 0], joints_3d[i, :, 1], joints_3d[i, :, 2])
-            ax2.scatter(cam_coords[2], cam_coords[0], cam_coords[1], color="red")
-            ax2.set_xlim(-2000, 2000)
-            ax2.set_ylim(-2000, 2000)
-            ax2.set_zlim(0, 2000)
+            ax2.scatter(joints_3d_camera[i, :, 2], joints_3d_camera[i, :, 0], -joints_3d_camera[i, :, 1])
+            ax2.set_xlim(2000, 4000)
+            ax2.set_ylim(-1500, 500)
+            ax2.set_zlim(-1000, 1000)
+            ax2.view_init(30, i * 2)
 
-        ani = animation.FuncAnimation(fig, animate, interval=1)
-        plt.show()
+        Writer = animation.writers['ffmpeg']
+        writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
+        ani = animation.FuncAnimation(fig, animate, interval=1, save_count=num_frames)
+        ani.save(os.path.join(data_dir, '%s.mp4' % scene_code), writer=writer)
 
-    f["calibration"][0]["K"] = K["K"]
-    f["calibration"][0]["R"] = K["R"]
-    f["calibration"][0]["t"] = np.squeeze(K["t"])
-    f["calibration"][0]["dist"] = K["d"]
-    f["calibration"][0]["resolution"] = cam_cfg["resolution"]
+    calibration = np.array((K["K"], K["R"], np.squeeze(K["t"]), K["d"], cam_cfg["resolution"]), dtype=calibration_dtype)
+    f["calibration"][0] = calibration
 
-    f["pose"][0]["subject_id"] = str(scene_code.split("s")[:2])
-    f["pose"][0]["action_id"] = str(scene_code.split("a")[:2])
-    f["pose"][0]["repetition_id"] = str(scene_code.split("r")[:2])
-    f["pose"][0]["rgb_video"] = rgb
-    f["pose"][0]["depth_video"] = depth
-    f["pose"][0]["pose_2d"] = joints_2d
-    f["pose"][0]["pose_3d"] = joints_3d
+    pose = np.array((
+        cam_id,
+        "s" + scene_code.split("s")[-1][:2],
+        "a" + scene_code.split("a")[-1][:2],
+        "r" + scene_code.split("r")[-1][:2],
+        rgb,
+        depth,
+        joints_2d,
+        joints_3d_camera,
+        joints_3d_world,
+        head_sizes_2d,
+        head_sizes_3d,
+    ), dtype=pose_dtype)
+    f["pose"][0] = pose
 
     return f
 
 
 if __name__ == "__main__":
-    fname = "bmhad_k02s01a01r01.h5"
-    data_dir = "BMHAD"
-
-    dataset = build_dataset(fname, data_dir, scene_code="s01a01r01", debug=False)
-    dataset.close()
+    data_dir = "/home/dpascualhe/repos/2017-tfm-david-pascual/src/Estimator/Tests/Datasets/BMHAD"
+    for scene_dir in glob(data_dir + "/*r02*/"):
+        scene_code = scene_dir.split("/")[-2]
+        print("Parsing %s" % scene_code)
+        fname = os.path.join(data_dir, "hdf5/bmhad_%s.h5" % scene_code)
+        dataset = build_dataset(fname, data_dir, scene_code=scene_code, debug=True)
+        dataset.close()

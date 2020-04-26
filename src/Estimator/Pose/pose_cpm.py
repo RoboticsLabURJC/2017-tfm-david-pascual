@@ -20,6 +20,8 @@ import numpy as np
 
 from pose import PoseEstimator
 
+from matplotlib import pyplot as plt
+
 
 def crop_human(sample, c, s, bsize):
     """
@@ -142,7 +144,7 @@ class PoseCPM(PoseEstimator):
 
         return np.squeeze(gaussmap)
 
-    def get_coords(self, sample, human_bbox):
+    def get_coords(self, sample, human_bbox, get_pose_maps=False):
         """
         Estimate human pose given an input image.
         @param sample: np.array - original input image
@@ -158,13 +160,21 @@ class PoseCPM(PoseEstimator):
 
         (ux, uy), (lx, ly) = human_bbox
 
+        # # Get scale
+        # scale = float(self.boxsize) / (np.max([np.abs(ux - lx), np.abs(uy - ly)]) + 50)
+        #
+        # # Get center
+        # cx, cy = (int((ux + lx) * scale / 2), int((uy + ly) * scale / 2))
+        #
+        # im_human = crop_human(sample, (cx, cy), scale, self.boxsize)
+        # # plt.figure(), plt.imshow(im_human), plt.show()
+
         # Get scale
         scale = float(self.boxsize) / sample.shape[0]
-
         # Get center
         cx, cy = (int((ux + lx) * scale / 2), int((uy + ly) * scale / 2))
-
         im_human = crop_human(sample, (cx, cy), scale, self.boxsize)
+        # plt.figure(), plt.imshow(im_human), plt.show()
 
         self.im = im_human.copy()
 
@@ -188,4 +198,71 @@ class PoseCPM(PoseEstimator):
 
         joint_coords = np.array([[int(x), int(y)] for y, x in joint_coords])
 
-        return joint_coords
+        if get_pose_maps:
+            return joint_coords, pose_map
+        else:
+            return joint_coords
+
+
+if __name__ == "__main__":
+    model_fname = ["/home/dpascualhe/repos/2017-tfm-david-pascual/src/Estimator/Pose/models/caffe/pose_deploy_resize.prototxt",
+                   "/home/dpascualhe/repos/2017-tfm-david-pascual/src/Estimator/Pose/models/caffe/pose_iter_320000.caffemodel"]
+    sigma = 21
+
+    boxsizes = [384, 192, 128, 92]
+
+    from matplotlib import pyplot as plt
+    plt.figure()
+
+    for idx, boxsize in enumerate(boxsizes):
+        pe = PoseCPM(model_fname, boxsize, sigma)
+
+        im = cv2.imread("/home/dpascualhe/repos/2017-tfm-david-pascual/src/Estimator/Samples/nadal.png")
+        bbox = np.array([[237, -21], [597, 338]])
+        joints, pose_maps = pe.get_coords(im, bbox, get_pose_maps=True)
+        print(pose_maps.shape)
+
+        # plt.figure()
+        # plt.subplot(441), plt.imshow(pe.im[:, :, ::-1])
+        # for idx in range(pose_maps.shape[0]):
+        #     plt.subplot(4, 4, idx + 2), plt.imshow(pose_maps[idx])
+        # plt.show()
+
+        limbs = [1, 2, 3, 4, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14]
+        limbs = np.array(limbs).reshape((-1, 2)) - 1
+
+        colors = [[0, 0, 255], [0, 170, 255], [0, 255, 170], [0, 255, 0],
+                 [170, 255, 0], [255, 170, 0], [255, 0, 0], [255, 0, 170],
+                 [170, 0, 255]]
+
+
+        def draw_estimation(im, bbox, joints, limbs, colors, stickwidth=6):
+            upper, lower = bbox
+            cv2.rectangle(im, tuple(upper), tuple(lower), (0, 255, 0), 3)
+
+            for i, (p, q) in enumerate(limbs):
+                px, py = joints[p]
+                qx, qy = joints[q]
+
+                if px >= 0 and py >= 0 and qx >= 0 and qy >= 0:
+                    m_x = int(np.mean(np.array([px, qx])))
+                    m_y = int(np.mean(np.array([py, qy])))
+
+                    length = ((px - qx) ** 2. + (py - qy) ** 2.) ** 0.5
+                    angle = math.degrees(math.atan2(py - qy, px - qx))
+                    polygon = cv2.ellipse2Poly((m_x, m_y),
+                                               (int(length / 2), stickwidth),
+                                               int(angle), 0, 360, 1)
+                    cv2.fillConvexPoly(im, polygon, colors[i])
+
+                if px >= 0 and py >= 0:
+                    cv2.circle(im, (px, py), 3, (0, 0, 0), -1)
+                if qx >= 0 and qy >= 0:
+                    cv2.circle(im, (qx, qy), 3, (0, 0, 0), -1)
+
+            return im
+
+        im_drawn = draw_estimation(im, bbox, joints, limbs, colors)
+        plt.subplot(2, 2, idx + 1), plt.title("Boxsize = %dpx" % boxsize), plt.imshow(im_drawn[:, :, ::-1])
+    plt.show()
+

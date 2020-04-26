@@ -74,3 +74,83 @@ class HumanDetector(Human):
 
         self.heatmap = np.squeeze(self.net.blobs[output_blobs.keys()[0]].data)
         self.heatmap = map_resize(self.im.shape, self.heatmap)
+
+if __name__ == "__main__":
+    human_model = ["/home/dpascualhe/repos/2017-tfm-david-pascual/src/Estimator/Human/models/caffe/pose_deploy_copy_4sg_resize.prototxt",
+                   "/home/dpascualhe/repos/2017-tfm-david-pascual/src/Estimator/Human/models/caffe/pose_iter_70000.caffemodel"]
+    boxsize = 256
+
+    hd = HumanDetector(human_model, boxsize)
+    hd.init_net()
+
+    im = cv2.imread("/home/dpascualhe/repos/2017-tfm-david-pascual/src/Estimator/Samples/nadal.png")
+    human_bbox = hd.get_bboxes(im)[0]
+
+    (ux, uy), (lx, ly) = human_bbox
+    print(human_bbox)
+    # Get scale
+    scale = float(boxsize) / im.shape[0]
+
+    # Get center
+    cx, cy = (int((ux + lx) * scale / 2), int((uy + ly) * scale / 2))
+
+    im_drawn = cv2.rectangle(im.copy(), (ux, uy), (lx, ly), color=(255, 0, 0), thickness=5)
+
+    def crop_human(sample, c, s, bsize):
+        """
+        Crop human in the image depending on subject center and scale.
+        @param sample: np.array - input image
+        @param c: list - approx. human center
+        @param s: float - approx. human scale wrt 200px
+        @param bsize: int - boxsize
+        @return: np.array - cropped human
+        """
+        cx, cy = c
+
+        # Resize image and center according to given scale
+        im_resized = cv2.resize(sample, None, fx=s, fy=s)
+
+        h, w, d = im_resized.shape
+
+        pad_up = int(bsize / 2 - cy)
+        pad_down = int(bsize / 2 - (h - cy))
+        pad_left = int(bsize / 2 - cx)
+        pad_right = int(bsize / 2 - (w - cx))
+
+        # Apply padding or crop image as needed
+        if pad_up > 0:
+            pad = np.ones((pad_up, w, d), np.uint8) * 128
+            im_resized = np.vstack((pad, im_resized))
+        else:
+            im_resized = im_resized[-pad_up:, :, :]
+        h, w, d = im_resized.shape
+
+        if pad_down > 0:
+            pad = np.ones((pad_down, w, d), np.uint8) * 128
+            im_resized = np.vstack((im_resized, pad))
+        else:
+            im_resized = im_resized[:h + pad_down, :, :]
+        h, w, d = im_resized.shape
+
+        if pad_left > 0:
+            pad = np.ones((h, pad_left, d), np.uint8) * 128
+            im_resized = np.hstack((pad, im_resized))
+        else:
+            im_resized = im_resized[:, -pad_left:, :]
+        h, w, d = im_resized.shape
+
+        if pad_right > 0:
+            pad = np.ones((h, pad_right, d), np.uint8) * 128
+            im_resized = np.hstack((im_resized, pad))
+        else:
+            im_resized = im_resized[:, :w + pad_right, :]
+
+        return im_resized
+
+    im_human = crop_human(im, (cx, cy), scale, boxsize)
+
+    from matplotlib import pyplot as plt
+    plt.figure()
+    plt.subplot(121), plt.imshow(im_drawn[:, :, ::-1])
+    plt.subplot(122), plt.imshow(im_human[:, :, ::-1])
+    plt.show()
