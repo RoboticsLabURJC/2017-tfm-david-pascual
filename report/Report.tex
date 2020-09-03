@@ -1,0 +1,132 @@
+\documentclass[a4paper, 12pt]{book}
+
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{layout}
+\usepackage{emptypage}
+\usepackage{fancyhdr}
+\usepackage{fancyref}
+\usepackage{fancyvrb}
+\usepackage{subcaption} % subfiguras
+\usepackage{caption}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage[a4paper,top=3cm, bottom=3cm, inner=2.5cm, outer=2.5cm]{geometry}
+\usepackage{listings}
+\usepackage[english]{babel}
+\usepackage{url}
+\usepackage{color}
+\usepackage[backend=bibtex,style=ieee,natbib=true]{biblatex}
+\addbibresource{Bibliography.bib}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{amsmath}
+\usepackage[noend]{algpseudocode}
+\usepackage[nottoc,numbib]{tocbibind}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\newcommand*{\matminus}{%
+	\leavevmode
+	\hphantom{0}%
+	\llap{%
+		\settowidth{\dimen0 }{$0$}%
+		\resizebox{1.1\dimen0 }{\height}{$-$}%
+	}%
+}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstset{frame=single,
+	language=Python,
+	aboveskip=3mm,
+	belowskip=3mm,
+	showstringspaces=false,
+	columns=flexible,
+	basicstyle={\small\ttfamily},
+	numbers=none,
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{blue},
+	numberstyle=\color{codepurple},
+	stringstyle=\color{magenta},
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=3
+}
+
+\usepackage[acronym,nomain]{glossaries}
+\newacronym{ai}{AI}{Artificial Intelligence}
+\makeglossaries
+
+%\usepackage{titlesec}
+\makeatletter
+\renewcommand{\@makeschapterhead}[1]{
+  \vspace*{0\p@}%
+  {\parindent \z@ \raggedright
+    \normalfont
+    \interlinepenalty\@M
+    \Huge \bfseries  #1\par \nobreak
+    \vskip 15\p@
+  }}
+\makeatother
+
+\renewcommand{\baselinestretch}{1.4}
+\setlength{\headheight}{16pt} 
+
+\pretolerance=1000
+
+\chead[]{}
+\rhead[]{}
+\renewcommand{\headrulewidth}{0.5pt}
+
+\pagestyle{empty}
+
+\title{3D Human Pose Estimation for Assistive Robotics}
+\author{David Pascual Hernández}
+
+\begin{document}
+%%%%%%%%%%%%%%% Cover %%%%%%%%%%%%%%%%%%%%
+\include{0-Cover}
+
+\pagenumbering{Roman}
+
+%%%%%%%%%%%%%%% Acknowledgements %%%%%%%%%%%%
+\include{0-Agradecimientos}
+
+%%%%%%%%%%%%%%% Resumen %%%%%%%%%%%%%%%%%%%%
+\include{0-Resumen}
+
+%%%%%%%%%%%%%%% Summary %%%%%%%%%%%%%%%%%%%%
+\include{0-Summary}
+
+%%%%%%%%%%%%%%% Índices %%%%%%%%%%%%%%%%%%%%
+\tableofcontents
+\listoffigures % Í­ndice de figura
+\listoftables
+\printglossaries
+\addcontentsline{toc}{chapter}{Acronyms}
+\cleardoublepage
+
+%%%%%%%%%%%%%%% Chapters %%%%%%%%%%%%%%%%%%
+\pagestyle{fancy}
+\pagenumbering{arabic}
+\setlength{\parindent}{6mm}
+
+\lhead[]{CHAPTER \thechapter. INTRODUCTION}
+\include{1-Introduction}
+\lhead[]{CHAPTER \thechapter. RELATED WORK}
+\include{2-Related_work}
+\lhead[]{CHAPTER \thechapter. DIGIT CLASSIFIER}
+\include{3-Proposed_method}
+\lhead[]{CHAPTER \thechapter. EXPERIMENTS}
+\include{4-Experiments}
+\lhead[]{CHAPTER \thechapter. CONCLUSIONS}
+\include{5-Conclusions}
+
+%%%%%%%%%%%%%%% Bibliography %%%%%%%%%%%%%%%
+\addcontentsline{toc}{chapter}{Bibliography}
+\include{6-Bibliography}
+
+\end{document}
