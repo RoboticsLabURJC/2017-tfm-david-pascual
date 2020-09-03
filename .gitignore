@@ -11,3 +11,14 @@ testbench_results/
 .idea/
 src/Viz/3DVizWeb/node_modules
 *.bag
+*.log
+*.aux
+*.acn
+*.ist
+*.lof
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*-blx.bib
