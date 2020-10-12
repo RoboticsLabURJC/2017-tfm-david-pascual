@@ -15,11 +15,13 @@
 \usepackage[a4paper,top=3cm, bottom=3cm, inner=2.5cm, outer=2.5cm]{geometry}
 \usepackage{listings}
 \usepackage[english]{babel}
+\usepackage{csquotes}
 \usepackage{url}
 \usepackage{color}
 \usepackage[normalem]{ulem}
 \usepackage[dvipsnames]{xcolor}
-\usepackage{biblatex}\addbibresource{Bibliography.bib}
+\usepackage[citestyle=numeric,style=numeric,backend=bibtex,sorting=none]{biblatex}
+\addbibresource{Bibliography.bib}
 \usepackage{amsmath}
 \usepackage{algorithm}
 \usepackage{amsmath}
@@ -27,6 +29,9 @@
 \usepackage[nottoc,numbib]{tocbibind}
 \usepackage{mathtools}
 \usepackage{graphicx}
+\usepackage{svg}
+\usepackage[labelformat=simple]{subcaption}
+\renewcommand\thesubfigure{(\alph{subfigure})}
 \newcommand*{\matminus}{%
 	\leavevmode
 	\hphantom{0}%
@@ -35,6 +40,21 @@
 		\resizebox{1.1\dimen0 }{\height}{$-$}%
 	}%
 }
+\usepackage{xcolor,colortbl}
+
+\newcommand{\mc}[2]{\multicolumn{#1}{c}{#2}}
+\definecolor{Gray}{gray}{0.85}
+\definecolor{LightCyan}{rgb}{0.88,1,1}
+
+\definecolor{LightRed}{rgb}{1,0.9,0.9}
+\definecolor{LightOrange}{rgb}{1,0.95,0.85}
+\definecolor{LightGreen}{rgb}{0.9,1,0.9}
+\definecolor{LightBlue}{rgb}{0.85,0.95,1}
+\newcolumntype{r}{>{\columncolor{LightRed}}c}
+\newcolumntype{o}{>{\columncolor{LightOrange}}c}
+\newcolumntype{g}{>{\columncolor{LightGreen}}c}
+\newcolumntype{b}{>{\columncolor{LightBlue}}c}
+
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
@@ -67,7 +87,19 @@
 \newacronym{dl}{DL}{Deep Learning}
 \newacronym{cnn}{CNN}{Convolutional Neural Network}
 \newacronym{nn}{NN}{Neural Network}
-\newacronym{cpm}{CPM}{Convolutional Pose Machines}
+\newacronym{cpm}{CPM}{Convolutional Pose Machine}
+\newacronym{bmhad}{BMHAD}{Berkeley's Multimodal Human Action Database}
+\newacronym{mocap}{MoCap}{Motion Capture}
+\newacronym{lsp}{LSP}{Leeds Sports Pose}
+\newacronym{pckh}{PCKh}{Percentage of Correct Keypoints}
+\newacronym{cp}{CP}{Chained Prediction}
+\newacronym{sh}{SH}{Stacked Hourglass}
+\newacronym{mpjpe}{MPJPE}{Mean Per Joint Position Error}
+\newacronym{fps}{fps}{frames per second}
+\newacronym{hri}{HRI}{Human-Robot Interaction}
+\newacronym{gpu}{GPU}{Graphics Processing Unit}
+\newacronym{sdk}{SDK}{Software Development Kit}
+\newacronym{sota}{SOTA}{state-of-the-art}
 \makeglossaries
 
 %\usepackage{titlesec}
@@ -92,8 +124,7 @@
 \renewcommand{\headrulewidth}{0.5pt}
 
 \pagestyle{empty}
-
-\title{3D Human Pose Estimation for Assistive Robotics}
+\title{Real-time 3D Human Pose Estimation for Robotics Applications}
 \author{David Pascual Hernández}
 
 \begin{document}
@@ -103,7 +134,7 @@
 \pagenumbering{Roman}
 
 %%%%%%%%%%%%%%% Acknowledgements %%%%%%%%%%%%
-\include{0-Agradecimientos}
+%\include{0-Agradecimientos}
 
 %%%%%%%%%%%%%%% Resumen %%%%%%%%%%%%%%%%%%%%
 \include{0-Resumen}
@@ -113,7 +144,7 @@
 
 %%%%%%%%%%%%%%% Índices %%%%%%%%%%%%%%%%%%%%
 \tableofcontents
-\listoffigures % Í­ndice de figura
+\listoffigures % Índice de figura
 \listoftables
 \printglossaries
 \addcontentsline{toc}{chapter}{Acronyms}
@@ -128,11 +159,11 @@
 \include{1-Introduction}
 \lhead[]{CHAPTER \thechapter. RELATED WORK}
 \include{2-Related_work}
-\lhead[]{CHAPTER \thechapter. DIGIT CLASSIFIER}
+\lhead[]{CHAPTER \thechapter. PROPOSED METHOD}
 \include{3-Proposed_method}
 \lhead[]{CHAPTER \thechapter. EXPERIMENTS}
 \include{4-Experiments}
-\lhead[]{CHAPTER \thechapter. CONCLUSIONS}
+\lhead[]{CHAPTER \thechapter. CONCLUSIONS AND FUTURE LINES}
 \include{5-Conclusions}
 
 %%%%%%%%%%%%%%% Bibliography %%%%%%%%%%%%%%%

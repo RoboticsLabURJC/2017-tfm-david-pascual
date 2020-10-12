@@ -1,955 +1,993 @@
-@article{sarafianos20163d,
-  title={3d human pose estimation: A review of the literature and analysis of covariates},
-  author={Sarafianos, Nikolaos and Boteanu, Bogdan and Ionescu, Bogdan and Kakadiaris, Ioannis A},
-  journal={Computer Vision and Image Understanding},
-  volume={152},
-  pages={1--20},
-  year={2016},
-  publisher={Elsevier}
-}
-
-@article{ionescu2013human3,
-  title={Human3. 6m: Large scale datasets and predictive methods for 3d human sensing in natural environments},
-  author={Ionescu, Catalin and Papava, Dragos and Olaru, Vlad and Sminchisescu, Cristian},
-  journal={IEEE transactions on pattern analysis and machine intelligence},
-  volume={36},
-  number={7},
-  pages={1325--1339},
-  year={2013},
-  publisher={IEEE}
-}
-
-@article{sigal2010humaneva,
-  title={Humaneva: Synchronized video and motion capture dataset and baseline algorithm for evaluation of articulated human motion},
-  author={Sigal, Leonid and Balan, Alexandru O and Black, Michael J},
-  journal={International journal of computer vision},
-  volume={87},
-  number={1-2},
-  pages={4},
-  year={2010},
-  publisher={Springer}
-}
-
-@ARTICLE{Gong2016-kd,
-  title    = "Human Pose Estimation from Monocular Images: A Comprehensive
-              Survey",
-  author   = "Gong, Wenjuan and Zhang, Xuena and Gonz{\`a}lez, Jordi and
-              Sobral, Andrews and Bouwmans, Thierry and Tu, Changhe and Zahzah,
-              El-Hadi",
-  journal  = "Sensors",
-  volume   =  16,
-  number   =  12,
-  month    =  nov,
-  year     =  2016,
-  keywords = "bottom-up methods; discriminative methods; generative methods;
-              human body models; human pose estimation; top-down methods",
-  language = "en"
-}
-
-@ARTICLE{Fischler1973-bi,
-  title     = "The representation and matching of pictorial structures",
-  author    = "Fischler, Martin A and Elschlager, Robert A",
-  journal   = "IEEE Trans. Comput.",
-  publisher = "IEEE",
-  number    =  1,
-  pages     = "67--92",
-  year      =  1973
-}
-
-@INPROCEEDINGS{Yang2011-vn,
-  title     = "Articulated pose estimation with flexible mixtures-of-parts",
-  booktitle = "{CVPR} 2011",
-  author    = "Yang, Y and Ramanan, D",
-  pages     = "1385--1392",
-  month     =  jun,
-  year      =  2011,
-  keywords  = "dynamic programming;image coding;image representation;pose
-               estimation;trees (mathematics);flexible mixture of parts;human
-               pose estimation;static images;articulated limb parts;flexible
-               mixture model;contextual co-occurrence relation;standard spring
-               models;spatial relations;tree structure;dynamic
-               programming;Estimation;Springs;Computational
-               modeling;Humans;Training;Deformable models;Joints"
-}
-
-@ARTICLE{Felzenszwalb2010-me,
-  title    = "Object detection with discriminatively trained part-based models",
-  author   = "Felzenszwalb, Pedro F and Girshick, Ross B and McAllester, David
-              and Ramanan, Deva",
-  journal  = "IEEE Trans. Pattern Anal. Mach. Intell.",
-  volume   =  32,
-  number   =  9,
-  pages    = "1627--1645",
-  month    =  sep,
-  year     =  2010,
-  language = "en"
-}
-
-@INPROCEEDINGS{Andriluka2009-on,
-  title     = "Pictorial structures revisited: People detection and articulated
-               pose estimation",
-  booktitle = "2009 {IEEE} Conference on Computer Vision and Pattern
-               Recognition",
-  author    = "Andriluka, M and Roth, S and Schiele, B",
-  pages     = "1014--1021",
-  month     =  jun,
-  year      =  2009,
-  keywords  = "computer vision;learning (artificial intelligence);object
-               detection;object recognition;pose estimation;shape
-               recognition;spatial data structures;people detection;computer
-               vision;spatial modeling;shape context descriptors;AdaBoost
-               classifiers;articulated pose estimation;Object
-               detection;Detectors;Humans;Biological system
-               modeling;Layout;Gaussian processes;State
-               estimation;Indexing;Iterative methods;Image edge detection"
-}
-
-@INPROCEEDINGS{Eichner2010-ey,
-  title     = "We Are Family: Joint Pose Estimation of Multiple Persons",
-  booktitle = "Computer Vision -- {ECCV} 2010",
-  author    = "Eichner, Marcin and Ferrari, Vittorio",
-  publisher = "Springer Berlin Heidelberg",
-  pages     = "228--242",
-  year      =  2010
-}
-
-@INPROCEEDINGS{Kiefel2014-vm,
-  title     = "Human Pose Estimation with Fields of Parts",
-  booktitle = "Computer Vision -- {ECCV} 2014",
-  author    = "Kiefel, Martin and Gehler, Peter Vincent",
-  publisher = "Springer International Publishing",
-  pages     = "331--346",
-  year      =  2014
-}
-
-@INPROCEEDINGS{Pishchulin2013-zi,
-  title     = "Poselet Conditioned Pictorial Structures",
-  booktitle = "2013 {IEEE} Conference on Computer Vision and Pattern
-               Recognition",
-  author    = "Pishchulin, L and Andriluka, M and Gehler, P and Schiele, B",
-  pages     = "588--595",
-  month     =  jun,
-  year      =  2013,
-  keywords  = "feature extraction;pose estimation;poselet-based
-               features;conditioning variables;image observations;tractable
-               tree-structured pictorial structures model;conditional
-               model;higher order part dependencies;human activities;human
-               motions;body articulations;still images;articulated human pose
-               estimation;poselet conditioned pictorial
-               structures;Estimation;Torso;Training;Predictive
-               models;Joints;Vectors;Detectors;pictorial structures;articulated
-               pose estimation;part-based models;poselets"
-}
-
-@INPROCEEDINGS{Sapp2010-dm,
-  title     = "Adaptive pose priors for pictorial structures",
-  booktitle = "2010 {IEEE} Computer Society Conference on Computer Vision and
-               Pattern Recognition",
-  author    = "Sapp, B and Jordan, C and Taskar, B",
-  pages     = "422--429",
-  month     =  jun,
-  year      =  2010,
-  keywords  = "inference mechanisms;pose estimation;regression analysis;set
-               theory;shape recognition;pictorial structure inference;kernel
-               regression estimate;learned sparse set;exemplar;image dependent
-               pose prior;query specific pose prior;shape based kernel;leave
-               one out loss function;human figure parsing;Kernel;Animal
-               structures;Humans;Costs;Training data;Testing;Predictive
-               models;Shape;Biological system modeling;Layout"
-}
-
-@INPROCEEDINGS{Cherian2014-zf,
-  title     = "Mixing body-part sequences for human pose estimation",
-  booktitle = "Proceedings of the {IEEE} Conference on Computer Vision and
-               Pattern Recognition",
-  author    = "Cherian, Anoop and Mairal, Julien and Alahari, Karteek and
-               Schmid, Cordelia",
-  pages     = "2353--2360",
-  year      =  2014
-}
-
-@INPROCEEDINGS{Toshev2014-ou,
-  title     = "Deeppose: Human pose estimation via deep neural networks",
-  booktitle = "Proceedings of the {IEEE} conference on computer vision and
-               pattern recognition",
-  author    = "Toshev, Alexander and Szegedy, Christian",
-  publisher = "openaccess.thecvf.com",
-  pages     = "1653--1660",
-  year      =  2014
-}
-
-@INPROCEEDINGS{Wang2013-wv,
-  title     = "Beyond physical connections: Tree models in human pose
-               estimation",
-  booktitle = "Proceedings of the {IEEE} Conference on Computer Vision and
-               Pattern Recognition",
-  author    = "Wang, Fang and Li, Yi",
-  pages     = "596--603",
-  year      =  2013
-}
-
-@INCOLLECTION{Tompson2014-iq,
-  title     = "Joint Training of a Convolutional Network and a Graphical Model
-               for Human Pose Estimation",
-  booktitle = "Advances in Neural Information Processing Systems 27",
-  author    = "Tompson, Jonathan J and Jain, Arjun and LeCun, Yann and Bregler,
-               Christoph",
-  editor    = "Ghahramani, Z and Welling, M and Cortes, C and Lawrence, N D and
-               Weinberger, K Q",
-  publisher = "Curran Associates, Inc.",
-  pages     = "1799--1807",
-  year      =  2014
-}
-
-@INPROCEEDINGS{Fan2015-zt,
-  title     = "Combining local appearance and holistic view: Dual-source deep
-               neural networks for human pose estimation",
-  booktitle = "Proceedings of the {IEEE} conference on computer vision and
-               pattern recognition",
-  author    = "Fan, Xiaochuan and Zheng, Kang and Lin, Yuewei and Wang, Song",
-  publisher = "openaccess.thecvf.com",
-  pages     = "1347--1355",
-  year      =  2015
-}
-
-@INPROCEEDINGS{Bulat2016-in,
-  title     = "Human Pose Estimation via Convolutional Part Heatmap Regression",
-  booktitle = "Computer Vision -- {ECCV} 2016",
-  author    = "Bulat, Adrian and Tzimiropoulos, Georgios",
-  publisher = "Springer International Publishing",
-  pages     = "717--732",
-  year      =  2016
-}
-
-@INPROCEEDINGS{Lifshitz2016-sg,
-  title     = "Human Pose Estimation Using Deep Consensus Voting",
-  booktitle = "Computer Vision -- {ECCV} 2016",
-  author    = "Lifshitz, Ita and Fetaya, Ethan and Ullman, Shimon",
-  publisher = "Springer International Publishing",
-  pages     = "246--260",
-  year      =  2016
-}
-
-@INPROCEEDINGS{Carreira2016-uk,
-  title     = "Human pose estimation with iterative error feedback",
-  booktitle = "Proceedings of the {IEEE} conference on computer vision and
-               pattern recognition",
-  author    = "Carreira, Joao and Agrawal, Pulkit and Fragkiadaki, Katerina and
-               Malik, Jitendra",
-  publisher = "openaccess.thecvf.com",
-  pages     = "4733--4742",
-  year      =  2016
-}
-
-@INPROCEEDINGS{Chu2017-io,
-  title     = "Multi-context attention for human pose estimation",
-  booktitle = "Proceedings of the {IEEE} Conference on Computer Vision and
-               Pattern Recognition",
-  author    = "Chu, Xiao and Yang, Wei and Ouyang, Wanli and Ma, Cheng and
-               Yuille, Alan L and Wang, Xiaogang",
-  publisher = "openaccess.thecvf.com",
-  pages     = "1831--1840",
-  year      =  2017
-}
-
-@INPROCEEDINGS{Chen2017-pd,
-  title     = "Adversarial posenet: A structure-aware convolutional network for
-               human pose estimation",
-  booktitle = "Proceedings of the {IEEE} International Conference on Computer
-               Vision",
-  author    = "Chen, Yu and Shen, Chunhua and Wei, Xiu-Shen and Liu, Lingqiao
-               and Yang, Jian",
-  publisher = "openaccess.thecvf.com",
-  pages     = "1212--1221",
-  year      =  2017
-}
-
-@INPROCEEDINGS{Yang2017-ao,
-  title     = "Learning feature pyramids for human pose estimation",
-  booktitle = "Proceedings of the {IEEE} International Conference on Computer
-               Vision",
-  author    = "Yang, Wei and Li, Shuang and Ouyang, Wanli and Li, Hongsheng and
-               Wang, Xiaogang",
-  publisher = "openaccess.thecvf.com",
-  pages     = "1281--1290",
-  year      =  2017
-}
-
-@INPROCEEDINGS{Belagiannis2017-mf,
-  title     = "Recurrent Human Pose Estimation",
-  booktitle = "2017 12th {IEEE} International Conference on Automatic Face
-               Gesture Recognition ({FG} 2017)",
-  author    = "Belagiannis, V and Zisserman, A",
-  publisher = "ieeexplore.ieee.org",
-  pages     = "468--475",
-  month     =  may,
-  year      =  2017,
-  keywords  = "image representation;iterative methods;pose estimation;recurrent
-               human pose estimation;ConvNet;2D-human body pose
-               prediction;heatmap representation;feed-forward module;Heating
-               systems;Training;Context;Predictive models;Context
-               modeling;Convolution;Detectors"
-}
-
-@INPROCEEDINGS{Ke2018-xw,
-  title     = "Multi-scale structure-aware network for human pose estimation",
-  booktitle = "Proceedings of the European Conference on Computer Vision
-               ({ECCV})",
-  author    = "Ke, Lipeng and Chang, Ming-Ching and Qi, Honggang and Lyu, Siwei",
-  publisher = "openaccess.thecvf.com",
-  pages     = "713--728",
-  year      =  2018
-}
-
-@INPROCEEDINGS{Newell2016-cy,
-  title     = "Stacked Hourglass Networks for Human Pose Estimation",
-  booktitle = "Computer Vision -- {ECCV} 2016",
-  author    = "Newell, Alejandro and Yang, Kaiyu and Deng, Jia",
-  publisher = "Springer International Publishing",
-  pages     = "483--499",
-  year      =  2016
-}
-
-@INPROCEEDINGS{Insafutdinov2016-ek,
-  title     = "{DeeperCut}: A Deeper, Stronger, and Faster Multi-person Pose
-               Estimation Model",
-  booktitle = "Computer Vision -- {ECCV} 2016",
-  author    = "Insafutdinov, Eldar and Pishchulin, Leonid and Andres, Bjoern
-               and Andriluka, Mykhaylo and Schiele, Bernt",
-  publisher = "Springer International Publishing",
-  pages     = "34--50",
-  year      =  2016
-}
-
-@INPROCEEDINGS{Wei2016-rb,
-  title     = "Convolutional pose machines",
-  booktitle = "Proceedings of the {IEEE} Conference on Computer Vision and
-               Pattern Recognition",
-  author    = "Wei, Shih-En and Ramakrishna, Varun and Kanade, Takeo and
-               Sheikh, Yaser",
-  publisher = "cv-foundation.org",
-  pages     = "4724--4732",
-  year      =  2016
-}
-
-@INPROCEEDINGS{Ramakrishna2014-ul,
-  title     = "Pose Machines: Articulated Pose Estimation via Inference
-               Machines",
-  booktitle = "Computer Vision -- {ECCV} 2014",
-  author    = "Ramakrishna, Varun and Munoz, Daniel and Hebert, Martial and
-               Andrew Bagnell, James and Sheikh, Yaser",
-  publisher = "Springer International Publishing",
-  pages     = "33--47",
-  year      =  2014
-}
-
-@INPROCEEDINGS{Ferrari2008-ry,
-  title     = "Progressive search space reduction for human pose estimation",
-  booktitle = "2008 {IEEE} Conference on Computer Vision and Pattern
-               Recognition",
-  author    = "Ferrari, V and Marin-Jimenez, M and Zisserman, A",
-  publisher = "ieeexplore.ieee.org",
-  pages     = "1--8",
-  month     =  jun,
-  year      =  2008,
-  keywords  = "pose estimation;video signal processing;progressive search space
-               reduction;human pose estimation;2D human pose;movie video
-               shots;TV video shots;video material;generic detector;belief
-               propagation;full-body action
-               recognition;Humans;Torso;Arm;Head;TV;Biological system
-               modeling;Motion pictures;Detectors;Clothing;Switches"
-}
-
-
-@INPROCEEDINGS{Fathi2007-dc,
-  title     = "Human Pose Estimation using Motion Exemplars",
-  booktitle = "2007 {IEEE} 11th International Conference on Computer Vision",
-  author    = "Fathi, A and Mori, G",
-  publisher = "ieeexplore.ieee.org",
-  pages     = "1--8",
-  month     =  oct,
-  year      =  2007,
-  keywords  = "image motion analysis;image sampling;image sequences;video
-               signal processing;human pose estimation;motion
-               exemplars;monocular videos;body configuration;motion correlation
-               technique;motion similarity;space-time locations;video
-               templates;exemplar sequence selection;joint position
-               estimation;Gibbs sampling;gradient ascent;incline walk
-               videos;Humans;Motion estimation;Clothing;Kinematics;State
-               estimation;Birth disorders;Board of Directors;Motion
-               detection;Tracking;Image sequences"
-}
-
-
-@INPROCEEDINGS{Zhang2015-js,
-  title     = "Human pose estimation in videos",
-  booktitle = "Proceedings of the {IEEE} International Conference on Computer
-               Vision",
-  author    = "Zhang, Dong and Shah, Mubarak",
-  publisher = "cv-foundation.org",
-  pages     = "2012--2020",
-  year      =  2015
-}
-
-@INPROCEEDINGS{Song2017-fe,
-  title     = "Thin-slicing network: A deep structured model for pose
-               estimation in videos",
-  booktitle = "Proceedings of the {IEEE} Conference on Computer Vision and
-               Pattern Recognition",
-  author    = "Song, Jie and Wang, Limin and Van Gool, Luc and Hilliges, Otmar",
-  publisher = "openaccess.thecvf.com",
-  pages     = "4220--4229",
-  year      =  2017
-}
-
-@INPROCEEDINGS{Girdhar2018-lx,
-  title     = "Detect-and-track: Efficient pose estimation in videos",
-  booktitle = "Proceedings of the {IEEE} Conference on Computer Vision and
-               Pattern Recognition",
-  author    = "Girdhar, Rohit and Gkioxari, Georgia and Torresani, Lorenzo and
-               Paluri, Manohar and Tran, Du",
-  publisher = "openaccess.thecvf.com",
-  pages     = "350--359",
-  year      =  2018
-}
-
-@INPROCEEDINGS{Jain2015-zb,
-  title     = "{MoDeep}: A Deep Learning Framework Using Motion Features for
-               Human Pose Estimation",
-  booktitle = "Computer Vision -- {ACCV} 2014",
-  author    = "Jain, Arjun and Tompson, Jonathan and LeCun, Yann and Bregler,
-               Christoph",
-  publisher = "Springer International Publishing",
-  pages     = "302--315",
-  year      =  2015
-}
-
-@INPROCEEDINGS{Pfister2015-ae,
-  title     = "Flowing convnets for human pose estimation in videos",
-  booktitle = "Proceedings of the {IEEE} International Conference on Computer
-               Vision",
-  author    = "Pfister, Tomas and Charles, James and Zisserman, Andrew",
-  publisher = "openaccess.thecvf.com",
-  pages     = "1913--1921",
-  year      =  2015
-}
-
-@INPROCEEDINGS{Insafutdinov2017-zx,
-  title     = "Arttrack: Articulated multi-person tracking in the wild",
-  booktitle = "Proceedings of the {IEEE} Conference on Computer Vision and
-               Pattern Recognition",
-  author    = "Insafutdinov, Eldar and Andriluka, Mykhaylo and Pishchulin,
-               Leonid and Tang, Siyu and Levinkov, Evgeny and Andres, Bjoern
-               and Schiele, Bernt",
-  publisher = "openaccess.thecvf.com",
-  pages     = "6457--6465",
-  year      =  2017
-}
-
-@INPROCEEDINGS{Papandreou2017-nk,
-  title     = "Towards accurate multi-person pose estimation in the wild",
-  booktitle = "Proceedings of the {IEEE} Conference on Computer Vision and
-               Pattern Recognition",
-  author    = "Papandreou, George and Zhu, Tyler and Kanazawa, Nori and Toshev,
-               Alexander and Tompson, Jonathan and Bregler, Chris and Murphy,
-               Kevin",
-  pages     = "4903--4911",
-  year      =  2017
-}
-
-@INPROCEEDINGS{Iqbal2017-nu,
-  title     = "Posetrack: Joint multi-person pose estimation and tracking",
-  booktitle = "Proceedings of the {IEEE} Conference on Computer Vision and
-               Pattern Recognition",
-  author    = "Iqbal, Umar and Milan, Anton and Gall, Juergen",
-  publisher = "openaccess.thecvf.com",
-  pages     = "2011--2020",
-  year      =  2017
-}
-
-@MISC{Cao2017-fq,
-  title   = "Realtime Multi-person {2D} Pose Estimation Using Part Affinity
-             Fields",
-  author  = "Cao, Zhe and Simon, Tomas and Wei, Shih-En and Sheikh, Yaser",
-  journal = "2017 IEEE Conference on Computer Vision and Pattern Recognition
-             (CVPR)",
-  year    =  2017
-}
-
-@INPROCEEDINGS{Alp_Guler2018-rg,
-  title     = "Densepose: Dense human pose estimation in the wild",
-  booktitle = "Proceedings of the {IEEE} Conference on Computer Vision and
-               Pattern Recognition",
-  author    = "Alp G{\"u}ler, R{\i}za and Neverova, Natalia and Kokkinos,
-               Iasonas",
-  publisher = "openaccess.thecvf.com",
-  pages     = "7297--7306",
-  year      =  2018
-}
-
-@INPROCEEDINGS{Belagiannis2014-av,
-  title     = "{3D} pictorial structures for multiple human pose estimation",
-  booktitle = "Proceedings of the {IEEE} Conference on Computer Vision and
-               Pattern Recognition",
-  author    = "Belagiannis, Vasileios and Amin, Sikandar and Andriluka,
-               Mykhaylo and Schiele, Bernt and Navab, Nassir and Ilic, Slobodan",
-  publisher = "openaccess.thecvf.com",
-  pages     = "1669--1676",
-  year      =  2014
-}
-
-@ARTICLE{Agarwal2006-rf,
-  title     = "Recovering {3D} human pose from monocular images",
-  author    = "Agarwal, Ankur and Triggs, Bill",
-  journal   = "IEEE Trans. Pattern Anal. Mach. Intell.",
-  publisher = "ieeexplore.ieee.org",
-  volume    =  28,
-  number    =  1,
-  pages     = "44--58",
-  month     =  jan,
-  year      =  2006,
-  language  = "en"
-}
-
-@INPROCEEDINGS{Andriluka2010-oc,
-  title     = "Monocular {3D} pose estimation and tracking by detection",
-  booktitle = "2010 {IEEE} Computer Society Conference on Computer Vision and
-               Pattern Recognition",
-  author    = "Andriluka, M and Roth, S and Schiele, B",
-  publisher = "ieeexplore.ieee.org",
-  pages     = "623--630",
-  month     =  jun,
-  year      =  2010,
-  keywords  = "image sequences;object detection;optical tracking;pose
-               estimation;monocular 3D pose estimation;detection tracking;3D
-               human pose;monocular image sequence;crowded street
-               scene;three-stage process building;2D articulation
-               estimation;viewpoint estimation;data
-               association;tracking-by-detection;2D image evidence;2D limb
-               position;tracklet-based estimates;articulated 3D
-               tracking;Layout;Hidden Markov
-               models;Robustness;Cameras;Humans;Biological system
-               modeling;Motion estimation;Image sequences;Hybrid power
-               systems;Computer science"
-}
-
-@INPROCEEDINGS{Ramakrishna2012-ti,
-  title     = "Reconstructing {3D} Human Pose from {2D} Image Landmarks",
-  booktitle = "Computer Vision -- {ECCV} 2012",
-  author    = "Ramakrishna, Varun and Kanade, Takeo and Sheikh, Yaser",
-  publisher = "Springer Berlin Heidelberg",
-  pages     = "573--586",
-  year      =  2012
-}
-
-@INPROCEEDINGS{Chen2017-ug,
-  title     = "3d human pose estimation= 2d pose estimation+ matching",
-  booktitle = "Proceedings of the {IEEE} Conference on Computer Vision and
-               Pattern Recognition",
-  author    = "Chen, Ching-Hang and Ramanan, Deva",
-  publisher = "openaccess.thecvf.com",
-  pages     = "7035--7043",
-  year      =  2017
-}
-
-@INPROCEEDINGS{Bogo2016-kk,
-  title     = "Keep It {SMPL}: Automatic Estimation of {3D} Human Pose and
-               Shape from a Single Image",
-  booktitle = "Computer Vision -- {ECCV} 2016",
-  author    = "Bogo, Federica and Kanazawa, Angjoo and Lassner, Christoph and
-               Gehler, Peter and Romero, Javier and Black, Michael J",
-  publisher = "Springer International Publishing",
-  pages     = "561--578",
-  year      =  2016
-}
-
-@INPROCEEDINGS{Tome2017-ja,
-  title     = "Lifting from the deep: Convolutional 3d pose estimation from a
-               single image",
-  booktitle = "Proceedings of the {IEEE} Conference on Computer Vision and
-               Pattern Recognition",
-  author    = "Tome, Denis and Russell, Chris and Agapito, Lourdes",
-  pages     = "2500--2509",
-  year      =  2017
-}
-
-@INPROCEEDINGS{Zhou2017-jk,
-  title     = "Towards 3d human pose estimation in the wild: a
-               weakly-supervised approach",
-  booktitle = "Proceedings of the {IEEE} International Conference on Computer
-               Vision",
-  author    = "Zhou, Xingyi and Huang, Qixing and Sun, Xiao and Xue, Xiangyang
-               and Wei, Yichen",
-  publisher = "openaccess.thecvf.com",
-  pages     = "398--407",
-  year      =  2017
-}
-
-@INPROCEEDINGS{Martinez2017-su,
-  title     = "A simple yet effective baseline for 3d human pose estimation",
-  booktitle = "Proceedings of the {IEEE} International Conference on Computer
-               Vision",
-  author    = "Martinez, Julieta and Hossain, Rayat and Romero, Javier and
-               Little, James J",
-  publisher = "openaccess.thecvf.com",
-  pages     = "2640--2649",
-  year      =  2017
-}
-
-@ARTICLE{Mehta2017-zi,
-  title     = "{VNect}: Real-time {3D} Human Pose Estimation with a Single
-               {RGB} Camera",
-  author    = "Mehta, Dushyant and Sridhar, Srinath and Sotnychenko, Oleksandr
-               and Rhodin, Helge and Shafiei, Mohammad and Seidel, Hans-Peter
-               and Xu, Weipeng and Casas, Dan and Theobalt, Christian",
-  journal   = "ACM Trans. Graph.",
-  publisher = "ACM",
-  volume    =  36,
-  number    =  4,
-  pages     = "44:1--44:14",
-  month     =  jul,
-  year      =  2017,
-  address   = "New York, NY, USA",
-  keywords  = "body pose, monocular, real time"
-}
-
-@INPROCEEDINGS{Luvizon2018-te,
-  title     = "2d/3d pose estimation and action recognition using multitask
-               deep learning",
-  booktitle = "Proceedings of the {IEEE} Conference on Computer Vision and
-               Pattern Recognition",
-  author    = "Luvizon, Diogo C and Picard, David and Tabia, Hedi",
-  publisher = "openaccess.thecvf.com",
-  pages     = "5137--5146",
-  year      =  2018
-}
-
-@INPROCEEDINGS{Nie2017-ud,
-  title     = "Monocular {3D} Human Pose Estimation by Predicting Depth on
-               Joints",
-  booktitle = "2017 {IEEE} International Conference on Computer Vision ({ICCV})",
-  author    = "Nie, B X and Wei, P and Zhu, S",
-  publisher = "ieeexplore.ieee.org",
-  pages     = "3467--3475",
-  month     =  oct,
-  year      =  2017,
-  keywords  = "image motion analysis;pose estimation;recurrent neural
-               nets;two-level hierarchy;Long Short-Term Memory
-               Networks;full-body 3D human pose estimation;Human3.6M
-               dataset;HHOI dataset;global 2D skeleton;body part images;2D
-               human joint locations;human joints;inherent ambiguity;monocular
-               images;monocular 3D Human pose estimation;final depth
-               prediction;local image evidence;patch-LSTM;global human skeleton
-               features;depth information;skeleton-LSTM;Three-dimensional
-               displays;Two dimensional displays;Skeleton;Pose
-               estimation;Training;Kinematics"
-}
-
-@INPROCEEDINGS{Pavlakos2017-qk,
-  title     = "Coarse-to-fine volumetric prediction for single-image {3D} human
-               pose",
-  booktitle = "Proceedings of the {IEEE} Conference on Computer Vision and
-               Pattern Recognition",
-  author    = "Pavlakos, Georgios and Zhou, Xiaowei and Derpanis, Konstantinos
-               G and Daniilidis, Kostas",
-  publisher = "openaccess.thecvf.com",
-  pages     = "7025--7034",
-  year      =  2017
-}
-
-@INPROCEEDINGS{Nibali2019-yl,
-  title     = "{3D} Human Pose Estimation With {2D} Marginal Heatmaps",
-  booktitle = "2019 {IEEE} Winter Conference on Applications of Computer Vision
-               ({WACV})",
-  author    = "Nibali, A and He, Z and Morgan, S and Prendergast, L",
-  publisher = "ieeexplore.ieee.org",
-  pages     = "1477--1485",
-  month     =  jan,
-  year      =  2019,
-  keywords  = "image colour analysis;inference mechanisms;neural nets;pose
-               estimation;statistical analysis;stereo image processing;3D
-               coordinate prediction;2D marginal heatmaps;coherent heatmaps;3D
-               human pose estimation;monocular RGB image data;flexible
-               statistical modelling capabilities;deep neural
-               networks;MargiPose;augmented soft-argmax scheme;Pose
-               estimation;Three-dimensional displays;Two dimensional
-               displays;Predictive models;Space heating;Solid modeling"
-}
-
-@INPROCEEDINGS{Gkioxari2016-ix,
-  title     = "Chained Predictions Using Convolutional Neural Networks",
-  booktitle = "Computer Vision -- {ECCV} 2016",
-  author    = "Gkioxari, Georgia and Toshev, Alexander and Jaitly, Navdeep",
-  publisher = "Springer International Publishing",
-  pages     = "728--743",
-  year      =  2016
-}
-
-@INPROCEEDINGS{Youding_Zhu2008-pr,
-  title     = "Controlled human pose estimation from depth image streams",
-  booktitle = "2008 {IEEE} Computer Society Conference on Computer Vision and
-               Pattern Recognition Workshops",
-  author    = "{Youding Zhu} and Dariush, B and {Kikuo Fujimura}",
-  publisher = "ieeexplore.ieee.org",
-  pages     = "1--8",
-  month     =  jun,
-  year      =  2008,
-  keywords  = "feature extraction;pose estimation;tracking;controlled human
-               pose estimation;depth image streams;Cartesian control;feature
-               detection;time of flight imaging device;probabilistic
-               inferencing algorithm;closed loop tracking control
-               algorithm;Humans;Streaming media;Computer vision;Inference
-               algorithms;Estimation theory;Tracking loops;Feedback
-               loop;Detectors;Kinematics;Joints"
-}
-
-
-@INPROCEEDINGS{Schwarz2011-qi,
-  title     = "Estimating human {3D} pose from {Time-of-Flight} images based on
-               geodesic distances and optical flow",
-  booktitle = "Face and Gesture 2011",
-  author    = "Schwarz, L A and Mkhitaryan, A and Mateus, D and Navab, N",
-  publisher = "ieeexplore.ieee.org",
-  pages     = "700--706",
-  month     =  mar,
-  year      =  2011,
-  keywords  = "differential geometry;image sequences;pose estimation;3D human
-               pose estimation;time-of-flight camera images;geodesic
-               distances;optical flow;skeleton body model;constrained inverse
-               kinematics;graph-based representation;anatomical landmark
-               localization;motion information;pose tracking method;Optical
-               imaging;Three dimensional
-               displays;Tracking;Joints;Humans;Adaptive optics"
-}
-
-
-@INPROCEEDINGS{Ye2011-ui,
-  title     = "Accurate {3D} pose estimation from a single depth image",
-  booktitle = "2011 International Conference on Computer Vision",
-  author    = "Ye, M and {Xianwang Wang} and Yang, R and {Liu Ren} and
-               Pollefeys, M",
-  publisher = "ieeexplore.ieee.org",
-  pages     = "731--738",
-  month     =  nov,
-  year      =  2011,
-  keywords  = "image matching;image motion analysis;object detection;pose
-               estimation;smoothing methods;3D pose estimation;single depth
-               image;body pose configuration estimation;pose detection;pose
-               refinement;input depth map;input point cloud semantic
-               labeling;point cloud smoothing technique;point cloud
-               alignment;pose search algorithm;human motion
-               modeling;Databases;Joints;Shape;Cameras;Sensors;Accuracy;Estimation"
-}
-
-
-@INPROCEEDINGS{Moon2018-xp,
-  title     = "V2v-posenet: Voxel-to-voxel prediction network for accurate 3d
-               hand and human pose estimation from a single depth map",
-  booktitle = "Proceedings of the {IEEE} Conference on Computer Vision and
-               Pattern Recognition",
-  author    = "Moon, Gyeongsik and Yong Chang, Ju and Mu Lee, Kyoung",
-  publisher = "openaccess.thecvf.com",
-  pages     = "5079--5088",
-  year      =  2018
-}
-
-
-@INPROCEEDINGS{Zimmermann2018-sn,
-  title     = "{3D} Human Pose Estimation in {RGBD} Images for Robotic Task
-               Learning",
-  booktitle = "2018 {IEEE} International Conference on Robotics and Automation
-               ({ICRA})",
-  author    = "Zimmermann, C and Welschehold, T and Dornhege, C and Burgard, W
-               and Brox, T",
-  publisher = "ieeexplore.ieee.org",
-  pages     = "1986--1992",
-  month     =  may,
-  year      =  2018,
-  keywords  = "image colour analysis;image sensors;learning (artificial
-               intelligence);pose estimation;service robots;monocular 3D pose
-               estimation;service robot;color images;robust human keypoint
-               detectors;robotic task learning;RGBD images;3D human pose
-               estimation;human teacher;PR2 robot;Three-dimensional
-               displays;Two dimensional displays;Color;Pose estimation;Robot
-               sensing systems;Task analysis"
-}
-
-
-@ARTICLE{Marin-Jimenez2018-so,
-  title     = "{3D} human pose estimation from depth maps using a deep
-               combination of poses",
-  author    = "Mar{\'\i}n-Jim{\'e}nez, Manuel J and Romero-Ramirez, Francisco J
-               and Mu{\~n}oz-Salinas, Rafael and Medina-Carnicer, Rafael",
-  journal   = "J. Vis. Commun. Image Represent.",
-  publisher = "Elsevier",
-  volume    =  55,
-  pages     = "627--639",
-  month     =  aug,
-  year      =  2018,
-  keywords  = "3D human pose; Body limbs; Depth maps; ConvNets"
-}
-
-@article{liu2017survey,
-  title={A survey of deep neural network architectures and their applications},
-  author={Liu, Weibo and Wang, Zidong and Liu, Xiaohui and Zeng, Nianyin and Liu, Yurong and Alsaadi, Fuad E},
-  journal={Neurocomputing},
-  volume={234},
-  pages={11--26},
-  year={2017},
-  publisher={Elsevier}
-}
-
-@inproceedings{leo2018deep,
-  title={Deep learning for assistive computer vision},
-  author={Leo, Marco and Furnari, Antonino and Medioni, Gerard G and Trivedi, Mohan and Farinella, Giovanni M},
-  booktitle={Proceedings of the European Conference on Computer Vision (ECCV)},
-  pages={0--0},
-  year={2018}
-}
-
-@incollection{ye2013survey,
-  title={A survey on human motion analysis from depth data},
-  author={Ye, Mao and Zhang, Qing and Wang, Liang and Zhu, Jiejie and Yang, Ruigang and Gall, Juergen},
-  booktitle={Time-of-flight and depth imaging. sensors, algorithms, and applications},
-  pages={149--187},
-  year={2013},
-  publisher={Springer}
-}
-
-@article{dang2019deep,
-  title={Deep learning based 2d human pose estimation: A survey},
-  author={Dang, Qi and Yin, Jianqin and Wang, Bin and Zheng, Wenqing},
-  journal={Tsinghua Science and Technology},
-  volume={24},
-  number={6},
-  pages={663--676},
-  year={2019},
-  publisher={TUP}
-}
-
-@article{perez2014survey,
-  title={A survey on model based approaches for 2D and 3D visual human pose recovery},
-  author={Perez-Sala, Xavier and Escalera, Sergio and Angulo, Cecilio and Gonzalez, Jordi},
-  journal={Sensors},
-  volume={14},
-  number={3},
-  pages={4189--4210},
-  year={2014},
-  publisher={Multidisciplinary Digital Publishing Institute}
-}
-
-@inproceedings{liu2018recognizing,
-  title={Recognizing human actions as the evolution of pose estimation maps},
-  author={Liu, Mengyuan and Yuan, Junsong},
-  booktitle={Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
-  pages={1159--1168},
-  year={2018}
+@book{schwab2017fourth,
+    author = {Schwab, Klaus},
+    title = {The fourth industrial revolution},
+    publisher = {Crown Business},
+    year = {2016},
+    address = {New York},
+    isbn = {1524758868}
+}
+
+@article{Goodrich2007,
+    doi = {10.1561/1100000005},
+    url = {https://doi.org/10.1561/1100000005},
+    year = {2007},
+    publisher = {Now Publishers},
+    volume = {1},
+    number = {3},
+    pages = {203--275},
+    author = {Michael A. Goodrich and Alan C. Schultz},
+    title = {Human-robot interaction: a survey},
+    journal = {Foundations and Trends in Human-Computer Interaction}
+}
+
+@online{travelarz_2017,
+    title={Humanoid robot}, url={https://commons.wikimedia.org/wiki/File:Humanoid_Robot_(2)_ITB_2017.JPG}, publisher={Wikimedia Commons},
+    author={Travelarz},
+    year={2017},
+    urldate={2020-10-09}
+}
+
+@online{arclab_2019, 
+    title={Surgical robotics seminar with UCSD’s Michael Yip}, url={https://robotics.utoronto.ca/news/surgical-robotics-seminar-with-ucsds-michael-yip/},
+    author={ARCLab},
+    year={2019},
+    urldate={2020-10-09}
+}
+
+@inproceedings{roncone2017transparent,
+    doi = {10.1109/icra.2017.7989122},
+    url = {https://doi.org/10.1109/icra.2017.7989122},
+    year = {2017},
+    month = may,
+    publisher = {{IEEE}},
+    author = {Alessandro Roncone and Olivier Mangin and Brian Scassellati},
+    title = {Transparent role assignment and task allocation in human robot collaboration},
+    booktitle = {2017 {IEEE} International Conference on Robotics and Automation ({ICRA})}
+}
+
+@incollection{leo2018deep,
+    doi = {10.1007/978-3-030-11024-6_1},
+    url = {https://doi.org/10.1007/978-3-030-11024-6_1},
+    year = {2019},
+    publisher = {Springer International Publishing},
+    pages = {3--14},
+    author = {Marco Leo and Antonino Furnari and Gerard G. Medioni and Mohan Trivedi and Giovanni M. Farinella},
+    title = {Deep learning for assistive computer vision},
+    booktitle = {Lecture Notes in Computer Science}
+}
+
+@online{vicon_2020,
+    title={The Vicon difference: motion capture systems},
+    url={https://www.vicon.com/about-us/},
+    author={Vicon},
+    year={2020},
+    urldate={2020-10-09}
+}
+
+@article{leone2011detecting,
+    doi = {10.1016/j.medengphy.2011.02.001},
+    url = {https://doi.org/10.1016/j.medengphy.2011.02.001},
+    year = {2011},
+    publisher = {Elsevier {BV}},
+    volume = {33},
+    number = {6},
+    pages = {770--781},
+    author = {Alessandro Leone and Giovanni Diraco and Pietro Siciliano},
+    title = {Detecting falls with 3D range camera in ambient assisted living applications: A preliminary study},
+    journal = {Medical Engineering {\&} Physics}
+}
+
+@online{optitrack_2019, 
+    title={Optitrack studio},
+    url={https://optitrack.com/public/images/prime41ActivisionVolume04.jpg},
+    author={OptiTrack},
+    year={2019},
+    urldate={2020-10-09}
 }
 
 @inproceedings{ofli2013berkeley,
-  title={Berkeley mhad: A comprehensive multimodal human action database},
-  author={Ofli, Ferda and Chaudhry, Rizwan and Kurillo, Gregorij and Vidal, Ren{\'e} and Bajcsy, Ruzena},
-  booktitle={2013 IEEE Workshop on Applications of Computer Vision (WACV)},
-  pages={53--60},
-  year={2013},
-  organization={IEEE}
+    doi = {10.1109/wacv.2013.6474999},
+    url = {https://doi.org/10.1109/wacv.2013.6474999},
+    year = {2013},
+    publisher = {{IEEE}},
+    author = {Ferda Ofli and Rizwan Chaudhry and Gregorij Kurillo and Rene Vidal and Ruzena Bajcsy},
+    title = {Berkeley {MHAD}: a comprehensive multimodal human action database},
+    booktitle = {2013 {IEEE} Workshop on Applications of Computer Vision ({WACV})}
 }
 
-
-@INPROCEEDINGS{Andriluka20142DHP,
-  title={2D Human Pose Estimation: New Benchmark and State of the Art Analysis},
-  author={Mykhaylo Andriluka and Leonid Pishchulin and Peter V. Gehler and Bernt Schiele},
-  booktitle={IEEE Conference on Computer Vision and Pattern Recognition},
-  year={2014},
-  pages={3686-3693}
+@inproceedings{ng2016nuts,
+    title={Nuts and bolts of building AI applications using deep learning},
+    author={Ng, Andrew},
+    booktitle={NIPS Keynote Talk},
+    publisher = {Curran Associates Inc.},
+    year={2016}
 }
 
-@inproceedings{sutskever2014sequence,
-  title={Sequence to sequence learning with neural networks},
-  author={Sutskever, Ilya and Vinyals, Oriol and Le, Quoc V},
-  booktitle={Advances in neural information processing systems},
-  pages={3104--3112},
-  year={2014}
+@article{liu2017survey,
+    doi = {10.1016/j.neucom.2016.12.038},
+    url = {https://doi.org/10.1016/j.neucom.2016.12.038},
+    year = {2017},
+    publisher = {Elsevier {BV}},
+    volume = {234},
+    pages = {11--26},
+    author = {Weibo Liu and Zidong Wang and Xiaohui Liu and Nianyin Zeng and Yurong Liu and Fuad E. Alsaadi},
+    title = {A survey of deep neural network architectures and their applications},
+    journal = {Neurocomputing}
 }
 
-@inproceedings{bengio2015scheduled,
-  title={Scheduled sampling for sequence prediction with recurrent neural networks},
-  author={Bengio, Samy and Vinyals, Oriol and Jaitly, Navdeep and Shazeer, Noam},
-  booktitle={Advances in Neural Information Processing Systems},
-  pages={1171--1179},
-  year={2015}
+@article{cao2018openpose,
+    doi = {10.1109/tpami.2019.2929257},
+    url = {https://doi.org/10.1109/tpami.2019.2929257},
+    year = {2019},
+    publisher = {Institute of Electrical and Electronics Engineers ({IEEE})},
+    pages = {1--1},
+    author = {Zhe Cao and Gines Hidalgo Martinez and Tomas Simon and Shih-En Wei and Yaser A. Sheikh},
+    title = {{OpenPose}: realtime multi-person 2D pose estimation using part affinity fields},
+    journal = {{IEEE} Transactions on Pattern Analysis and Machine Intelligence}
 }
 
-@inproceedings{andriluka20142d,
-  title={2d human pose estimation: New benchmark and state of the art analysis},
-  author={Andriluka, Mykhaylo and Pishchulin, Leonid and Gehler, Peter and Schiele, Bernt},
-  booktitle={Proceedings of the IEEE Conference on computer Vision and Pattern Recognition},
-  pages={3686--3693},
-  year={2014}
+@article{ionescu2013human3,
+    doi = {10.1109/tpami.2013.248},
+    url = {https://doi.org/10.1109/tpami.2013.248},
+    year = {2014},
+    publisher = {Institute of Electrical and Electronics Engineers ({IEEE})},
+    volume = {36},
+    number = {7},
+    pages = {1325--1339},
+    author = {Catalin Ionescu and Dragos Papava and Vlad Olaru and Cristian Sminchisescu},
+    title = {Human3.6M: large scale datasets and predictive methods for 3D human sensing in natural environments},
+    journal = {{IEEE} Transactions on Pattern Analysis and Machine Intelligence}
 }
 
-@inproceedings{Johnson10,
-   title = {Clustered Pose and Nonlinear Appearance Models for Human Pose Estimation},
-   author = {Johnson, Sam and Everingham, Mark},
-   year = {2010},
-   booktitle = {Proceedings of the British Machine Vision Conference},
-   note = {doi:10.5244/C.24.12}
+@article{sigal2010humaneva,
+    doi = {10.1007/s11263-009-0273-6},
+    url = {https://doi.org/10.1007/s11263-009-0273-6},
+    year = {2009},
+    publisher = {Springer Science and Business Media {LLC}},
+    volume = {87},
+    number = {1-2},
+    pages = {4--27},
+    author = {Leonid Sigal and Alexandru O. Balan and Michael J. Black},
+    title = {{HumanEva}: synchronized video and motion capture dataset and baseline algorithm for evaluation of articulated human-motion},
+    journal = {International Journal of Computer Vision}
 }
 
-@article{h36m_pami,
-author = {Ionescu, Catalin and Papava, Dragos and Olaru, Vlad and Sminchisescu,  Cristian},
-title = {Human3.6M: Large Scale Datasets and Predictive Methods for 3D Human Sensing in Natural Environments},
-journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
-publisher = {IEEE Computer Society},
-volume = {36},
-number = {7},
-pages = {1325-1339},
-month = {jul},
-year = {2014}
+@inproceedings{liu2018recognizing,
+    doi = {10.1109/cvpr.2018.00127},
+    url = {https://doi.org/10.1109/cvpr.2018.00127},
+    year = {2018},
+    publisher = {{IEEE}},
+    author = {Mengyuan Liu and Junsong Yuan},
+    title = {Recognizing human actions as the evolution of pose estimation maps},
+    booktitle = {2018 {IEEE}/{CVF} Conference on Computer Vision and Pattern Recognition}
 }
 
-@article{sigal2006humaneva,
-  title={Humaneva: Synchronized video and motion capture dataset for evaluation of articulated human motion},
-  author={Sigal, Leonid and Black, Michael J},
-  journal={Brown Univertsity TR},
-  volume={120},
-  year={2006}
+@article{Sarafianos2016,
+    doi = {10.1016/j.cviu.2016.09.002},
+    url = {https://doi.org/10.1016/j.cviu.2016.09.002},
+    year = {2016},
+    publisher = {Elsevier {BV}},
+    volume = {152},
+    pages = {1--20},
+    author = {Nikolaos Sarafianos and Bogdan Boteanu and Bogdan Ionescu and Ioannis A. Kakadiaris},
+    title = {3D Human pose estimation: a review of the literature and analysis of covariates},
+    journal = {Computer Vision and Image Understanding}
 }
 
-@inproceedings{sung2011human,
-  title={Human activity detection from RGBD images},
-  author={Sung, Jaeyong and Ponce, Colin and Selman, Bart and Saxena, Ashutosh},
-  booktitle={Workshops at the twenty-fifth AAAI conference on artificial intelligence},
-  year={2011}
+@article{zhang2012microsoft,
+    doi = {10.1109/mmul.2012.24},
+    url = {https://doi.org/10.1109/mmul.2012.24},
+    year = {2012},
+    publisher = {Institute of Electrical and Electronics Engineers ({IEEE})},
+    volume = {19},
+    number = {2},
+    pages = {4--10},
+    author = {Zhengyou Zhang},
+    title = {Microsoft Kinect sensor and its effect},
+    journal = {{IEEE} Multimedia}
 }
 
-@article{kalman1960new,
-  title={A new approach to linear filtering and prediction problems},
-  author={Kalman, Rudolph Emil},
-  year={1960}
+@online{xtion,
+    title={Xtion PRO LIVE: 3D sensor},
+    url={https://www.asus.com/3D-Sensor/Xtion_PRO_LIVE/},
+    author={ASUSTeK Computer Inc.},
+    year={2020},
+    urldate={2020-10-09}
+}
+
+@article{larman2003iterative,
+    doi = {10.1109/mc.2003.1204375},
+    url = {https://doi.org/10.1109/mc.2003.1204375},
+    year = {2003},
+    publisher = {Institute of Electrical and Electronics Engineers ({IEEE})},
+    volume = {36},
+    number = {6},
+    pages = {47--56},
+    author = {C. Larman and V.R. Basili},
+    title = {Iterative and incremental developments: a brief history},
+    journal = {Computer}
+}
+
+@article{Gong2016-kd,
+    doi = {10.3390/s16121966},
+    url = {https://doi.org/10.3390/s16121966},
+    year = {2016},
+    publisher = {{MDPI} {AG}},
+    volume = {16},
+    number = {12},
+    pages = {1966},
+    author = {Wenjuan Gong and Xuena Zhang and Jordi Gonz{\`{a}}lez and Andrews Sobral and Thierry Bouwmans and Changhe Tu and El-hadi Zahzah},
+    title = {Human pose estimation from monocular images: a comprehensive survey},
+    journal = {Sensors}
+}
+
+@article{Fischler1973-bi,
+    doi = {10.1109/t-c.1973.223602},
+    url = {https://doi.org/10.1109/t-c.1973.223602},
+    year = {1973},
+    publisher = {Institute of Electrical and Electronics Engineers ({IEEE})},
+    volume = {C-22},
+    number = {1},
+    pages = {67--92},
+    author = {M.A. Fischler and R.A. Elschlager},
+    title = {The representation and matching of pictorial structures},
+    journal = {{IEEE} Transactions on Computers}
+}
+
+@article{felzenszwalb2005pictorial,
+    doi = {10.1023/b:visi.0000042934.15159.49},
+    url = {https://doi.org/10.1023/b:visi.0000042934.15159.49},
+    year = {2005},
+    publisher = {Springer Science and Business Media {LLC}},
+    volume = {61},
+    number = {1},
+    pages = {55--79},
+    author = {Pedro F. Felzenszwalb and Daniel P. Huttenlocher},
+    title = {Pictorial structures for object recognition},
+    journal = {International Journal of Computer Vision}
+}
+
+@inproceedings{Andriluka2009-on,
+    doi = {10.1109/cvpr.2009.5206754},
+    url = {https://doi.org/10.1109/cvpr.2009.5206754},
+    year = {2009},
+    publisher = {{IEEE}},
+    author = {Mykhaylo Andriluka and Stefan Roth and Bernt Schiele},
+    title = {Pictorial structures revisited: People detection and articulated pose estimation},
+    booktitle = {2009 {IEEE} Conference on Computer Vision and Pattern Recognition}
+}
+
+@inproceedings{Yang2011-vn,
+    doi = {10.1109/cvpr.2011.5995741},
+    url = {https://doi.org/10.1109/cvpr.2011.5995741},
+    year = {2011},
+    publisher = {{IEEE}},
+    author = {Yi Yang and Deva Ramanan},
+    title = {Articulated pose estimation with flexible mixtures-of-parts},
+    booktitle = {{CVPR} 2011}
+}
+
+@inproceedings{Sapp2010-dm,
+    doi = {10.1109/cvpr.2010.5540182},
+    url = {https://doi.org/10.1109/cvpr.2010.5540182},
+    year = {2010},
+    publisher = {{IEEE}},
+    author = {Benjamin Sapp and Chris Jordan and Ben Taskar},
+    title = {Adaptive pose priors for pictorial structures},
+    booktitle = {2010 {IEEE} Computer Society Conference on Computer Vision and Pattern Recognition}
+}
+
+@inproceedings{Pishchulin2013-zi,
+    doi = {10.1109/cvpr.2013.82},
+    url = {https://doi.org/10.1109/cvpr.2013.82},
+    year = {2013},
+    publisher = {{IEEE}},
+    author = {Leonid Pishchulin and Mykhaylo Andriluka and Peter Gehler and Bernt Schiele},
+    title = {Poselet conditioned pictorial structures},
+    booktitle = {2013 {IEEE} Conference on Computer Vision and Pattern Recognition}
+}
+
+@incollection{Kiefel2014-vm,
+    doi = {10.1007/978-3-319-10602-1_22},
+    url = {https://doi.org/10.1007/978-3-319-10602-1_22},
+    year = {2014},
+    publisher = {Springer International Publishing},
+    pages = {331--346},
+    author = {Martin Kiefel and Peter Vincent Gehler},
+    title = {Human pose estimation with fields of parts},
+    booktitle = {Computer Vision {\textendash} {ECCV} 2014}
+}
+
+@inproceedings{Wang2013-wv,
+    doi = {10.1109/cvpr.2013.83},
+    url = {https://doi.org/10.1109/cvpr.2013.83},
+    year = {2013},
+    publisher = {{IEEE}},
+    author = {Fang Wang and Yi Li},
+    title = {Beyond physical connections: tree models in human pose estimation},
+    booktitle = {2013 {IEEE} Conference on Computer Vision and Pattern Recognition}
+}
+
+@inproceedings{Cherian2014-zf,
+    doi = {10.1109/cvpr.2014.302},
+    url = {https://doi.org/10.1109/cvpr.2014.302},
+    year = {2014},
+    publisher = {{IEEE}},
+    author = {Anoop Cherian and Julien Mairal and Karteek Alahari and Cordelia Schmid},
+    title = {Mixing body-part sequences for human pose estimation},
+    booktitle = {2014 {IEEE} Conference on Computer Vision and Pattern Recognition}
+}
+
+@inproceedings{Fathi2007-dc,
+    doi = {10.1109/iccv.2007.4409073},
+    url = {https://doi.org/10.1109/iccv.2007.4409073},
+    year = {2007},
+    publisher = {{IEEE}},
+    author = {Alireza Fathi and Greg Mori},
+    title = {Human pose estimation using motion exemplars},
+    booktitle = {2007 {IEEE} 11th International Conference on Computer Vision}
+}
+
+@inproceedings{Ferrari2008-ry,
+    doi = {10.1109/cvpr.2008.4587468},
+    url = {https://doi.org/10.1109/cvpr.2008.4587468},
+    year = {2008},
+    publisher = {{IEEE}},
+    author = {Vittorio Ferrari and Manuel Marin-Jimenez and Andrew Zisserman},
+    title = {Progressive search space reduction for human pose estimation},
+    booktitle = {2008 {IEEE} Conference on Computer Vision and Pattern Recognition}
+}
+
+@inproceedings{Zhang2015-js,
+    doi = {10.1109/iccv.2015.233},
+    url = {https://doi.org/10.1109/iccv.2015.233},
+    year = {2015},
+    publisher = {{IEEE}},
+    author = {Dong Zhang and Mubarak Shah},
+    title = {Human pose estimation in videos},
+    booktitle = {2015 {IEEE} International Conference on Computer Vision ({ICCV})}
+}
+
+@inproceedings{Toshev2014-ou,
+    doi = {10.1109/cvpr.2014.214},
+    url = {https://doi.org/10.1109/cvpr.2014.214},
+    year = {2014},
+    publisher = {{IEEE}},
+    author = {Alexander Toshev and Christian Szegedy},
+    title = {{DeepPose}: human pose estimation via deep neural networks},
+    booktitle = {2014 {IEEE} Conference on Computer Vision and Pattern Recognition}
+}
+
+@incollection{Tompson2014-iq,
+    url = {https://papers.nips.cc/paper/5573-joint-training-of-a-convolutional-network-and-a-graphical-model-for-human-pose-estimation},
+    year = {2014},
+    publisher = {Curran Associate, Inc.},
+    pages = {1799--1807},
+    author = {Jonathan J Tompson and Arjun Jain and Yann LeCun and Christoph Bregler},
+    title = {Joint training of a convolutional network and a graphical model for human pose estimation},
+    booktitle = {Advances in Neural Information Processing Systems 27}
+}
+
+@incollection{Newell2016-cy,
+    doi = {10.1007/978-3-319-46484-8_29},
+    url = {https://doi.org/10.1007/978-3-319-46484-8_29},
+    year = {2016},
+    publisher = {Springer International Publishing},
+    pages = {483--499},
+    author = {Alejandro Newell and Kaiyu Yang and Jia Deng},
+    title = {Stacked hourglass networks for human pose estimation},
+    booktitle = {Computer Vision {\textendash} {ECCV} 2016}
+}
+
+@inproceedings{Wei2016-rb,
+    doi = {10.1109/cvpr.2016.511},
+    url = {https://doi.org/10.1109/cvpr.2016.511},
+    year = {2016},
+    publisher = {{IEEE}},
+    author = {Shih-En Wei and Varun Ramakrishna and Takeo Kanade and Yaser Sheikh},
+    title = {Convolutional pose machines},
+    booktitle = {2016 {IEEE} Conference on Computer Vision and Pattern Recognition ({CVPR})}
+}
+
+@incollection{Ramakrishna2014-ul,
+    doi = {10.1007/978-3-319-10605-2_3},
+    url = {https://doi.org/10.1007/978-3-319-10605-2_3},
+    year = {2014},
+    publisher = {Springer International Publishing},
+    pages = {33--47},
+    author = {Varun Ramakrishna and Daniel Munoz and Martial Hebert and James Andrew Bagnell and Yaser Sheikh},
+    title = {Pose machines: articulated pose estimation via inference machines},
+booktitle = {Computer Vision {\textendash} {ECCV} 2014}
+}
+
+@incollection{Gkioxari2016-ix,
+    doi = {10.1007/978-3-319-46493-0_44},
+    url = {https://doi.org/10.1007/978-3-319-46493-0_44},
+    year = {2016},
+    publisher = {Springer International Publishing},
+    pages = {728--743},
+    author = {Georgia Gkioxari and Alexander Toshev and Navdeep Jaitly},
+    title = {Chained predictions using convolutional neural networks},
+    booktitle = {Computer Vision {\textendash} {ECCV} 2016}
+}
+
+@inproceedings{Chen2017-pd, 
+    doi = {10.1109/ICCV.2017.137},
+    url = {https://doi.org/10.1109/ICCV.2017.137},
+    year = {2017},
+    publisher = {{IEEE}},
+    pages = {1221-1230},
+    author = {Yu Chen and Chunhua Shen and Xiu-Shen Wei and Lingqiao Liu},
+    title = {Adversarial PoseNet: a structure-aware convolutional network for human pose estimation},
+    booktitle ={2017 IEEE International Conference on Computer Vision (ICCV)}
+}
+
+@incollection{Jain2015-zb,
+    doi = {10.1007/978-3-319-16808-1_21},
+    url = {https://doi.org/10.1007/978-3-319-16808-1_21},
+    year = {2015},
+    publisher = {Springer International Publishing},
+    pages = {302--315},
+    author = {Arjun Jain and Jonathan Tompson and Yann LeCun and Christoph Bregler},
+    title = {{MoDeep}: a deep learning framework using motion features for human pose estimation},
+    booktitle = {Computer Vision -- {ACCV} 2014}
+}
+
+@inproceedings{Pfister2015-ae, 
+    doi = {10.1109/ICCV.2015.222},
+    url = {https://doi.org/10.1109/ICCV.2015.222},
+    year = {2015},
+    publisher = {{IEEE}},
+    pages = {1913-1921},
+    author = {Tomas Pfister and James Charles and Zisserman Andrew},
+    title = {Flowing convnets for human pose estimation in videos},
+    booktitle ={2015 IEEE International Conference on Computer Vision (ICCV)}
+}
+
+@inproceedings{Song2017-fe,
+    doi = {10.1109/cvpr.2017.590},
+    url = {https://doi.org/10.1109/cvpr.2017.590},
+    year = {2017},
+    publisher = {{IEEE}},
+    author = {Jie Song and Limin Wang and Luc Van Gool and Otmar Hilliges},
+    title = {Thin-slicing network: a deep structured model for pose estimation in videos},
+    booktitle = {2017 {IEEE} Conference on Computer Vision and Pattern Recognition ({CVPR})}
+}
+
+@inproceedings{Girdhar2018-lx,
+    doi = {10.1109/cvpr.2018.00044},
+    url = {https://doi.org/10.1109/cvpr.2018.00044},
+    year = {2018},
+    publisher = {{IEEE}},
+    author = {Rohit Girdhar and Georgia Gkioxari and Lorenzo Torresani and Manohar Paluri and Du Tran},
+    title = {Detect-and-track: efficient pose estimation in videos},
+    booktitle = {2018 {IEEE}/{CVF} Conference on Computer Vision and Pattern Recognition}
+}
+
+@inproceedings{he2017mask,
+    doi = {10.1109/iccv.2017.322},
+    url = {https://doi.org/10.1109/iccv.2017.322},
+    year = {2017},
+    publisher = {{IEEE}},
+    author = {Kaiming He and Georgia Gkioxari and Piotr Dollar and Ross Girshick},
+    title = {Mask R-{CNN}},
+    booktitle = {2017 {IEEE} International Conference on Computer Vision ({ICCV})}
+}
+
+@inproceedings{Iqbal2017-nu,
+  doi = {10.1109/cvpr.2017.495},
+  url = {https://doi.org/10.1109/cvpr.2017.495},
+  year = {2017},
+  publisher = {{IEEE}},
+  author = {Umar Iqbal and Anton Milan and Juergen Gall},
+  title = {{PoseTrack}: joint multi-person pose estimation and tracking},
+  booktitle = {2017 {IEEE} Conference on Computer Vision and Pattern Recognition ({CVPR})}
+}
+
+@inproceedings{Papandreou2017-nk,
+    doi = {10.1109/cvpr.2017.395},
+    url = {https://doi.org/10.1109/cvpr.2017.395},
+    year = {2017},
+    publisher = {{IEEE}},
+    author = {George Papandreou and Tyler Zhu and Nori Kanazawa and Alexander Toshev and Jonathan Tompson and Chris Bregler and Kevin Murphy},
+    title = {Towards accurate multi-person pose estimation in the wild},
+    booktitle = {2017 {IEEE} Conference on Computer Vision and Pattern Recognition ({CVPR})}
+}
+
+@inproceedings{Insafutdinov2017-zx,
+    doi = {10.1109/cvpr.2017.142},
+    url = {https://doi.org/10.1109/cvpr.2017.142},
+    year = {2017},
+    publisher = {{IEEE}},
+    author = {Eldar Insafutdinov and Mykhaylo Andriluka and Leonid Pishchulin and Siyu Tang and Evgeny Levinkov and Bjoern Andres and Bernt Schiele},
+    title = {{ArtTrack}: articulated multi-person tracking in the wild},
+    booktitle = {2017 {IEEE} Conference on Computer Vision and Pattern Recognition ({CVPR})}
+}
+
+@inproceedings{Alp_Guler2018-rg,
+    doi = {10.1109/cvpr.2018.00762},
+    url = {https://doi.org/10.1109/cvpr.2018.00762},
+    year = {2018},
+    publisher = {{IEEE}},
+    author = {Riza Alp Guler and Natalia Neverova and Iasonas Kokkinos},
+    title = {{DensePose}: dense human pose estimation in the wild},
+    booktitle = {2018 {IEEE}/{CVF} Conference on Computer Vision and Pattern Recognition}
+}
+
+@inproceedings{simon2017hand,
+    doi = {10.1109/cvpr.2017.494},
+    url = {https://doi.org/10.1109/cvpr.2017.494},
+    year = {2017},
+    publisher = {{IEEE}},
+    author = {Tomas Simon and Hanbyul Joo and Iain Matthews and Yaser Sheikh},
+    title = {Hand keypoint detection in single images using multiview bootstrapping},
+    booktitle = {2017 {IEEE} Conference on Computer Vision and Pattern Recognition ({CVPR})}
+}
+
+@article{joo2015panoptic,
+    doi = {10.1109/tpami.2017.2782743},
+    url = {https://doi.org/10.1109/tpami.2017.2782743},
+    year = {2019},
+    publisher = {Institute of Electrical and Electronics Engineers ({IEEE})},
+    volume = {41},
+    number = {1},
+    pages = {190--204},
+    author = {Hanbyul Joo and Tomas Simon and Xulong Li and Hao Liu and Lei Tan and Lin Gui and Sean Banerjee and Timothy Godisart and Bart Nabbe and Iain Matthews and Takeo Kanade and Shohei Nobuhara and Yaser Sheikh},
+    title = {Panoptic Studio: a massively multiview system for social interaction capture},
+    journal = {{IEEE} Transactions on Pattern Analysis and Machine Intelligence}
+}
+
+@inproceedings{Andriluka2010-oc,
+    doi = {10.1109/cvpr.2010.5540156},
+    url = {https://doi.org/10.1109/cvpr.2010.5540156},
+    year = {2010},
+    publisher = {{IEEE}},
+    author = {Mykhaylo Andriluka and Stefan Roth and Bernt Schiele},
+    title = {Monocular 3D pose estimation and tracking by detection},
+    booktitle = {2010 {IEEE} Computer Society Conference on Computer Vision and Pattern Recognition}
+}
+
+@incollection{Ramakrishna2012-ti,
+    doi = {10.1007/978-3-642-33765-9_41},
+    url = {https://doi.org/10.1007/978-3-642-33765-9_41},
+    year = {2012},
+    publisher = {Springer Berlin Heidelberg},
+    pages = {573--586},
+    author = {Varun Ramakrishna and Takeo Kanade and Yaser Sheikh},
+    title = {Reconstructing 3D human pose from 2D image landmarks},
+    booktitle = {Computer Vision {\textendash} {ECCV} 2012}
+}
+
+@inproceedings{Chen2017-ug,
+    doi = {10.1109/cvpr.2017.610},
+    url = {https://doi.org/10.1109/cvpr.2017.610},
+    year = {2017},
+    publisher = {{IEEE}},
+    author = {Ching-Hang Chen and Deva Ramanan},
+    title = {3D human pose estimation = 2D pose estimation $\mathplus$ matching},
+    booktitle = {2017 {IEEE} Conference on Computer Vision and Pattern Recognition ({CVPR})}
+}
+
+@incollection{Bogo2016-kk,
+    doi = {10.1007/978-3-319-46454-1_34},
+    url = {https://doi.org/10.1007/978-3-319-46454-1_34},
+    year = {2016},
+    publisher = {Springer International Publishing},
+    pages = {561--578},
+    author = {Federica Bogo and Angjoo Kanazawa and Christoph Lassner and Peter Gehler and Javier Romero and Michael J. Black},
+    title = {Keep it {SMPL}: automatic estimation of 3D human pose and shape from a single image},
+    booktitle = {Computer Vision {\textendash} {ECCV} 2016}
+}
+
+@inproceedings{Martinez2017-su,
+    doi = {10.1109/iccv.2017.288},
+    url = {https://doi.org/10.1109/iccv.2017.288},
+    year = {2017},
+    publisher = {{IEEE}},
+    author = {Julieta Martinez and Rayat Hossain and Javier Romero and James J. Little},
+    title = {A simple yet effective baseline for 3d human pose estimation},
+    booktitle = {2017 {IEEE} International Conference on Computer Vision ({ICCV})}
+}
+
+@inproceedings{Tome2017-ja,
+    doi = {10.1109/cvpr.2017.603},
+    url = {https://doi.org/10.1109/cvpr.2017.603},
+    year = {2017},
+    publisher = {{IEEE}},
+    author = {Denis Tome and Chris Russell and Lourdes Agapito},
+    title = {Lifting from the deep: convolutional 3D pose estimation from a single image},
+    booktitle = {2017 {IEEE} Conference on Computer Vision and Pattern Recognition ({CVPR})}
+}
+
+@inproceedings{Nibali2019-yl,
+    doi = {10.1109/wacv.2019.00162},
+    url = {https://doi.org/10.1109/wacv.2019.00162},
+    year = {2019},
+    publisher = {{IEEE}},
+    author = {Aiden Nibali and Zhen He and Stuart Morgan and Luke Prendergast},
+    title = {3D human pose estimation with 2D marginal heatmaps},
+    booktitle = {2019 {IEEE} Winter Conference on Applications of Computer Vision ({WACV})}
+}
+
+@inproceedings{Luvizon2018-te,
+    doi = {10.1109/cvpr.2018.00539},
+    url = {https://doi.org/10.1109/cvpr.2018.00539},
+    year = {2018},
+    publisher = {{IEEE}},
+    author = {Diogo C. Luvizon and David Picard and Hedi Tabia},
+    title = {2D/3D pose estimation and action recognition using multitask deep learning},
+    booktitle = {2018 {IEEE}/{CVF} Conference on Computer Vision and Pattern Recognition}
+}
+
+@inproceedings{Pavlakos2017-qk,
+    doi = {10.1109/cvpr.2017.139},
+    url = {https://doi.org/10.1109/cvpr.2017.139},
+    year = {2017},
+    publisher = {{IEEE}},
+    author = {Georgios Pavlakos and Xiaowei Zhou and Konstantinos G. Derpanis and Kostas Daniilidis},
+    title = {Coarse-to-fine volumetric prediction for single-image 3D human pose},
+booktitle = {2017 {IEEE} Conference on Computer Vision and Pattern Recognition ({CVPR})}
+}
+
+@inproceedings{Nie2017-ud,
+    doi = {10.1109/iccv.2017.373},
+    url = {https://doi.org/10.1109/iccv.2017.373},
+    year = {2017},
+    publisher = {{IEEE}},
+    author = {Bruce Xiaohan Nie and Ping Wei and Song-Chun Zhu},
+    title = {Monocular 3D Human Pose Estimation by Predicting Depth on Joints},
+    booktitle = {2017 {IEEE} International Conference on Computer Vision ({ICCV})}
+}
+
+@article{Mehta2017-zi,
+    doi = {10.1145/3072959.3073596},
+    url = {https://doi.org/10.1145/3072959.3073596},
+    year = {2017},
+    publisher = {Association for Computing Machinery ({ACM})},
+    volume = {36},
+    number = {4},
+    pages = {1--14},
+    author = {Dushyant Mehta and Srinath Sridhar and Oleksandr Sotnychenko and Helge Rhodin and Mohammad Shafiei and Hans-Peter Seidel and Weipeng Xu and Dan Casas and Christian Theobalt},
+    title = {{VNect}},
+    journal = {{ACM} Transactions on Graphics}
+}
+
+@article{ramirez2020bayesian,
+    doi = {10.1016/j.neucom.2019.09.101},
+    url = {https://doi.org/10.1016/j.neucom.2019.09.101},
+    year = {2020},
+    publisher = {Elsevier {BV}},
+    volume = {379},
+    pages = {64--73},
+    author = {Iv{\'{a}}n Ram{\'{\i}}rez and Alfredo Cuesta-Infante and Emanuele Schiavi and Juan Jos{\'{e}} Pantrigo},
+    title = {Bayesian capsule networks for 3D human pose estimation from single 2D images},
+    journal = {Neurocomputing}
+}
+
+@inproceedings{Gavrila19963,
+    doi = {10.1109/cvpr.1996.517056},
+    url = {https://doi.org/10.1109/cvpr.1996.517056},
+    year = {1996},
+    publisher = {{IEEE}},
+    author = {D.M. Gavrila and L.S. Davis},
+    title = {3-D model-based tracking of humans in action: a multi-view approach},
+    booktitle = {Proceedings {CVPR} {IEEE} Computer Society Conference on Computer Vision and Pattern Recognition}
+}
+
+@article{nunez2019multiview,
+    doi = {10.1016/j.neucom.2018.10.009},
+    url = {https://doi.org/10.1016/j.neucom.2018.10.009},
+    year = {2019},
+    publisher = {Elsevier {BV}},
+    volume = {323},
+    pages = {335--343},
+    author = {Juan Carlos N{\'{u}}{\~{n}}ez and Ra{\'{u}}l Cabido and Jos{\'{e}} F. V{\'{e}}lez and Antonio S. Montemayor and Juan Jos{\'{e}} Pantrigo},
+    title = {Multiview 3D human pose estimation using improved least-squares and {LSTM} networks},
+    journal = {Neurocomputing}
+}
+
+@inproceedings{shotton2011real,
+    doi = {10.1109/cvpr.2011.5995316},
+    url = {https://doi.org/10.1109/cvpr.2011.5995316},
+    year = {2011},
+    publisher = {{IEEE}},
+    author = {Jamie Shotton and Andrew Fitzgibbon and Mat Cook and Toby Sharp and Mark Finocchio and Richard Moore and Alex Kipman and Andrew Blake},
+    title = {Real-time human pose recognition in parts from single depth images},
+    booktitle = {{CVPR} 2011}
+}
+
+@article{han2013enhanced,
+    doi = {10.1109/tcyb.2013.2265378},
+    url = {https://doi.org/10.1109/tcyb.2013.2265378},
+    year = {2013},
+    publisher = {Institute of Electrical and Electronics Engineers ({IEEE})},
+    volume = {43},
+    number = {5},
+    pages = {1318--1334},
+    author = {Jungong Han and  Ling Shao and  Dong Xu and Jamie Shotton},
+    title = {Enhanced computer vision with Microsoft Kinect sensor: a review},
+    journal = {{IEEE} Transactions on Cybernetics}
+}
+
+@inproceedings{Youding_Zhu2008-pr,
+    doi = {10.1109/cvprw.2008.4563163},
+    url = {https://doi.org/10.1109/cvprw.2008.4563163},
+    year = {2008},
+    publisher = {{IEEE}},
+    author = {Youding Zhu and Behzad Dariush and  Kikuo Fujimura},
+    title = {Controlled human pose estimation from depth image streams},
+    booktitle = {2008 {IEEE} Computer Society Conference on Computer Vision and Pattern Recognition Workshops}
+}
+
+@inproceedings{Schwarz2011-qi,
+    doi = {10.1109/fg.2011.5771333},
+    url = {https://doi.org/10.1109/fg.2011.5771333},
+    year = {2011},
+    publisher = {{IEEE}},
+    author = {Loren Arthur Schwarz and Artashes Mkhitaryan and Diana Mateus and Nassir Navab},
+    title = {Estimating human 3D pose from Time-of-Flight images based on geodesic distances and optical flow},
+    booktitle = {Face and Gesture 2011}
+}
+
+@inproceedings{Ye2011-ui,
+    doi = {10.1109/iccv.2011.6126310},
+    url = {https://doi.org/10.1109/iccv.2011.6126310},
+    year = {2011},
+    publisher = {{IEEE}},
+    author = {Mao Ye and  Xianwang Wang and Ruigang Yang and  Liu Ren and Marc Pollefeys},
+    title = {Accurate 3D pose estimation from a single depth image},
+    booktitle = {2011 International Conference on Computer Vision}
+}
+
+@article{Marin-Jimenez2018-so,
+    doi = {10.1016/j.jvcir.2018.07.010},
+    url = {https://doi.org/10.1016/j.jvcir.2018.07.010},
+    year = {2018},
+    publisher = {Elsevier {BV}},
+    volume = {55},
+    pages = {627--639},
+    author = {Manuel J. Mar{\'{\i}}n-Jim{\'{e}}nez and Francisco J. Romero-Ramirez and Rafael Mu{\~{n}}oz-Salinas and Rafael Medina-Carnicer},
+    title = {3D human pose estimation from depth maps using a deep combination of poses},
+    journal = {Journal of Visual Communication and Image Representation}
+}
+
+@inproceedings{Chang2018,
+    doi = {10.1109/cvpr.2018.00533},
+    url = {https://doi.org/10.1109/cvpr.2018.00533},
+    year = {2018},
+    publisher = {{IEEE}},
+    author = {Ju Yong Chang and Gyeongsik Moon and Kyoung Mu Lee},
+    title = {V2V-{PoseNet}: voxel-to-voxel prediction network for accurate 3D hand and human pose estimation from a single depth map},
+    booktitle = {2018 {IEEE}/{CVF} Conference on Computer Vision and Pattern Recognition}
+}
+
+@inproceedings{Zimmermann2018-sn,
+    doi = {10.1109/icra.2018.8462833},
+    url = {https://doi.org/10.1109/icra.2018.8462833},
+    year = {2018},
+    publisher = {{IEEE}},
+    author = {Christian Zimmermann and Tim Welschehold and Christian Dornhege and Wolfram Burgard and Thomas Brox},
+    title = {3D human pose estimation in {RGBD} images for robotic task learning},
+    booktitle = {2018 {IEEE} International Conference on Robotics and Automation ({ICRA})}
+}
+
+@inproceedings{dalal2005histograms,
+    doi = {10.1109/cvpr.2005.177},
+    url = {https://doi.org/10.1109/cvpr.2005.177},
+    year = {2005},
+    publisher = {{IEEE}},
+    author = {N. Dalal and B. Triggs},
+    title = {Histograms of oriented gradients for human detection},
+    booktitle = {2005 {IEEE} Computer Society Conference on Computer Vision and Pattern Recognition ({CVPR}{\textquotesingle}05)}
+}
+
+@inproceedings{sandler2018mobilenetv2,
+  doi = {10.1109/cvpr.2018.00474},
+  url = {https://doi.org/10.1109/cvpr.2018.00474},
+  year = {2018},
+  publisher = {{IEEE}},
+  author = {Mark Sandler and Andrew Howard and Menglong Zhu and Andrey Zhmoginov and Liang-Chieh Chen},
+  title = {{MobileNetV}2: inverted residuals and linear bottlenecks},
+  booktitle = {2018 {IEEE}/{CVF} Conference on Computer Vision and Pattern Recognition}
+}
+
+@incollection{liu2016ssd,
+    doi = {10.1007/978-3-319-46448-0_2},
+    url = {https://doi.org/10.1007/978-3-319-46448-0_2},
+    year = {2016},
+    publisher = {Springer International Publishing},
+    pages = {21--37},
+    author = {Wei Liu and Dragomir Anguelov and Dumitru Erhan and Christian Szegedy and Scott Reed and Cheng-Yang Fu and Alexander C. Berg},
+    title = {{SSD}: single shot {multibox} detector},
+    booktitle = {Computer Vision {\textendash} {ECCV} 2016}
+}
+
+@incollection{sutskever2014sequence,
+    url = {https://papers.nips.cc/paper/5346-sequence-to-sequence-learning-with-neural-networks},
+    year = {2014},
+    publisher = {Curran Associate, Inc.},
+    pages = {3104--3112},
+    author = {Ilya Sutskever and Oriol Vinyals and Quoc V Le},
+    title = {Sequence to sequence learning with neural networks},
+    booktitle = {Advances in Neural Information Processing Systems 27}
+}
+
+@incollection{bengio2015scheduled,
+    url = {http://papers.neurips.cc/paper/5956-scheduled-sampling-for-sequence-prediction-with-recurrent-neural-networks},
+    year = {2015},
+    publisher = {Curran Associate, Inc.},   
+    pages={1171--1179},
+    author = {Samy Bengio and Oriol Vinyals and Navdeep Jaitly and Noam Shazeer},
+    title={Scheduled sampling for sequence prediction with recurrent neural networks},
+    booktitle = {Advances in Neural Information Processing Systems 28}
+}
+
+@online{opencv_library,
+    title={OpenCV},
+    url={https://opencv.org/},
+    author={OpenCV team},
+    year={2020},
+    urldate={2020-10-09}
+}
+
+@online{mallick_2020,
+    title={Geometry of image formation},
+    url={https://www.learnopencv.com/geometry-of-image-formation/},
+    author={Satya Mallick},
+    year={2020},
+    urldate={2020-10-09}
 }
 
 @article{roser2013human,
-  title={Human height},
-  author={Roser, Max and Appel, Cameron and Ritchie, Hannah},
-  journal={Our world in data},
-  year={2013}
+    author = {Max Roser, Cameron Appel and Hannah Ritchie},
+    title = {Human height},
+    journal = {Our World in Data},
+    year = {2013},
+    url = {https://ourworldindata.org/human-height},
+    urldate={2020-10-08}
 }
 
-@inproceedings{lin2014microsoft,
-  title={Microsoft coco: Common objects in context},
-  author={Lin, Tsung-Yi and Maire, Michael and Belongie, Serge and Hays, James and Perona, Pietro and Ramanan, Deva and Doll{\'a}r, Piotr and Zitnick, C Lawrence},
-  booktitle={European conference on computer vision},
-  pages={740--755},
-  year={2014},
-  organization={Springer}
+@article{kalman1960new,
+    author = {Kalman, Rudolf},
+    year = {1959},
+    pages = {35-45},
+    title = {A new approach to linear filtering and prediction problems},
+    volume = {82D},
+    journal = {Journal of Fluids Engineering}
 }
 
-@inproceedings{field2009motion,
-  title={Motion capture in robotics review},
-  author={Field, Matthew and Stirling, David and Naghdy, Fazel and Pan, Zengxi},
-  booktitle={2009 IEEE International Conference on Control and Automation},
-  pages={1697--1702},
-  year={2009},
-  organization={IEEE}
+@online{petteri_2011,
+    title={Basic concept of Kalman filtering},
+    url={https://commons.wikimedia.org/wiki/File:Basic_concept_of_Kalman_filtering.svg},
+    author={Petteri Aimonen},
+    publisher={Wikimedia Commons},
+    year={2011},
+    urldate={2020-10-09}
+}
+
+@online{pykalman,
+    title={pykalman},
+    url={https://pykalman.github.io},
+    author={Daniel Duckworth},
+    year={2012},
+    urldate={2020-10-09}
+}
+
+@inproceedings{andriluka20142d,
+    doi = {10.1109/cvpr.2014.471},
+    url = {https://doi.org/10.1109/cvpr.2014.471},
+    year = {2014},
+    publisher = {{IEEE}},
+    author = {Mykhaylo Andriluka and Leonid Pishchulin and Peter Gehler and Bernt Schiele},
+    title = {2D human pose estimation: new benchmark and state of the art Analysis},
+    booktitle = {2014 {IEEE} Conference on Computer Vision and Pattern Recognition}
+}
+
+@inproceedings{Johnson10,
+    doi = {10.5244/c.24.12},
+    url = {https://doi.org/10.5244/c.24.12},
+    year = {2010},
+    publisher = {British Machine Vision Association},
+    author = {Sam Johnson and Mark Everingham},
+    title = {Clustered pose and nonlinear appearance models for human pose estimation},
+    booktitle = {Procedings of the British Machine Vision Conference 2010}
+}
+
+@inproceedings{sung2011human,
+    doi = {10.1109/icra.2012.6224591},
+    url = {https://doi.org/10.1109/icra.2012.6224591},
+    year = {2012},
+    publisher = {{IEEE}},
+    author = {Jaeyong Sung and Colin Ponce and Bart Selman and Ashutosh Saxena},
+    title = {Unstructured human activity detection from {RGBD} images},
+    booktitle = {2012 {IEEE} International Conference on Robotics and Automation}
+}
+
+@incollection{lin2014microsoft,
+    doi = {10.1007/978-3-319-10602-1_48},
+    url = {https://doi.org/10.1007/978-3-319-10602-1_48},
+    year = {2014},
+    publisher = {Springer International Publishing},
+    pages = {740--755},
+    author = {Tsung-Yi Lin and Michael Maire and Serge Belongie and James Hays and Pietro Perona and Deva Ramanan and Piotr Doll{\'{a}}r and C. Lawrence Zitnick},
+    title = {Microsoft {COCO}: common objects in context},
+    booktitle = {Computer Vision {\textendash} {ECCV} 2014}
+}
+
+@online{nvidia,
+    title={NVIDIA: world leader in artificial intelligence computing},
+    url={https://www.nvidia.com/en-us/},
+    author={NVIDIA Corporation},
+    year={2020},
+    urldate={2020-10-07}
+}
+
+@inproceedings{nickolls2008scalable,
+    doi = {10.1145/1401132.1401152},
+    url = {https://doi.org/10.1145/1401132.1401152},
+    year = {2008},
+    publisher = {{ACM} Press},
+    author = {John Nickolls and Ian Buck and Michael Garland and Kevin Skadron},
+    title = {Scalable parallel programming with {CUDA}},
+    booktitle = {{ACM} {SIGGRAPH} 2008 classes on - {SIGGRAPH} {\textquotesingle}08}
+}
+
+@online{ros,
+    title = {ROS.org | Powering the world's robots},
+    url = {https://www.ros.org/},
+    author = {Open Robotics},
+    year={2020},
+    date = {2020}, 
+    urldate={2020-10-09}
+}
+
+@online{openni,
+    title = {Wiki: openni2\_launch},
+    url = {http://wiki.ros.org/openni2_launch},
+    author = {Open Source Robotics Foundation},
+    year={2020}, 
+    urldate={2020-10-09}
+}
+
+@online{perez_gonzalez_2019,
+    title = {Rperez-tfg},
+    url = {https://wiki.jderobot.org/Rperez-tfg},
+    author = {Roberto P{\'{e}}rez Gonz{\'{a}}lez},
+    year={2019}, 
+    urldate={2020-10-09}
+}
+
+@online{electron,
+    title = {Build cross-platform desktop apps with JavaScript, HTML, and CSS.},
+    url = {https://www.electronjs.org/},
+    author = {OpenJS Foundation},
+    year={2020}, 
+    urldate={2020-10-09}
+}
+
+@online{papers_with_code,
+    title = {Papers with Code - MPII human pose benchmark (pose estimation)},
+    url = {https://paperswithcode.com/sota/pose-estimation-on-mpii-human-pose},
+    author = {Papers With Code},
+    year={2020}, 
+    urldate={2020-10-09}
+}
+
+@misc{groos2020efficientpose,
+    title={EfficientPose: scalable single-person pose estimation}, 
+    author={Daniel Groos and Heri Ramampiaro and Espen Ihlen},
+    year={2020},
+    eprint={2004.12186},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV}
+}
+
+@inproceedings{kearney2020rgbd,
+  doi = {10.1109/cvpr42600.2020.00836},
+  url = {https://doi.org/10.1109/cvpr42600.2020.00836},
+  year = {2020},
+  publisher = {{IEEE}},
+  author = {Sinead Kearney and Wenbin Li and Martin Parsons and Kwang In Kim and Darren Cosker},
+  title = {{RGBD}-Dog: predicting canine pose from {RGBD} sensors},
+  booktitle = {2020 {IEEE}/{CVF} Conference on Computer Vision and Pattern Recognition ({CVPR})}
 }
